@@ -427,6 +427,14 @@
         <div class="progress-track"><div class="progress-fill" id="progfill"></div></div>
       </div>
 
+      <div class="live-graph-wrap" id="graphwrap">
+        <div class="live-graph-label">
+          <span>VELOCIDAD EN TIEMPO REAL</span>
+          <span id="graphpeak"></span>
+        </div>
+        <canvas id="liveChart" width="240" height="50"></canvas>
+      </div>
+
       <p class="status-msg" id="statusmsg">Presiona INICIAR para medir tu conexión</p>
 
       <div class="btn-row">
@@ -681,7 +689,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida</footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; <span id="attempt-counter" style="color:var(--accent);opacity:1">intento #1</span> &nbsp;·&nbsp; v2025-05-18</footer>
 </div>
 
 <script>
@@ -704,6 +712,7 @@
 
 // ─── State ─────────────────────────────────────────────────────────────────
 let aborted = false;
+let attemptCount = 0;
 const $ = id => document.getElementById(id);
 const GAUGE_LEN = 358, MAX_MBPS = 1000;
 const chartData = [];
@@ -988,6 +997,65 @@ function fetchMbps(url, onProgress) {
   });
 }
 
+// ─── Live IT panel update (called every 150ms ticker) ─────────────────────
+function updateITLive(latestMbps) {
+  if (!allSamples.length) return;
+  const sorted = [...allSamples].sort((a, b) => a - b);
+  const mn = sorted[0];
+  const mx = sorted[sorted.length - 1];
+  const avg = allSamples.reduce((a, b) => a + b, 0) / allSamples.length;
+  const variance = allSamples.reduce((a, b) => a + (b - avg) ** 2, 0) / allSamples.length;
+  const std = Math.sqrt(variance);
+  const cv = avg > 0 ? (std / avg) * 100 : 0;
+
+  function fl(n) {
+    if (!n || n <= 0) return '—';
+    const fmt = (val, dec) =>
+      val.toLocaleString('es-CL', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    if (n >= 1000) return fmt(n, 0);
+    if (n >= 100)  return fmt(n, 1);
+    if (n >= 10)   return fmt(n, 2);
+    return fmt(n, 3);
+  }
+
+  $('it-peak').textContent    = fl(mx) + ' Mbps';
+  $('it-avg').textContent     = fl(avg) + ' Mbps';
+  $('it-min').textContent     = fl(mn) + ' Mbps';
+  $('it-std').textContent     = fl(std) + ' Mbps';
+  $('it-samples').textContent = allSamples.length;
+
+  const cvEl = $('it-cv');
+  cvEl.textContent = cv.toLocaleString('es-CL', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
+  cvEl.className = 'it-metric-val ' + (cv < 20 ? 'good' : cv < 40 ? '' : cv < 60 ? 'warn' : 'bad');
+
+  // Draw live histogram
+  drawHistogram(allSamples);
+
+  // Live stability diagnosis
+  const stability = cv < 20 ? '✓ Estable' : cv < 40 ? '⚠ Moderada' : '✗ Inestable';
+  $('diag-stability').textContent = stability;
+  $('diag-stability').style.color = cv < 20 ? 'var(--accent)' : cv < 40 ? 'var(--warn)' : '#ff4444';
+  $('diag-stability-note').textContent = cv < 20
+    ? 'Enlace consistente. Normal para WiFi6 / fibra.'
+    : cv < 40 ? 'Variabilidad moderada. Puede ser congestión puntual.'
+    : 'Alta variabilidad. Investigar interferencias o saturación.';
+
+  $('diag-peakratio').textContent = mx > 0 ? ((latestMbps / mx) * 100).toLocaleString('es-CL',{maximumFractionDigits:0}) + '%' : '—';
+  $('diag-peakratio-note').textContent = 'Velocidad actual vs pico observado. En tiempo real.';
+  $('diag-multith').textContent = roundLog.length >= 2
+    ? (roundLog[roundLog.length-1].mbps / roundLog[0].mbps).toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2}) + 'x'
+    : '...midiendo';
+  $('diag-multith-note').textContent = 'Ratio velocidad última ronda vs primera. >1 = beneficio de más hilos.';
+
+  let verdict;
+  if (cv < 20 && latestMbps > mx * 0.80) { verdict = '✓ Enlace sano'; }
+  else if (cv < 40) { verdict = '⚠ Revisar'; }
+  else { verdict = '✗ Problema detectado'; }
+  $('diag-verdict').textContent = verdict;
+  $('diag-verdict').style.color = cv < 15 ? 'var(--accent)' : cv < 30 ? 'var(--warn)' : '#ff4444';
+  $('diag-verdict-note').textContent = '⟳ Actualizando en tiempo real...';
+}
+
 // Ejecuta N descargas en paralelo midiendo velocidad TOTAL agregada en tiempo real
 function runParallel(urls) {
   return new Promise(resolve => {
@@ -1008,6 +1076,9 @@ function runParallel(urls) {
           setGauge(mbps);
           updateUnits(mbps);
           drawChart(mbps);
+          // Update IT panel live
+          allSamples.push(mbps);
+          updateITLive(mbps);
         }
       }
       lastTickBytes = totalBytesReceived;
@@ -1062,6 +1133,8 @@ function makeUrls(threads, bytes) {
 // ─── Run Test ──────────────────────────────────────────────────────────────
 async function runTest() {
   aborted = false;
+  attemptCount++;
+  $('attempt-counter').textContent = 'intento #' + attemptCount;
   peakMbps = 0;
   chartData.length = 0;
   allSamples.length = 0;
@@ -1077,14 +1150,14 @@ async function runTest() {
   $('fullgrid-header').classList.add('hidden');
   $('fullgrid').classList.add('hidden');
   $('progwrap').classList.add('visible');
-  // Hide gauge, show animation
-  $('gauge-outer').style.display = 'none';
-  $('gmode').style.display = 'none';
-  $('measuring-anim').classList.add('active');
-  $('graphwrap').classList.add('hidden');
-  $('gnum').textContent = '—';
-  $('gmode').textContent = '— INICIANDO —';
-  $('statusmsg').classList.add('hidden');
+  // Show gauge live during test (don't hide it)
+  $('gauge-outer').style.display = '';
+  $('gmode').style.display = '';
+  $('measuring-anim').classList.remove('active');
+  $('graphwrap').classList.remove('hidden');
+  $('gnum').textContent = '0';
+  $('gmode').textContent = '↓ MIDIENDO...';
+  $('statusmsg').classList.remove('hidden');
   $('statusmsg').classList.add('pulsing');
   setProgress(0, 'Preparando');
   await sleep(300);
@@ -1123,10 +1196,6 @@ async function runTest() {
     if (aggregatedMbps > 0.1 && aggregatedMbps < 100000) {
       roundResults.push(aggregatedMbps);
       roundLog.push({ round: r+1, threads, mbps: aggregatedMbps, ms: totalMs, warmup });
-      if (!warmup) {
-        measureSamples.push(aggregatedMbps);
-        allSamples.push(aggregatedMbps);
-      }
       setGauge(aggregatedMbps);
       updateUnits(aggregatedMbps);
       drawChart(aggregatedMbps);
@@ -1201,6 +1270,7 @@ function finishStop() {
   $('gauge-outer').style.display = '';
   $('gmode').style.display = '';
   $('gmode').textContent = '';
+  $('gnum').textContent = '—';
 }
 </script>
 </body>
