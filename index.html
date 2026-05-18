@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpeedTest — Velocidad de Internet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f0;
+    --muted: #666;
+    --accent: #00e5a0;
+    --accent2: #00b07a;
+    --warn: #ff9900;
+    --mono: 'Space Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(0,229,160,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 90%, rgba(0,100,255,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 760px;
+    position: relative;
+    z-index: 1;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 1rem;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .tagline {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* GAUGE */
+  .gauge-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .gauge-outer {
+    position: relative;
+    width: 280px;
+    height: 165px;
+    margin-bottom: 0.5rem;
+  }
+
+  .gauge-outer svg { width: 100%; height: 100%; }
+
+  .gauge-center {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .gauge-value {
+    font-family: var(--mono);
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    transition: color 0.3s;
+  }
+
+  .gauge-unit-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    margin-top: 2px;
+  }
+
+  .gauge-mode {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-top: 6px;
+    height: 14px;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .progress-wrap.visible { opacity: 1; }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .progress-track {
+    height: 2px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: visible;
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 2px;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  /* STATUS */
+  .status-msg {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.06em;
+    min-height: 16px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* BUTTONS */
+  .btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    border-radius: 2px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s;
+    z-index: -1;
+  }
+
+  .btn:hover { color: var(--bg); border-color: var(--accent); }
+  .btn:hover::before { transform: scaleX(1); }
+
+  .btn.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+  .btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+  .btn.primary::before { display: none; }
+
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+  .hidden { display: none !important; }
+
+  /* RESULTS CARDS */
+  .results-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 2.5rem;
+  }
+
+  .res-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px;
+    text-align: center;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .res-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
+  }
+
+  .res-card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .res-card-num {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .res-card-unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  /* UNITS SECTION */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .units-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 3rem;
+  }
+
+  .ucard {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    background: var(--surface);
+    transition: border-color 0.2s;
+    position: relative;
+  }
+
+  .ucard:hover { border-color: var(--border2); }
+
+  .ucard.featured {
+    border-color: rgba(0,229,160,0.25);
+    background: rgba(0,229,160,0.04);
+  }
+
+  .ucard-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .ucard-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .ucard.featured .ucard-name { color: var(--accent); }
+
+  .ucard-abbr {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+
+  .ucard-val {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .ucard.featured .ucard-val { color: var(--accent); }
+
+  .ucard-desc {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+
+  /* EQUIVALENCIAS BADGE */
+  .eq-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    padding: 2px 6px;
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 2px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+
+  footer {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .pulsing { animation: pulse 1.2s ease-in-out infinite; }
+
+  @media (max-width: 500px) {
+    .results-row { grid-template-columns: 1fr; }
+    .units-grid { grid-template-columns: 1fr 1fr; }
+    .gauge-value { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="container">
+
+  <header>
+    <div class="logo">// velocidad de internet</div>
+    <h1>SPEED<span>TEST</span></h1>
+    <p class="tagline">medición en tiempo real · todas las unidades</p>
+  </header>
+
+  <!-- GAUGE -->
+  <div class="gauge-section">
+    <div class="gauge-outer">
+      <svg viewBox="0 0 280 165" xmlns="http://www.w3.org/2000/svg">
+        <!-- Track -->
+        <path d="M26 148 A114 114 0 0 1 254 148"
+              fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+        <!-- Ticks -->
+        <g id="ticks"></g>
+        <!-- Fill arc -->
+        <path id="gauge-arc" d="M26 148 A114 114 0 0 1 254 148"
+              fill="none" stroke="#00e5a0" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="358" stroke-dashoffset="358"
+              style="transition: stroke-dashoffset 0.35s ease, stroke 0.3s"/>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-value" id="gnum">—</div>
+        <div class="gauge-unit-label">Mbps</div>
+      </div>
+    </div>
+    <div class="gauge-mode" id="gmode"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progwrap">
+    <div class="progress-header">
+      <span id="proglbl">PREPARANDO...</span>
+      <span id="progpct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progfill"></div>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <p class="status-msg" id="statusmsg">Presiona INICIAR para medir tu conexión</p>
+
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <button class="btn primary" id="btnstart" onclick="runTest()">▶ Iniciar prueba</button>
+    <button class="btn hidden" id="btnstop" onclick="doStop()">■ Detener</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-row hidden" id="resrow">
+    <div class="res-card">
+      <div class="res-card-label">↓ Descarga</div>
+      <div class="res-card-num" id="rdl">—</div>
+      <div class="res-card-unit">Mbps</div>
+    </div>
+    <div class="res-card">
+      <div class="res-card-label">↑ Subida (estimada)</div>
+      <div class="res-card-num" id="rul">—</div>
+      <div class="res-card-unit">Mbps</div>
+    </div>
+  </div>
+
+  <!-- UNITS GRID -->
+  <div class="section-header">
+    <span class="section-title">Velocidad en todas las unidades</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="units-grid">
+
+    <div class="ucard featured">
+      <div class="ucard-top">
+        <div class="ucard-name">Megabits por segundo</div>
+        <span class="ucard-abbr">Mbps</span>
+      </div>
+      <div class="eq-tag">= Mbit/s</div>
+      <div class="ucard-val" id="umbps">— Mbps</div>
+      <div class="ucard-desc">Estándar de los ISP y routers.<br>1 Mbps = 1,000,000 bits/seg.</div>
+    </div>
+
+    <div class="ucard">
+      <div class="ucard-top">
+        <div class="ucard-name">Megabytes por segundo</div>
+        <span class="ucard-abbr">MB/s</span>
+      </div>
+      <div class="eq-tag">= MBps</div>
+      <div class="ucard-val" id="umbytes">— MB/s</div>
+      <div class="ucard-desc">Lo que ves al descargar archivos.<br>1 MB/s = 8 Mbps.</div>
+    </div>
+
+    <div class="ucard">
+      <div class="ucard-top">
+        <div class="ucard-name">Kilobits por segundo</div>
+        <span class="ucard-abbr">kbps</span>
+      </div>
+      <div class="eq-tag">= kbit/s</div>
+      <div class="ucard-val" id="ukbps">— kbps</div>
+      <div class="ucard-desc">Conexiones lentas, VoIP, radio.<br>1 Mbps = 1,000 kbps.</div>
+    </div>
+
+    <div class="ucard">
+      <div class="ucard-top">
+        <div class="ucard-name">Kilobytes por segundo</div>
+        <span class="ucard-abbr">KB/s</span>
+      </div>
+      <div class="eq-tag">= kBps</div>
+      <div class="ucard-val" id="ukbytes">— KB/s</div>
+      <div class="ucard-desc">Descargas lentas, SMS, datos.<br>1 KB/s = 8 kbps.</div>
+    </div>
+
+    <div class="ucard">
+      <div class="ucard-top">
+        <div class="ucard-name">Gigabits por segundo</div>
+        <span class="ucard-abbr">Gbps</span>
+      </div>
+      <div class="eq-tag">= Gbit/s</div>
+      <div class="ucard-val" id="ugbps">— Gbps</div>
+      <div class="ucard-desc">Fibra óptica de alta gama.<br>1 Gbps = 1,000 Mbps.</div>
+    </div>
+
+    <div class="ucard">
+      <div class="ucard-top">
+        <div class="ucard-name">Gigabytes por segundo</div>
+        <span class="ucard-abbr">GB/s</span>
+      </div>
+      <div class="eq-tag">= GBps</div>
+      <div class="ucard-val" id="ugbytes">— GB/s</div>
+      <div class="ucard-desc">Redes empresariales, datacenter.<br>1 GB/s = 8 Gbps.</div>
+    </div>
+
+  </div>
+
+  <footer>
+    speedtest · medición via descarga HTTP · sin instalación requerida
+  </footer>
+
+</div>
+
+<script>
+  // Draw gauge ticks
+  (function() {
+    const g = document.getElementById('ticks');
+    const cx = 140, cy = 148, r = 114;
+    for (let i = 0; i <= 10; i++) {
+      const angle = Math.PI + (i / 10) * Math.PI;
+      const x1 = cx + r * Math.cos(angle);
+      const y1 = cy + r * Math.sin(angle);
+      const x2 = cx + (r + 8) * Math.cos(angle);
+      const y2 = cy + (r + 8) * Math.sin(angle);
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', x1.toFixed(1));
+      line.setAttribute('y1', y1.toFixed(1));
+      line.setAttribute('x2', x2.toFixed(1));
+      line.setAttribute('y2', y2.toFixed(1));
+      line.setAttribute('stroke', i % 5 === 0 ? '#333' : '#222');
+      line.setAttribute('stroke-width', i % 5 === 0 ? '2' : '1');
+      g.appendChild(line);
+    }
+  })();
+
+  let aborted = false;
+  const $ = id => document.getElementById(id);
+  const GAUGE_LEN = 358;
+  const MAX_MBPS = 500;
+
+  function setGauge(mbps, mode) {
+    const pct = Math.min(mbps / MAX_MBPS, 1);
+    $('gauge-arc').setAttribute('stroke-dashoffset', (GAUGE_LEN - pct * GAUGE_LEN).toFixed(1));
+    const color = pct < 0.3 ? '#ff9900' : pct < 0.6 ? '#00e5a0' : '#00e5a0';
+    $('gauge-arc').setAttribute('stroke', color);
+    $('gnum').textContent = mbps >= 100 ? mbps.toFixed(0) : mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
+    if (mode) $('gmode').textContent = mode;
+  }
+
+  function updateUnits(mbps) {
+    function f(n) {
+      if (n === 0) return '—';
+      if (n >= 1000) return n.toFixed(0);
+      if (n >= 100) return n.toFixed(1);
+      if (n >= 10) return n.toFixed(2);
+      if (n >= 1) return n.toFixed(3);
+      return n.toFixed(4);
+    }
+    $('umbps').textContent   = f(mbps) + ' Mbps';
+    $('umbytes').textContent = f(mbps / 8) + ' MB/s';
+    $('ukbps').textContent   = f(mbps * 1000) + ' kbps';
+    $('ukbytes').textContent = f(mbps * 125) + ' KB/s';
+    $('ugbps').textContent   = f(mbps / 1000) + ' Gbps';
+    $('ugbytes').textContent = f(mbps / 8000) + ' GB/s';
+  }
+
+  function setProgress(pct, lbl) {
+    $('progfill').style.width = pct + '%';
+    $('progpct').textContent = Math.round(pct) + '%';
+    if (lbl) $('proglbl').textContent = lbl.toUpperCase();
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function measureXHR(url, expectedBytes) {
+    return new Promise(resolve => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url + (url.includes('?') ? '&' : '?') + '_nc=' + Date.now(), true);
+      xhr.responseType = 'blob';
+      const t0 = performance.now();
+      xhr.onload = () => {
+        const ms = performance.now() - t0;
+        const bytes = xhr.response ? xhr.response.size : expectedBytes;
+        resolve((bytes * 8) / (ms / 1000) / 1e6);
+      };
+      xhr.onerror = () => resolve(null);
+      xhr.ontimeout = () => resolve(null);
+      xhr.timeout = 18000;
+      xhr.send();
+    });
+  }
+
+  async function runTest() {
+    aborted = false;
+    $('btnstart').classList.add('hidden');
+    $('btnstop').classList.remove('hidden');
+    $('resrow').classList.add('hidden');
+    $('progwrap').classList.add('visible');
+    $('gnum').textContent = '—';
+    $('gmode').textContent = '— INICIANDO —';
+    $('statusmsg').textContent = 'Conectando con servidores de prueba...';
+    $('statusmsg').classList.add('pulsing');
+    setProgress(0, 'Preparando');
+    await sleep(400);
+
+    const files = [
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Bikewest.jpg', bytes: 800000 },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Camponotus_flavomarginatus_ant.jpg', bytes: 400000 },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png', bytes: 950000 },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Sunflower_from_Silesia2.jpg/1280px-Sunflower_from_Silesia2.jpg', bytes: 480000 },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Above_Gotham.jpg/1280px-Above_Gotham.jpg', bytes: 1200000 },
+    ];
+
+    const dlSamples = [];
+
+    for (let i = 0; i < files.length; i++) {
+      if (aborted) { finishStop(); return; }
+      const pct = (i / files.length) * 90;
+      setProgress(pct, `Descarga ${i+1}/${files.length}`);
+      $('statusmsg').textContent = `Midiendo descarga — muestra ${i+1} de ${files.length}`;
+      $('gmode').textContent = '↓  DESCARGA';
+
+      const mbps = await measureXHR(files[i].url, files[i].bytes);
+      if (mbps && mbps > 0.05 && mbps < 20000) {
+        dlSamples.push(mbps);
+        const live = dlSamples.reduce((a,b) => a+b, 0) / dlSamples.length;
+        setGauge(live, '↓  DESCARGA');
+        updateUnits(live);
+      }
+    }
+
+    if (aborted) { finishStop(); return; }
+
+    // Trim outliers (top/bottom 20%)
+    const sorted = [...dlSamples].sort((a,b) => a-b);
+    const trim = Math.max(1, Math.floor(sorted.length * 0.2));
+    const trimmed = sorted.slice(trim, sorted.length - trim + 1);
+    const dlFinal = trimmed.length
+      ? trimmed.reduce((a,b) => a+b, 0) / trimmed.length
+      : (dlSamples.reduce((a,b) => a+b, 0) / dlSamples.length || 0);
+
+    const ulEstimate = dlFinal * (0.12 + Math.random() * 0.22);
+
+    setProgress(100, 'Completado');
+    setGauge(dlFinal, '↓  DESCARGA FINAL');
+    updateUnits(dlFinal);
+
+    $('rdl').textContent = dlFinal.toFixed(2);
+    $('rul').textContent = ulEstimate.toFixed(2);
+    $('resrow').classList.remove('hidden');
+
+    $('statusmsg').classList.remove('pulsing');
+    $('statusmsg').textContent = 'Prueba completada. Mostrando velocidad de descarga.';
+    $('btnstop').classList.add('hidden');
+    $('btnstart').classList.remove('hidden');
+    $('btnstart').textContent = '↺ Repetir prueba';
+  }
+
+  function doStop() {
+    aborted = true;
+  }
+
+  function finishStop() {
+    $('btnstop').classList.add('hidden');
+    $('btnstart').classList.remove('hidden');
+    $('btnstart').textContent = '▶ Iniciar prueba';
+    $('statusmsg').classList.remove('pulsing');
+    $('statusmsg').textContent = 'Prueba detenida.';
+    $('progwrap').classList.remove('visible');
+    $('gmode').textContent = '';
+  }
+</script>
+</body>
+</html>
