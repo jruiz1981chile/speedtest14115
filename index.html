@@ -921,8 +921,8 @@ function setProgress(pct, lbl) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ─── Fetch Mbps — reporta progreso via callback ────────────────────────────
-function fetchMbps(url, onProgress) {
+// ─── Fetch Mbps — per-thread rate via onRate(mbps) callback ──────────────
+function fetchMbps(url, onRate) {
   return new Promise(resolve => {
     const xhr = new XMLHttpRequest();
     activeXhrs.push(xhr);
@@ -935,9 +935,12 @@ function fetchMbps(url, onProgress) {
       if (e.loaded === 0) return;
       const now = performance.now();
       const dt = now - lastTime;
-      if (dt > 80) {
+      if (dt >= 300) {
         const bytes = e.loaded - lastLoaded;
-        if (bytes > 0 && onProgress) onProgress(bytes, dt);
+        if (bytes > 0) {
+          const rate = (bytes * 8) / (dt / 1000) / 1e6;
+          if (rate > 0 && rate < 2000 && onRate) onRate(rate);
+        }
         lastLoaded = e.loaded;
         lastTime = now;
       }
@@ -952,7 +955,7 @@ function fetchMbps(url, onProgress) {
       cleanup();
       const ms = performance.now() - t0;
       const bytes = xhr.response ? xhr.response.byteLength : 0;
-      if (bytes > 0 && ms > 50) resolve({ mbps: (bytes * 8) / (ms / 1000) / 1e6, ms });
+      if (bytes > 0 && ms > 100) resolve({ mbps: (bytes * 8) / (ms / 1000) / 1e6, ms, bytes });
       else resolve(null);
     };
     xhr.onerror   = () => { cleanup(); resolve(null); };
@@ -963,7 +966,7 @@ function fetchMbps(url, onProgress) {
   });
 }
 
-// ─── Live IT panel update (called every 150ms ticker) ─────────────────────
+// ─── Live IT panel update ─────────────────────────────────────────────────
 function updateITLive(latestMbps) {
   if (!allSamples.length) return;
   const sorted = [...allSamples].sort((a, b) => a - b);
@@ -1002,12 +1005,11 @@ function updateITLive(latestMbps) {
 
 // ─── Smoothing buffer for main display ────────────────────────────────────
 const smoothBuf = [];
-const SMOOTH_N = 12; // average over last ~1.8s at 150ms ticks
+const SMOOTH_N = 8;
 
 function smoothedMbps(raw) {
   smoothBuf.push(raw);
   if (smoothBuf.length > SMOOTH_N) smoothBuf.shift();
-  // Weighted average: more recent samples get higher weight
   let weightedSum = 0, totalWeight = 0;
   smoothBuf.forEach((v, i) => {
     const w = i + 1;
@@ -1017,54 +1019,49 @@ function smoothedMbps(raw) {
   return weightedSum / totalWeight;
 }
 
-// Ejecuta N descargas en paralelo midiendo velocidad TOTAL agregada en tiempo real
+// Ejecuta N descargas en paralelo — suma tasas por hilo (no delta de bytes compartido)
 function runParallel(urls) {
   return new Promise(resolve => {
     const t0 = performance.now();
-    let totalBytesReceived = 0;  // bytes acumulados de TODOS los hilos
-    let lastTickBytes = 0;
-    let lastTickTime = t0;
-    let aggInterval = null;
+    // Per-thread last-seen rate and timestamp
+    const threadRates    = new Array(urls.length).fill(0);
+    const threadLastSeen = new Array(urls.length).fill(performance.now());
+    const STALE_MS = 800; // zero a thread if silent this long
 
-    // Ticker cada 150ms: calcula Mbps = (bytes nuevos desde el tick anterior) / dt
-    aggInterval = setInterval(() => {
+    let aggInterval = setInterval(() => {
       const now = performance.now();
-      const dt = now - lastTickTime;
-      const newBytes = totalBytesReceived - lastTickBytes;
-      if (dt > 0 && newBytes > 0) {
-        const mbps = (newBytes * 8) / (dt / 1000) / 1e6;
-        if (mbps > 0.05 && mbps < 100000) {
-          const display = smoothedMbps(mbps); // suavizado para el gauge principal
-          setGauge(display);
-          updateUnits(display);
-          drawChart(mbps);        // gráfica muestra valor crudo
-          // Update IT panel live con valor crudo
-          allSamples.push(mbps);
-          updateITLive(mbps);
-        }
+      for (let i = 0; i < threadRates.length; i++) {
+        if (now - threadLastSeen[i] > STALE_MS) threadRates[i] = 0;
       }
-      lastTickBytes = totalBytesReceived;
-      lastTickTime = now;
-    }, 150);
+      const total = threadRates.reduce((a, b) => a + b, 0);
+      if (total > 0.05) {
+        const display = smoothedMbps(total);
+        setGauge(display);
+        updateUnits(display);
+        drawChart(total);
+        allSamples.push(total);
+        updateITLive(total);
+      }
+    }, 250);
 
     let done = 0;
     const results = new Array(urls.length).fill(null);
 
     urls.forEach((url, i) => {
-      fetchMbps(url, (bytes) => {
-        // Acumular bytes de todos los hilos en un solo contador
-        totalBytesReceived += bytes;
+      fetchMbps(url, (rate) => {
+        threadRates[i]    = rate;
+        threadLastSeen[i] = performance.now();
       }).then(res => {
+        threadRates[i] = 0;
         results[i] = res;
         done++;
         if (done === urls.length) {
           clearInterval(aggInterval);
-          // Resultado final: bytes totales de todos los hilos / tiempo total transcurrido
-          const totalMs = performance.now() - t0;
-          const totalBytes = results
-            .filter(r => r)
-            .reduce((sum, r) => sum + (r.mbps * r.ms / 1000 / 8 * 1e6), 0);
-          const aggregatedMbps = (totalBytes * 8) / (totalMs / 1000) / 1e6;
+          const totalMs    = performance.now() - t0;
+          const totalBytes = results.filter(r => r).reduce((s, r) => s + r.bytes, 0);
+          const aggregatedMbps = totalBytes > 0
+            ? (totalBytes * 8) / (totalMs / 1000) / 1e6
+            : 0;
           resolve({ aggregatedMbps, results });
         }
       });
