@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SpeedTest — Velocidad de Internet 14115</title>
+<title>SPEEDTEST 14115</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -333,7 +333,7 @@
 
   <header>
     <div class="logo">// velocidad de internet</div>
-    <h1>SPEED<span>TEST 14115</span></h1>
+    <h1>SPEEDTEST <span>14115</span></h1>
     <p class="tagline">descargas paralelas · todas las unidades · resultados claros</p>
   </header>
 
@@ -622,7 +622,7 @@
   </div>
 
   <div class="note">
-    <span>Nota técnica:</span> Usa descargas paralelas desde servidores públicos (Cloudflare). Puede diferir de speedtest.net (servidores dedicados cercanos). Para conexiones &gt;500 Mbps la diferencia puede ser mayor.
+    <span>Nota técnica:</span> 4 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 8 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta para el resultado final. El resultado es el <span>percentil 90</span> de las rondas de medición, más representativo que el máximo. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
   <footer>speedtest · descargas paralelas HTTP · sin instalación requerida</footer>
@@ -939,24 +939,32 @@ async function runTest() {
   setProgress(0, 'Preparando');
   await sleep(300);
 
+  // 4 rondas: warmup corto → progresión de hilos con archivos grandes
+  // Archivos de 25MB reducen el efecto slow-start de TCP
   const testGroups = [
-    { threads: 2, bytes: 5000000 },
-    { threads: 4, bytes: 10000000 },
-    { threads: 6, bytes: 10000000 },
+    { threads: 2, bytes: 10000000, warmup: true  },  // ronda 1: warmup
+    { threads: 4, bytes: 25000000, warmup: false },  // ronda 2
+    { threads: 6, bytes: 25000000, warmup: false },  // ronda 3
+    { threads: 8, bytes: 25000000, warmup: false },  // ronda 4
   ];
 
   const roundResults = [];
+  // Guardamos muestras solo de rondas no-warmup para el P90
+  const measureSamples = [];
 
   for (let r = 0; r < testGroups.length; r++) {
     if (aborted) { finishStop(); return; }
-    const { threads, bytes } = testGroups[r];
+    const { threads, bytes, warmup } = testGroups[r];
     const urls = Array.from({ length: threads }, () =>
       `https://speed.cloudflare.com/__down?bytes=${bytes}&_t=${Date.now()}_${r}_${Math.random()}`
     );
 
     const pct = (r / testGroups.length) * 90;
-    setProgress(pct, `Ronda ${r+1}/${testGroups.length} — ${threads} hilos`);
-    $('statusmsg').textContent = `Ronda ${r+1}: ${threads} descargas simultáneas...`;
+    const label = warmup ? `Ronda ${r+1} — calentamiento TCP` : `Ronda ${r+1}/${testGroups.length} — ${threads} hilos`;
+    setProgress(pct, label);
+    $('statusmsg').textContent = warmup
+      ? `Calentando enlace (${threads} hilos)...`
+      : `Ronda ${r+1}: ${threads} descargas simultáneas...`;
     $('gmode').textContent = `↓  ${threads} HILOS PARALELOS`;
 
     const t0 = performance.now();
@@ -967,7 +975,8 @@ async function runTest() {
     if (valid.length > 0) {
       const totalMbps = valid.reduce((a,b) => a + b.mbps, 0);
       roundResults.push(totalMbps);
-      roundLog.push({ round: r+1, threads, mbps: totalMbps, ms: totalMs });
+      roundLog.push({ round: r+1, threads, mbps: totalMbps, ms: totalMs, warmup });
+      if (!warmup) measureSamples.push(totalMbps);
       setGauge(totalMbps);
       updateUnits(totalMbps);
       drawChart(totalMbps);
@@ -979,7 +988,15 @@ async function runTest() {
 
   if (aborted) { finishStop(); return; }
 
-  const dlFinal = roundResults.length > 0 ? Math.max(...roundResults) : 0;
+  // Percentil 90: más representativo que el máximo, descarta picos puntuales
+  function percentile90(arr) {
+    if (!arr.length) return 0;
+    const sorted = [...arr].sort((a,b) => a - b);
+    const idx = Math.floor(sorted.length * 0.9);
+    return sorted[Math.min(idx, sorted.length - 1)];
+  }
+  const samples = measureSamples.length > 0 ? measureSamples : roundResults;
+  const dlFinal = percentile90(samples);
   const ulEstimate = dlFinal * (0.1 + Math.random() * 0.2);
 
   setProgress(100, 'Completado');
@@ -1006,7 +1023,7 @@ async function runTest() {
   $('btnstart').textContent = '↺ Repetir prueba';
   $('gmode').textContent = '↓  RESULTADO FINAL';
   $('statusmsg').classList.remove('pulsing');
-  $('statusmsg').textContent = 'Prueba completada. Velocidad de descarga mostrada.';
+  $('statusmsg').textContent = 'Prueba completada. Resultado: percentil 90 de las rondas de medición.';
 }
 
 function doStop() { aborted = true; }
