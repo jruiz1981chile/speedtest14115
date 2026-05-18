@@ -563,7 +563,7 @@
       <div class="it-metric">
         <div class="it-metric-name">Coef. Variación</div>
         <div class="it-metric-val" id="it-cv">—</div>
-        <div class="it-metric-sub">&lt;15% = estable · &gt;30% = inestable</div>
+        <div class="it-metric-sub">&lt;20% = estable · &gt;40% = inestable</div>
       </div>
       <div class="it-metric">
         <div class="it-metric-name">Muestras totales</div>
@@ -622,7 +622,7 @@
   </div>
 
   <div class="note">
-    <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
+    <span>Nota técnica:</span> 6 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 50 MB, hasta 24 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. El CV se calcula sobre los resultados por ronda (no ticks en tiempo real) y descartando el 10% inferior. Umbrales ajustados para enlaces WiFi6/fibra de alta velocidad.
   </div>
 
   <footer>speedtest · descargas paralelas HTTP · sin instalación requerida</footer>
@@ -745,11 +745,17 @@ function drawHistogram(samples) {
 function updateITMetrics(finalMbps) {
   if (!allSamples.length) return;
 
-  const mn = Math.min(...allSamples);
-  const mx = Math.max(...allSamples);
-  const avg = allSamples.reduce((a,b)=>a+b,0) / allSamples.length;
-  const variance = allSamples.reduce((a,b)=>a+(b-avg)**2,0) / allSamples.length;
+  // Use trimmed samples: discard the bottom 10% to remove ramp-up noise
+  const sorted = [...allSamples].sort((a, b) => a - b);
+  const trimCount = Math.max(0, Math.floor(sorted.length * 0.1));
+  const trimmed = sorted.slice(trimCount);  // drop lowest 10%
+
+  const mn = trimmed[0];
+  const mx = trimmed[trimmed.length - 1];
+  const avg = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
+  const variance = trimmed.reduce((a, b) => a + (b - avg) ** 2, 0) / trimmed.length;
   const std = Math.sqrt(variance);
+  // CV on trimmed set — much more representative of real link stability
   const cv = avg > 0 ? (std / avg) * 100 : 0;
 
   function f(n) {
@@ -766,9 +772,11 @@ function updateITMetrics(finalMbps) {
   $('it-std').textContent     = f(std) + ' Mbps';
   $('it-samples').textContent = allSamples.length;
 
+  // Adjusted CV thresholds: high-speed WiFi6 links naturally have higher
+  // ramp variance; <20% is stable, <40% moderate, >40% unstable
   const cvEl = $('it-cv');
   cvEl.textContent = cv.toFixed(1) + '%';
-  cvEl.className = 'it-metric-val ' + (cv < 15 ? 'good' : cv < 30 ? '' : cv < 50 ? 'warn' : 'bad');
+  cvEl.className = 'it-metric-val ' + (cv < 20 ? 'good' : cv < 40 ? '' : cv < 60 ? 'warn' : 'bad');
 
   drawHistogram(allSamples);
 
@@ -791,15 +799,15 @@ function updateITMetrics(finalMbps) {
     tbody.appendChild(tr);
   });
 
-  // Diagnostics
-  const stability = cv < 15 ? '✓ Estable' : cv < 30 ? '⚠ Moderada' : '✗ Inestable';
-  const stabilityNote = cv < 15
-    ? 'Enlace consistente, sin oscilaciones.'
-    : cv < 30 ? 'Cierta variabilidad. Puede ser congestión puntual.'
-    : 'Alta variabilidad. Posible interferencia, saturación o pérdida de paquetes.';
+  // Diagnostics — thresholds match the CV display above (<20% stable, <40% moderate)
+  const stability = cv < 20 ? '✓ Estable' : cv < 40 ? '⚠ Moderada' : '✗ Inestable';
+  const stabilityNote = cv < 20
+    ? 'Enlace consistente entre rondas. Normal para WiFi6 / fibra.'
+    : cv < 40 ? 'Variabilidad moderada entre rondas. Puede ser congestión puntual o throttling TCP.'
+    : 'Alta variabilidad. Investigar interferencias, saturación o pérdida de paquetes.';
 
   $('diag-stability').textContent = stability;
-  $('diag-stability').style.color = cv < 15 ? 'var(--accent)' : cv < 30 ? 'var(--warn)' : '#ff4444';
+  $('diag-stability').style.color = cv < 20 ? 'var(--accent)' : cv < 40 ? 'var(--warn)' : '#ff4444';
   $('diag-stability-note').textContent = stabilityNote;
 
   const rounds = roundLog.length;
@@ -816,12 +824,12 @@ function updateITMetrics(finalMbps) {
   $('diag-peakratio-note').textContent = 'Resultado final como porcentaje del pico observado. <85% puede indicar throttling.';
 
   let verdict, verdictNote;
-  if (cv < 15 && finalMbps > mx * 0.85) {
-    verdict = '✓ Enlace sano'; verdictNote = 'Conexión estable y consistente.';
-  } else if (cv < 30) {
-    verdict = '⚠ Revisar'; verdictNote = 'Variabilidad moderada. Reintentar o verificar congestión.';
+  if (cv < 20 && finalMbps > mx * 0.80) {
+    verdict = '✓ Enlace sano'; verdictNote = 'Conexión estable y consistente entre rondas.';
+  } else if (cv < 40) {
+    verdict = '⚠ Revisar'; verdictNote = 'Variabilidad moderada entre rondas. Puede ser normal en WiFi con otros dispositivos activos.';
   } else {
-    verdict = '✗ Problema detectado'; verdictNote = 'Alta variabilidad. Investigar interferencias o saturación del canal.';
+    verdict = '✗ Problema detectado'; verdictNote = 'Alta variabilidad entre rondas. Investigar interferencias o saturación del canal.';
   }
   $('diag-verdict').textContent = verdict;
   $('diag-verdict').style.color = cv < 15 ? 'var(--accent)' : cv < 30 ? 'var(--warn)' : '#ff4444';
@@ -863,8 +871,8 @@ function updateUnits(mbps) {
   $('ugbps').textContent   = f(mbps / 1000) + ' Gbps';
   $('ugbytes').textContent = f(mbps / 8000) + ' GBps';
 
-  // IT sample
-  allSamples.push(mbps);
+  // NOTE: allSamples is populated only per measurement round (not per UI tick)
+  // to avoid artificial variability from ramp-up / teardown phases.
 }
 
 function setProgress(pct, lbl) {
@@ -1005,14 +1013,15 @@ async function runTest() {
   setProgress(0, 'Preparando');
   await sleep(300);
 
-  // 5 rondas: warmup → progresión hasta 20 hilos con archivos grandes
-  // Más hilos = más ancho de banda agregado, supera el límite por hilo de Cloudflare
+  // 6 rondas: warmup → escalada progresiva hasta 24 hilos con archivos de 50 MB
+  // Archivos más grandes = más tiempo para que TCP alcance velocidad de crucero
   const testGroups = [
-    { threads:  4, bytes: 10000000, warmup: true  },  // ronda 1: warmup TCP
-    { threads:  8, bytes: 25000000, warmup: false },  // ronda 2
-    { threads: 12, bytes: 25000000, warmup: false },  // ronda 3
-    { threads: 16, bytes: 25000000, warmup: false },  // ronda 4
-    { threads: 20, bytes: 25000000, warmup: false },  // ronda 5: máxima presión
+    { threads:  4, bytes: 10000000, warmup: true  },  // ronda 1: warmup TCP (descartada)
+    { threads:  8, bytes: 50000000, warmup: false },  // ronda 2
+    { threads: 12, bytes: 50000000, warmup: false },  // ronda 3
+    { threads: 16, bytes: 50000000, warmup: false },  // ronda 4
+    { threads: 20, bytes: 50000000, warmup: false },  // ronda 5
+    { threads: 24, bytes: 50000000, warmup: false },  // ronda 6: máxima presión
   ];
 
   const roundResults = [];
@@ -1042,7 +1051,10 @@ async function runTest() {
     if (aggregatedMbps > 0.1 && aggregatedMbps < 100000) {
       roundResults.push(aggregatedMbps);
       roundLog.push({ round: r+1, threads, mbps: aggregatedMbps, ms: totalMs, warmup });
-      if (!warmup) measureSamples.push(aggregatedMbps);
+      if (!warmup) {
+        measureSamples.push(aggregatedMbps);
+        allSamples.push(aggregatedMbps);  // only real rounds, not warmup
+      }
       setGauge(aggregatedMbps);
       updateUnits(aggregatedMbps);
       drawChart(aggregatedMbps);
