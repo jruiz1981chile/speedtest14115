@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SpeedTest — Velocidad de Internet 14115</title>
+<title>SpeedTest — Velocidad de Internet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -202,6 +202,11 @@
   .us-legend .bits-c { color: var(--bits); font-weight: 700; }
   .us-legend .bytes-c { color: var(--bytes); font-weight: 700; }
 
+  /* Colored b/B inside unit symbols */
+  .b-bit  { color: var(--bits);  font-weight: 700; }
+  .b-byte { color: var(--bytes); font-weight: 700; }
+  .sym-neutral { color: var(--muted); }
+
   /* ── SECTION SEPARATOR ── */
   .section-header { display: flex; align-items: center; gap: 12px; margin: 1.5rem 0 1rem; }
   .section-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
@@ -348,7 +353,7 @@
         </svg>
         <div class="gauge-center">
           <div class="gauge-value" id="gnum">—</div>
-          <div class="gauge-unit-label">mbps</div>
+          <div class="gauge-unit-label">M<span class="b-bit" style="font-size:inherit">b</span>ps</div>
         </div>
       </div>
       <div class="gauge-mode" id="gmode"></div>
@@ -382,10 +387,10 @@
         <div class="hero-mbps-label">↓ RESULTADO DE DESCARGA</div>
         <div class="hero-mbps-sentence">Su velocidad es de</div>
         <div>
-          <span class="hero-mbps-val" id="h-mbps-num">—</span><span class="hero-mbps-unit">Mbps</span>
+          <span class="hero-mbps-val" id="h-mbps-num">—</span><span class="hero-mbps-unit">M<span class="b-bit">b</span>ps</span>
         </div>
         <div class="hero-mbps-explain">
-          Megabits por segundo &nbsp;·&nbsp; unidad estándar de los proveedores de internet
+          Mega<span class="b-bit">b</span>its por segundo &nbsp;·&nbsp; unidad estándar de los proveedores de internet
         </div>
       </div>
 
@@ -394,58 +399,66 @@
 
         <div class="us-card bits">
           <div class="us-card-header">
-            <span class="us-sym-primary">kbps</span>
-            <span class="us-sym-alt">= kb/s</span>
+            <span class="us-sym-primary">k<span class="b-bit">b</span>ps</span>
+            <span class="us-sym-alt">= k<span class="b-bit">b</span>/s</span>
           </div>
           <div class="us-val" id="s-kbps">—</div>
           <div class="us-name">
             Kilobits por segundo<br>
-            <span style="color:var(--bits)">b</span> minúscula = bits
+            <span class="b-bit">b</span> minúscula = bits
           </div>
         </div>
 
         <div class="us-card bytes">
           <div class="us-card-header">
-            <span class="us-sym-primary">kBps</span>
-            <span class="us-sym-alt">= KB/s</span>
+            <span class="us-sym-primary">k<span class="b-byte">B</span>ps</span>
+            <span class="us-sym-alt">= k<span class="b-byte">B</span>/s</span>
           </div>
           <div class="us-val" id="s-kbytes">—</div>
           <div class="us-name">
             Kilobytes por segundo<br>
-            <span style="color:var(--bytes)">B</span> mayúscula = Bytes
+            <span class="b-byte">B</span> mayúscula = Bytes
           </div>
         </div>
 
         <div class="us-card bits">
           <div class="us-card-header">
-            <span class="us-sym-primary">mbps</span>
-            <span class="us-sym-alt">= Mb/s</span>
+            <span class="us-sym-primary">M<span class="b-bit">b</span>ps</span>
+            <span class="us-sym-alt">= M<span class="b-bit">b</span>/s</span>
           </div>
           <div class="us-val" id="s-mbps">—</div>
           <div class="us-name">
             Megabits por segundo<br>
-            <span style="color:var(--bits)">b</span> minúscula = bits
+            <span class="b-bit">b</span> minúscula = bits
           </div>
         </div>
 
         <div class="us-card bytes">
           <div class="us-card-header">
-            <span class="us-sym-primary">mBps</span>
-            <span class="us-sym-alt">= MB/s</span>
+            <span class="us-sym-primary">M<span class="b-byte">B</span>ps</span>
+            <span class="us-sym-alt">= M<span class="b-byte">B</span>/s</span>
           </div>
           <div class="us-val" id="s-mbytes">—</div>
           <div class="us-name">
             Megabytes por segundo<br>
-            <span style="color:var(--bytes)">B</span> mayúscula = Bytes
+            <span class="b-byte">B</span> mayúscula = Bytes
           </div>
         </div>
 
       </div>
 
-      <div class="us-legend hidden" id="us-legend-row" style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8;padding:4px 2px;">
-        <span style="color:var(--bits);font-weight:700">■ b minúscula</span> = bits &nbsp;&nbsp;
-        <span style="color:var(--bytes);font-weight:700">■ B mayúscula</span> = Bytes &nbsp;&nbsp;
-        1 Byte = 8 bits &nbsp;·&nbsp; mbps ÷ 8 = mBps
+      <div class="us-legend hidden" id="us-legend-row" style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:2;padding:6px 2px;">
+        ■ <span class="b-bit">b</span> minúscula = bits &nbsp;&nbsp;
+        ■ <span class="b-byte">B</span> mayúscula = Bytes &nbsp;&nbsp;
+        1 Byte = 8 bits &nbsp;·&nbsp; M<span class="b-bit">b</span>ps ÷ 8 = M<span class="b-byte">B</span>ps
+        <br>
+        <span style="opacity:0.55">
+          Prefijos según el Sistema Internacional de Unidades (SI):
+          &nbsp;<span style="color:var(--text);opacity:1">k</span> = kilo (minúscula) &nbsp;·&nbsp;
+          <span style="color:var(--text);opacity:1">M</span> = Mega &nbsp;·&nbsp;
+          <span style="color:var(--text);opacity:1">G</span> = Giga &nbsp;·&nbsp;
+          <span style="color:var(--text);opacity:1">T</span> = Tera &nbsp;(mayúsculas)
+        </span>
       </div>
 
     </div>
@@ -457,12 +470,12 @@
     <div class="du-card">
       <div class="du-label">↓ DESCARGA</div>
       <div class="du-num" id="rdl">—</div>
-      <div class="du-unit">mbps</div>
+      <div class="du-unit">M<span class="b-bit">b</span>ps</div>
     </div>
     <div class="du-card">
       <div class="du-label">↑ SUBIDA (estimada)</div>
       <div class="du-num" id="rul">—</div>
-      <div class="du-unit">mbps</div>
+      <div class="du-unit">M<span class="b-bit">b</span>ps</div>
     </div>
   </div>
 
@@ -474,40 +487,40 @@
 
   <div class="units-grid hidden" id="fullgrid">
     <div class="ucard featured">
-      <div class="ucard-top"><div class="ucard-name">Megabits por segundo</div><span class="ucard-abbr">Mbps</span></div>
-      <div class="eq-tag">= Mbit/s = Mb/s</div>
-      <div class="ucard-val" id="umbps">— Mbps</div>
-      <div class="ucard-desc">Estándar de ISP y routers.<br>1 Mbps = 1,000,000 bits/seg.</div>
+      <div class="ucard-top"><div class="ucard-name">Megabits por segundo</div><span class="ucard-abbr">M<span class="b-bit">b</span>ps</span></div>
+      <div class="eq-tag">= M<span class="b-bit">b</span>it/s = M<span class="b-bit">b</span>/s</div>
+      <div class="ucard-val" id="umbps">— M<span class="b-bit">b</span>ps</div>
+      <div class="ucard-desc">Estándar de ISP y routers.<br>1 M<span class="b-bit">b</span>ps = 1,000,000 bits/seg.</div>
     </div>
     <div class="ucard">
-      <div class="ucard-top"><div class="ucard-name">Megabytes por segundo</div><span class="ucard-abbr">MBps</span></div>
-      <div class="eq-tag">= MB/s</div>
-      <div class="ucard-val" id="umbytes">— MBps</div>
-      <div class="ucard-desc">Lo que ves al descargar archivos.<br>1 MBps = 8 Mbps.</div>
+      <div class="ucard-top"><div class="ucard-name">Megabytes por segundo</div><span class="ucard-abbr">M<span class="b-byte">B</span>ps</span></div>
+      <div class="eq-tag">= M<span class="b-byte">B</span>/s</div>
+      <div class="ucard-val" id="umbytes">— M<span class="b-byte">B</span>ps</div>
+      <div class="ucard-desc">Lo que ves al descargar archivos.<br>1 M<span class="b-byte">B</span>ps = 8 M<span class="b-bit">b</span>ps.</div>
     </div>
     <div class="ucard">
-      <div class="ucard-top"><div class="ucard-name">Kilobits por segundo</div><span class="ucard-abbr">kbps</span></div>
-      <div class="eq-tag">= kbit/s = kb/s</div>
-      <div class="ucard-val" id="ukbps">— kbps</div>
-      <div class="ucard-desc">Conexiones lentas, VoIP, radio.<br>1 Mbps = 1,000 kbps.</div>
+      <div class="ucard-top"><div class="ucard-name">Kilobits por segundo</div><span class="ucard-abbr">k<span class="b-bit">b</span>ps</span></div>
+      <div class="eq-tag">= k<span class="b-bit">b</span>it/s = k<span class="b-bit">b</span>/s</div>
+      <div class="ucard-val" id="ukbps">— k<span class="b-bit">b</span>ps</div>
+      <div class="ucard-desc">Conexiones lentas, VoIP, radio.<br>1 M<span class="b-bit">b</span>ps = 1,000 k<span class="b-bit">b</span>ps.</div>
     </div>
     <div class="ucard">
-      <div class="ucard-top"><div class="ucard-name">Kilobytes por segundo</div><span class="ucard-abbr">kBps</span></div>
-      <div class="eq-tag">= KB/s</div>
-      <div class="ucard-val" id="ukbytes">— kBps</div>
-      <div class="ucard-desc">Descargas lentas, SMS, datos.<br>1 kBps = 8 kbps.</div>
+      <div class="ucard-top"><div class="ucard-name">Kilobytes por segundo</div><span class="ucard-abbr">k<span class="b-byte">B</span>ps</span></div>
+      <div class="eq-tag">= k<span class="b-byte">B</span>/s</div>
+      <div class="ucard-val" id="ukbytes">— k<span class="b-byte">B</span>ps</div>
+      <div class="ucard-desc">Descargas lentas, SMS, datos.<br>1 k<span class="b-byte">B</span>ps = 8 k<span class="b-bit">b</span>ps.</div>
     </div>
     <div class="ucard">
-      <div class="ucard-top"><div class="ucard-name">Gigabits por segundo</div><span class="ucard-abbr">Gbps</span></div>
-      <div class="eq-tag">= Gbit/s</div>
-      <div class="ucard-val" id="ugbps">— Gbps</div>
-      <div class="ucard-desc">Fibra óptica de alta gama.<br>1 Gbps = 1,000 Mbps.</div>
+      <div class="ucard-top"><div class="ucard-name">Gigabits por segundo</div><span class="ucard-abbr">G<span class="b-bit">b</span>ps</span></div>
+      <div class="eq-tag">= G<span class="b-bit">b</span>it/s</div>
+      <div class="ucard-val" id="ugbps">— G<span class="b-bit">b</span>ps</div>
+      <div class="ucard-desc">Fibra óptica de alta gama.<br>1 G<span class="b-bit">b</span>ps = 1,000 M<span class="b-bit">b</span>ps.</div>
     </div>
     <div class="ucard">
-      <div class="ucard-top"><div class="ucard-name">Gigabytes por segundo</div><span class="ucard-abbr">GBps</span></div>
-      <div class="eq-tag">= GB/s</div>
-      <div class="ucard-val" id="ugbytes">— GBps</div>
-      <div class="ucard-desc">Redes empresariales, datacenter.<br>1 GBps = 8 Gbps.</div>
+      <div class="ucard-top"><div class="ucard-name">Gigabytes por segundo</div><span class="ucard-abbr">G<span class="b-byte">B</span>ps</span></div>
+      <div class="eq-tag">= G<span class="b-byte">B</span>/s</div>
+      <div class="ucard-val" id="ugbytes">— G<span class="b-byte">B</span>ps</div>
+      <div class="ucard-desc">Redes empresariales, datacenter.<br>1 G<span class="b-byte">B</span>ps = 8 G<span class="b-bit">b</span>ps.</div>
     </div>
   </div>
 
