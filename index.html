@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test de Velocidad de Internet</title>
+<title>Test de Velocidad de Internet 1.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -126,21 +126,87 @@
     font-weight: 400;
   }
 
-  /* SPEEDTEST EMBED */
+  /* SPEEDTEST LAUNCH */
   .speedtest-wrap {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
     box-shadow: var(--shadow);
     margin: 2rem 0;
   }
 
-  .speedtest-wrap iframe {
-    display: block;
-    width: 100%;
-    height: 500px;
-    border: none;
+  .launch-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    gap: 1rem;
+  }
+
+  .launch-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    filter: drop-shadow(0 0 24px rgba(0,229,255,0.4));
+  }
+
+  .launch-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .launch-desc {
+    font-size: 1rem;
+    color: var(--text2);
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  .launch-btn {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.9rem 2.4rem;
+    background: var(--accent);
+    color: #0a0f1e;
+    font-family: var(--font);
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 100px;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 0 32px rgba(0,229,255,0.25);
+  }
+
+  .launch-btn:hover { opacity: 0.88; transform: scale(1.03); }
+  .launch-btn:active { transform: scale(0.98); }
+
+  .launch-note {
+    font-size: 0.83rem;
+    color: var(--text3);
+    margin-top: -0.25rem;
+  }
+
+  .launch-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.25rem;
+  }
+
+  .lbadge {
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.15);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
   }
 
   /* RESULTS LEGEND */
@@ -561,14 +627,23 @@
     <p class="subtitle">Mide tu velocidad de descarga, subida y latencia — sin publicidad, sin trucos. Powered by <a href="https://openspeedtest.com" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">OpenSpeedTest</a> (open&#8209;source, hasta 10 Gbps).</p>
   </header>
 
-  <!-- SPEEDTEST EMBED -->
+  <!-- SPEEDTEST LAUNCH -->
   <div class="speedtest-wrap">
-    <iframe
-      id="OST-iFrame"
-      src="https://openspeedtest.com/selfhosted"
-      title="Test de velocidad de internet - OpenSpeedTest"
-      allowfullscreen
-    ></iframe>
+    <div class="launch-inner">
+      <div class="launch-icon">⚡</div>
+      <h2 class="launch-title">Iniciar el test de velocidad</h2>
+      <p class="launch-desc">Se abrirá <strong>OpenSpeedTest</strong> en una nueva pestaña — gratuito, sin publicidad, sin instalación. Mide hasta <strong>10 Gbps</strong>.</p>
+      <a href="https://openspeedtest.com" target="_blank" rel="noopener" class="launch-btn">
+        Abrir test de velocidad →
+      </a>
+      <p class="launch-note">Cuando termines, vuelve a esta página para entender tus resultados 👇</p>
+      <div class="launch-badges">
+        <span class="lbadge">✓ Open-source</span>
+        <span class="lbadge">✓ Sin publicidad</span>
+        <span class="lbadge">✓ Sin registro</span>
+        <span class="lbadge">✓ Hasta 10 Gbps</span>
+      </div>
+    </div>
   </div>
 
   <!-- BITS VS BYTES EXPLAINER -->
