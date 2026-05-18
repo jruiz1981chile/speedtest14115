@@ -312,6 +312,49 @@
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   .pulsing { animation: pulse 1.2s ease-in-out infinite; }
 
+  /* ── MEASURING ANIMATION ── */
+  .measuring-anim {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 24px 0 16px;
+    gap: 20px;
+    min-height: 160px;
+  }
+  .measuring-anim.active { display: flex; }
+  .measuring-dots { display: flex; gap: 10px; }
+  .measuring-dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); opacity: 0.15;
+    animation: dot-pulse 1.5s ease-in-out infinite;
+  }
+  .measuring-dots span:nth-child(1) { animation-delay: 0s; }
+  .measuring-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .measuring-dots span:nth-child(3) { animation-delay: 0.4s; }
+  .measuring-dots span:nth-child(4) { animation-delay: 0.6s; }
+  .measuring-dots span:nth-child(5) { animation-delay: 0.8s; }
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.15; transform: scale(0.85); }
+    50%       { opacity: 1;    transform: scale(1.2); box-shadow: 0 0 10px var(--accent); }
+  }
+  .measuring-label {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em;
+    color: var(--muted); text-align: center; line-height: 1.8;
+  }
+  .measuring-label strong {
+    display: block; color: var(--text); font-size: 15px;
+    letter-spacing: 0.04em; margin-bottom: 2px;
+  }
+  .measuring-bar-wrap { width: 160px; }
+  .measuring-bar-track { height: 2px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+  .measuring-bar-fill {
+    height: 100%; width: 0%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.5s ease;
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .atf-wrap { grid-template-columns: 1fr; }
@@ -342,7 +385,9 @@
 
     <!-- Gauge column -->
     <div class="gauge-col">
-      <div class="gauge-outer">
+
+      <!-- Gauge: visible only when showing results -->
+      <div class="gauge-outer" id="gauge-outer">
         <svg viewBox="0 0 280 165" xmlns="http://www.w3.org/2000/svg">
           <path d="M26 148 A114 114 0 0 1 254 148" fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
           <g id="ticks"></g>
@@ -358,9 +403,20 @@
       </div>
       <div class="gauge-mode" id="gmode"></div>
 
-      <div class="live-graph-wrap hidden" id="graphwrap">
-        <div class="live-graph-label"><span>TIEMPO REAL</span><span id="graphpeak">pico: — Mbps</span></div>
-        <canvas id="liveChart" width="240" height="50"></canvas>
+      <!-- Measuring animation: visible during test -->
+      <div class="measuring-anim" id="measuring-anim">
+        <div class="measuring-dots">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="measuring-label">
+          <strong>Midiendo velocidad</strong>
+          Por favor espere...
+        </div>
+        <div class="measuring-bar-wrap">
+          <div class="measuring-bar-track">
+            <div class="measuring-bar-fill" id="meas-bar"></div>
+          </div>
+        </div>
       </div>
 
       <div class="progress-wrap" id="progwrap">
@@ -622,7 +678,7 @@
   </div>
 
   <div class="note">
-    <span>Nota técnica:</span> 6 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 50 MB, hasta 24 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. El CV se calcula sobre los resultados por ronda (no ticks en tiempo real) y descartando el 10% inferior. Umbrales ajustados para enlaces WiFi6/fibra de alta velocidad.
+    <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
   <footer>speedtest · descargas paralelas HTTP · sin instalación requerida</footer>
@@ -669,7 +725,7 @@ function toggleIT() {
 function drawChart(mbps) {
   chartData.push(mbps);
   if (chartData.length > MAX_POINTS) chartData.shift();
-  if (mbps > peakMbps) { peakMbps = mbps; $('graphpeak').textContent = 'pico: ' + mbps.toFixed(1) + ' Mbps'; }
+  if (mbps > peakMbps) { peakMbps = mbps; $('graphpeak').textContent = 'pico: ' + mbps.toLocaleString('es-CL', {minimumFractionDigits:1,maximumFractionDigits:1}) + ' Mbps'; }
 
   const canvas = $('liveChart');
   const ctx = canvas.getContext('2d');
@@ -738,32 +794,33 @@ function drawHistogram(samples) {
     }
   });
 
-  $('hist-range').textContent = mn.toFixed(1) + ' – ' + mx.toFixed(1) + ' Mbps';
+  $('hist-range').textContent = mn.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' – ' + mx.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1}) + ' Mbps';
 }
 
 // ─── IT metrics update ─────────────────────────────────────────────────────
 function updateITMetrics(finalMbps) {
   if (!allSamples.length) return;
 
-  // Use trimmed samples: discard the bottom 10% to remove ramp-up noise
+  // Trim bottom 10% to remove ramp-up noise
   const sorted = [...allSamples].sort((a, b) => a - b);
   const trimCount = Math.max(0, Math.floor(sorted.length * 0.1));
-  const trimmed = sorted.slice(trimCount);  // drop lowest 10%
+  const trimmed = sorted.slice(trimCount);
 
   const mn = trimmed[0];
   const mx = trimmed[trimmed.length - 1];
   const avg = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
   const variance = trimmed.reduce((a, b) => a + (b - avg) ** 2, 0) / trimmed.length;
   const std = Math.sqrt(variance);
-  // CV on trimmed set — much more representative of real link stability
   const cv = avg > 0 ? (std / avg) * 100 : 0;
 
   function f(n) {
     if (!n || n <= 0) return '—';
-    if (n >= 1000) return n.toFixed(0);
-    if (n >= 100)  return n.toFixed(1);
-    if (n >= 10)   return n.toFixed(2);
-    return n.toFixed(3);
+    const fmt = (val, dec) =>
+      val.toLocaleString('es-CL', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    if (n >= 1000) return fmt(n, 0);
+    if (n >= 100)  return fmt(n, 1);
+    if (n >= 10)   return fmt(n, 2);
+    return fmt(n, 3);
   }
 
   $('it-peak').textContent    = f(mx) + ' Mbps';
@@ -772,10 +829,8 @@ function updateITMetrics(finalMbps) {
   $('it-std').textContent     = f(std) + ' Mbps';
   $('it-samples').textContent = allSamples.length;
 
-  // Adjusted CV thresholds: high-speed WiFi6 links naturally have higher
-  // ramp variance; <20% is stable, <40% moderate, >40% unstable
   const cvEl = $('it-cv');
-  cvEl.textContent = cv.toFixed(1) + '%';
+  cvEl.textContent = cv.toLocaleString('es-CL', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
   cvEl.className = 'it-metric-val ' + (cv < 20 ? 'good' : cv < 40 ? '' : cv < 60 ? 'warn' : 'bad');
 
   drawHistogram(allSamples);
@@ -793,13 +848,13 @@ function updateITMetrics(finalMbps) {
       <td>${r.threads}</td>
       <td class="${isBest ? 'best' : 'val'}">${f(r.mbps)} Mbps</td>
       <td style="color:var(--muted)">${pct}</td>
-      <td style="color:var(--muted)">${r.ms < 2000 ? r.ms.toFixed(0)+'ms' : (r.ms/1000).toFixed(1)+'s'}</td>
+      <td style="color:var(--muted)">${r.ms < 2000 ? r.ms.toLocaleString('es-CL',{maximumFractionDigits:0})+'ms' : (r.ms/1000).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+'s'}</td>
       <td style="color:${isBest ? 'var(--accent)' : 'var(--muted)'}">${isBest ? '★ mejor' : 'ok'}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Diagnostics — thresholds match the CV display above (<20% stable, <40% moderate)
+  // Diagnostics
   const stability = cv < 20 ? '✓ Estable' : cv < 40 ? '⚠ Moderada' : '✗ Inestable';
   const stabilityNote = cv < 20
     ? 'Enlace consistente entre rondas. Normal para WiFi6 / fibra.'
@@ -812,14 +867,14 @@ function updateITMetrics(finalMbps) {
 
   const rounds = roundLog.length;
   const speedupR1R3 = rounds >= 3 && roundLog[0].mbps > 0
-    ? (roundLog[rounds-1].mbps / roundLog[0].mbps).toFixed(2) + 'x'
+    ? (roundLog[rounds-1].mbps / roundLog[0].mbps).toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2}) + 'x'
     : '—';
   $('diag-multith').textContent = speedupR1R3;
   $('diag-multith-note').textContent = rounds >= 3
     ? 'Ratio velocidad ronda 3 vs ronda 1. >1 = beneficio de más hilos paralelos.'
     : 'Ejecute la prueba completa para ver este dato.';
 
-  const peakRatio = mx > 0 ? ((finalMbps / mx) * 100).toFixed(0) + '%' : '—';
+  const peakRatio = mx > 0 ? ((finalMbps / mx) * 100).toLocaleString('es-CL',{maximumFractionDigits:0}) + '%' : '—';
   $('diag-peakratio').textContent = peakRatio;
   $('diag-peakratio-note').textContent = 'Resultado final como porcentaje del pico observado. <85% puede indicar throttling.';
 
@@ -827,7 +882,7 @@ function updateITMetrics(finalMbps) {
   if (cv < 20 && finalMbps > mx * 0.80) {
     verdict = '✓ Enlace sano'; verdictNote = 'Conexión estable y consistente entre rondas.';
   } else if (cv < 40) {
-    verdict = '⚠ Revisar'; verdictNote = 'Variabilidad moderada entre rondas. Puede ser normal en WiFi con otros dispositivos activos.';
+    verdict = '⚠ Revisar'; verdictNote = 'Variabilidad moderada. Puede ser normal en WiFi con otros dispositivos activos.';
   } else {
     verdict = '✗ Problema detectado'; verdictNote = 'Alta variabilidad entre rondas. Investigar interferencias o saturación del canal.';
   }
@@ -841,18 +896,24 @@ function setGauge(mbps) {
   const pct = Math.min(mbps / MAX_MBPS, 1);
   $('gauge-arc').setAttribute('stroke-dashoffset', (GAUGE_LEN - pct * GAUGE_LEN).toFixed(1));
   $('gauge-arc').setAttribute('stroke', pct < 0.25 ? '#ff9900' : '#00e5a0');
-  $('gnum').textContent = mbps >= 100 ? mbps.toFixed(0) : mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
+  $('gnum').textContent = mbps >= 100
+    ? mbps.toLocaleString('es-CL', {maximumFractionDigits: 0})
+    : mbps >= 10
+      ? mbps.toLocaleString('es-CL', {minimumFractionDigits: 1, maximumFractionDigits: 1})
+      : mbps.toLocaleString('es-CL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
-// ─── Format number ─────────────────────────────────────────────────────────
+// ─── Format number (separador miles=punto, decimales=coma — es-CL) ─────────
 function f(n) {
   if (!n || n <= 0) return '—';
-  if (n >= 10000) return Math.round(n).toLocaleString('es-CL');
-  if (n >= 1000)  return n.toFixed(0);
-  if (n >= 100)   return n.toFixed(1);
-  if (n >= 10)    return n.toFixed(2);
-  if (n >= 1)     return n.toFixed(3);
-  return n.toFixed(4);
+  const fmt = (val, dec) =>
+    val.toLocaleString('es-CL', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  if (n >= 10000) return fmt(Math.round(n), 0);
+  if (n >= 1000)  return fmt(n, 0);
+  if (n >= 100)   return fmt(n, 1);
+  if (n >= 10)    return fmt(n, 2);
+  if (n >= 1)     return fmt(n, 3);
+  return fmt(n, 4);
 }
 
 // ─── Update all unit displays ───────────────────────────────────────────────
@@ -872,13 +933,14 @@ function updateUnits(mbps) {
   $('ugbytes').textContent = f(mbps / 8000) + ' GBps';
 
   // NOTE: allSamples is populated only per measurement round (not per UI tick)
-  // to avoid artificial variability from ramp-up / teardown phases.
 }
 
 function setProgress(pct, lbl) {
   $('progfill').style.width = pct + '%';
   $('progpct').textContent = Math.round(pct) + '%';
   if (lbl) $('proglbl').textContent = lbl.toUpperCase();
+  const bar = $('meas-bar');
+  if (bar) bar.style.width = pct + '%';
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -1005,7 +1067,11 @@ async function runTest() {
   $('fullgrid-header').classList.add('hidden');
   $('fullgrid').classList.add('hidden');
   $('progwrap').classList.add('visible');
-  $('graphwrap').classList.remove('hidden');
+  // Hide gauge, show animation
+  $('gauge-outer').style.display = 'none';
+  $('gmode').style.display = 'none';
+  $('measuring-anim').classList.add('active');
+  $('graphwrap').classList.add('hidden');
   $('gnum').textContent = '—';
   $('gmode').textContent = '— INICIANDO —';
   $('statusmsg').textContent = 'Iniciando descargas paralelas...';
@@ -1013,15 +1079,15 @@ async function runTest() {
   setProgress(0, 'Preparando');
   await sleep(300);
 
-  // 6 rondas: warmup → escalada progresiva hasta 24 hilos con archivos de 50 MB
-  // Archivos más grandes = más tiempo para que TCP alcance velocidad de crucero
+  // 5 rondas: warmup → progresión hasta 20 hilos con archivos grandes
+  // Más hilos = más ancho de banda agregado, supera el límite por hilo de Cloudflare
   const testGroups = [
     { threads:  4, bytes: 10000000, warmup: true  },  // ronda 1: warmup TCP (descartada)
     { threads:  8, bytes: 50000000, warmup: false },  // ronda 2
     { threads: 12, bytes: 50000000, warmup: false },  // ronda 3
     { threads: 16, bytes: 50000000, warmup: false },  // ronda 4
     { threads: 20, bytes: 50000000, warmup: false },  // ronda 5
-    { threads: 24, bytes: 50000000, warmup: false },  // ronda 6: máxima presión
+    { threads: 24, bytes: 50000000, warmup: false },  // ronda 6
   ];
 
   const roundResults = [];
@@ -1053,7 +1119,7 @@ async function runTest() {
       roundLog.push({ round: r+1, threads, mbps: aggregatedMbps, ms: totalMs, warmup });
       if (!warmup) {
         measureSamples.push(aggregatedMbps);
-        allSamples.push(aggregatedMbps);  // only real rounds, not warmup
+        allSamples.push(aggregatedMbps);
       }
       setGauge(aggregatedMbps);
       updateUnits(aggregatedMbps);
@@ -1078,6 +1144,10 @@ async function runTest() {
   const ulEstimate = dlFinal * (0.1 + Math.random() * 0.2);
 
   setProgress(100, 'Completado');
+  // Hide animation, show gauge with final result
+  $('measuring-anim').classList.remove('active');
+  $('gauge-outer').style.display = '';
+  $('gmode').style.display = '';
   setGauge(dlFinal);
   updateUnits(dlFinal);
 
@@ -1087,8 +1157,8 @@ async function runTest() {
   $('units-summary').classList.remove('hidden');
   $('us-legend-row').classList.remove('hidden');
 
-  $('rdl').textContent = dlFinal.toFixed(2);
-  $('rul').textContent = ulEstimate.toFixed(2);
+  $('rdl').textContent = dlFinal.toLocaleString('es-CL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  $('rul').textContent = ulEstimate.toLocaleString('es-CL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   $('dl-ul-row').classList.remove('hidden');
 
   $('fullgrid-header').classList.remove('hidden');
@@ -1114,6 +1184,9 @@ function finishStop() {
   $('statusmsg').textContent = 'Prueba detenida.';
   $('progwrap').classList.remove('visible');
   $('hero-mbps').classList.add('hidden');
+  $('measuring-anim').classList.remove('active');
+  $('gauge-outer').style.display = '';
+  $('gmode').style.display = '';
   $('gmode').textContent = '';
 }
 </script>
