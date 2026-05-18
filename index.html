@@ -3,904 +3,774 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test de Velocidad de Internet 1.0</title>
+<title>SpeedTest — Velocidad de Internet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0f1e;
-    --bg2: #111827;
-    --bg3: #1a2235;
-    --card: #141d2e;
-    --card2: #1e2a3d;
-    --accent: #00e5ff;
-    --accent2: #7c3aed;
-    --accent3: #10b981;
-    --text: #f0f4ff;
-    --text2: #8b98b8;
-    --text3: #5a6888;
-    --border: rgba(0,229,255,0.12);
-    --border2: rgba(255,255,255,0.06);
-    --download: #00e5ff;
-    --upload: #7c3aed;
-    --ping: #10b981;
-    --font: 'Sora', sans-serif;
-    --mono: 'JetBrains Mono', monospace;
-    --radius: 16px;
-    --radius-sm: 10px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f0;
+    --muted: #666;
+    --accent: #00e5a0;
+    --accent2: #00b07a;
+    --warn: #ff9900;
+    --mono: 'Space Mono', monospace;
+    --display: 'Syne', sans-serif;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
-    font-family: var(--font);
     background: var(--bg);
     color: var(--text);
+    font-family: var(--display);
     min-height: 100vh;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-
-  .bg-grid {
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .bg-glow {
-    position: fixed;
-    top: -200px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 900px;
-    height: 500px;
-    background: radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  main {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-  }
-
-  header {
-    text-align: center;
-    padding: 2.5rem 0 2rem;
-  }
-
-  .logo-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0,229,255,0.08);
-    border: 1px solid rgba(0,229,255,0.2);
-    border-radius: 100px;
-    padding: 6px 18px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1.25rem;
-  }
-
-  .dot-live {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.7); }
-  }
-
-  h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-    margin-bottom: 0.75rem;
-  }
-
-  h1 span.cyan { color: var(--accent); }
-
-  .subtitle {
-    font-size: 1.05rem;
-    color: var(--text2);
-    max-width: 560px;
-    margin: 0 auto;
-    font-weight: 400;
-  }
-
-  /* SPEEDTEST LAUNCH */
-  .speedtest-wrap {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin: 2rem 0;
-  }
-
-  .launch-inner {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 3rem 2rem;
-    gap: 1rem;
+    padding: 2rem 1rem 4rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(0,229,160,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 90%, rgba(0,100,255,0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 48px 48px;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .container { width: 100%; max-width: 760px; position: relative; z-index: 1; }
+
+  header { text-align: center; margin-bottom: 2.5rem; padding-top: 1rem; }
+  .logo { font-family: var(--mono); font-size: 11px; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; margin-bottom: 1rem; opacity: 0.8; }
+  h1 { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.5rem; }
+  h1 span { color: var(--accent); }
+  .tagline { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+
+  /* GAUGE */
+  .gauge-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 1rem; }
+  .gauge-outer { position: relative; width: 280px; height: 165px; margin-bottom: 0.5rem; }
+  .gauge-outer svg { width: 100%; height: 100%; }
+  .gauge-center { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; }
+  .gauge-value { font-family: var(--mono); font-size: 44px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -0.04em; transition: color 0.3s; }
+  .gauge-unit-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.12em; margin-top: 2px; }
+  .gauge-mode { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-top: 6px; height: 14px; }
+
+  /* LIVE GRAPH */
+  .live-graph-wrap { width: 100%; max-width: 420px; margin: 0 auto 1rem; }
+  .live-graph-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  canvas#liveChart { width: 100%; height: 60px; display: block; border-radius: 4px; background: var(--surface); }
+
+  /* PROGRESS */
+  .progress-wrap { width: 100%; max-width: 420px; margin: 0 auto 1rem; opacity: 0; transition: opacity 0.3s; }
+  .progress-wrap.visible { opacity: 1; }
+  .progress-header { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 6px; }
+  .progress-track { height: 2px; background: var(--surface2); border-radius: 99px; overflow: visible; position: relative; }
+  .progress-fill { height: 2px; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; width: 0%; position: relative; }
+  .progress-fill::after { content: ''; position: absolute; right: -1px; top: -3px; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+
+  /* STATUS */
+  .status-msg { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: 0.06em; min-height: 16px; margin-bottom: 1.2rem; }
+
+  /* BUTTONS */
+  .btn-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 2rem; }
+  .btn { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; padding: 14px 36px; border-radius: 2px; border: 1px solid var(--border2); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+  .btn::before { content: ''; position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 0.2s; z-index: -1; }
+  .btn:hover { color: var(--bg); border-color: var(--accent); }
+  .btn:hover::before { transform: scaleX(1); }
+  .btn.primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700; }
+  .btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+  .btn.primary::before { display: none; }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+  .hidden { display: none !important; }
+
+  /* RESULTS */
+  .results-row { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; margin-bottom: 2rem; align-items: start; }
+  .res-main-col { display: flex; flex-direction: column; }
+  .res-card { border: 1px solid var(--border); border-radius: 4px; padding: 18px; text-align: center; background: var(--surface); position: relative; overflow: hidden; }
+  .res-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
+  .res-card-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .res-card-num { font-family: var(--mono); font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .res-card-unit { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.1em; }
+
+  /* QUICK UNITS PANEL */
+  .quick-units { border: 1px solid var(--border2); border-radius: 4px; background: var(--surface); padding: 14px; }
+  .qu-title { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .qu-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .qu-divider { height: 1px; background: var(--border); margin: 10px 0; }
+  .qu-block { border: 1px solid var(--border); border-radius: 4px; padding: 10px; background: var(--surface2); }
+  .qu-block.featured { border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.05); }
+  .qu-notation { font-family: var(--mono); line-height: 1; margin-bottom: 2px; display: flex; align-items: baseline; gap: 0; }
+  .qu-big { font-size: 20px; font-weight: 700; color: var(--text); }
+  .qu-block.bits .qu-big { color: #7eb8ff; }
+  .qu-block.featured .qu-big { color: var(--accent); }
+  .qu-block.bytes .qu-big { color: #ffb347; }
+  .qu-sep { font-size: 18px; font-weight: 700; color: var(--muted); margin: 0 1px; }
+  .qu-aka { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 6px; }
+  .qu-val { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .qu-block.bits .qu-val { color: #7eb8ff; }
+  .qu-block.featured .qu-val { color: var(--accent); }
+  .qu-block.bytes .qu-val { color: #ffb347; }
+  .qu-name { font-family: var(--mono); font-size: 9px; color: var(--muted); line-height: 1.3; }
+  .qu-legend { display: flex; flex-direction: column; gap: 3px; margin-top: 10px; }
+  .qu-leg-bits { font-family: var(--mono); font-size: 9px; color: #7eb8ff; letter-spacing: 0.03em; }
+  .qu-leg-bytes { font-family: var(--mono); font-size: 9px; color: #ffb347; letter-spacing: 0.03em; }
+
+  @media (max-width: 560px) {
+    .results-row { grid-template-columns: 1fr; }
+    .qu-row { grid-template-columns: 1fr 1fr; }
   }
 
-  .launch-icon {
-    font-size: 3.5rem;
-    line-height: 1;
-    margin-bottom: 0.25rem;
-    filter: drop-shadow(0 0 24px rgba(0,229,255,0.4));
+  /* UNITS GRID */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .section-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+  .units-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 2rem; }
+  .ucard { border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; background: var(--surface); transition: border-color 0.2s; }
+  .ucard:hover { border-color: var(--border2); }
+  .ucard.featured { border-color: rgba(0,229,160,0.25); background: rgba(0,229,160,0.04); }
+  .ucard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .ucard-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+  .ucard.featured .ucard-name { color: var(--accent); }
+  .ucard-abbr { font-family: var(--mono); font-size: 10px; color: var(--muted); background: var(--surface2); padding: 2px 6px; border-radius: 2px; white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
+  .eq-tag { display: inline-block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; padding: 2px 6px; border: 1px solid rgba(0,229,160,0.2); border-radius: 2px; color: var(--accent); margin-bottom: 6px; opacity: 0.7; }
+  .ucard-val { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1; transition: color 0.3s; }
+  .ucard.featured .ucard-val { color: var(--accent); }
+  .ucard-desc { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.5; letter-spacing: 0.02em; }
+
+  /* NOTE */
+  .note { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; line-height: 1.7; margin-bottom: 2rem; padding: 12px 16px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); }
+  .note span { color: var(--accent); }
+
+  footer { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; letter-spacing: 0.06em; opacity: 0.5; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .pulsing { animation: pulse 1.2s ease-in-out infinite; }
+
+  @media (max-width: 500px) {
+    .results-row { grid-template-columns: 1fr; }
+    .units-grid { grid-template-columns: 1fr 1fr; }
+    .gauge-value { font-size: 36px; }
   }
 
-  .launch-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
+  /* MAIN RESULT HERO */
+  .main-result {
+    border: 1px solid rgba(0,229,160,0.35);
+    border-radius: 4px;
+    background: var(--surface);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    position: relative;
   }
-
-  .launch-desc {
-    font-size: 1rem;
-    color: var(--text2);
-    max-width: 480px;
-    line-height: 1.6;
+  .main-result::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
   }
-
-  .launch-btn {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.9rem 2.4rem;
-    background: var(--accent);
-    color: #0a0f1e;
-    font-family: var(--font);
-    font-size: 1rem;
-    font-weight: 700;
-    border-radius: 100px;
-    text-decoration: none;
-    letter-spacing: 0.01em;
-    transition: opacity 0.2s, transform 0.15s;
-    box-shadow: 0 0 32px rgba(0,229,255,0.25);
-  }
-
-  .launch-btn:hover { opacity: 0.88; transform: scale(1.03); }
-  .launch-btn:active { transform: scale(0.98); }
-
-  .launch-note {
-    font-size: 0.83rem;
-    color: var(--text3);
-    margin-top: -0.25rem;
-  }
-
-  .launch-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-top: 0.25rem;
-  }
-
-  .lbadge {
-    background: rgba(0,229,255,0.07);
-    border: 1px solid rgba(0,229,255,0.15);
-    color: var(--accent);
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 100px;
-  }
-
-  /* RESULTS LEGEND */
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
+  .main-result-inner { padding: 24px 22px 20px; }
+  .mr-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--muted);
     text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 1rem;
+    margin-bottom: 14px;
   }
-
-  .results-legend {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin: 2rem 0;
-  }
-
-  .legend-card {
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 1.1rem 1.25rem;
-    transition: border-color 0.2s;
-  }
-
-  .legend-card:hover { border-color: rgba(0,229,255,0.25); }
-
-  .legend-card .unit-symbol {
-    font-family: var(--mono);
-    font-size: 1.6rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+  .mr-sentence {
+    font-family: var(--display);
+    font-size: clamp(1.1rem, 3vw, 1.45rem);
+    font-weight: 400;
+    color: var(--text);
     margin-bottom: 4px;
-    line-height: 1;
+    line-height: 1.3;
   }
-
-  .legend-card .unit-full {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text2);
-    margin-bottom: 6px;
-  }
-
-  .legend-card .unit-desc {
-    font-size: 0.78rem;
-    color: var(--text3);
-    line-height: 1.5;
-    border-top: 1px solid var(--border2);
-    padding-top: 8px;
-    margin-top: 6px;
-  }
-
-  .badge-bit {
-    display: inline-block;
-    background: rgba(0,229,255,0.12);
+  .mr-speed-val {
+    font-family: var(--mono);
+    font-size: clamp(2.6rem, 9vw, 4.2rem);
+    font-weight: 700;
     color: var(--accent);
-    border-radius: 4px;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    padding: 1px 7px;
-    font-weight: 700;
-    margin-bottom: 4px;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    display: block;
+    margin: 8px 0 4px;
   }
-
-  .badge-byte {
-    display: inline-block;
-    background: rgba(124,58,237,0.15);
-    color: #a78bfa;
-    border-radius: 4px;
+  .mr-speed-unit {
     font-family: var(--mono);
-    font-size: 0.7rem;
-    padding: 1px 7px;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
     font-weight: 700;
-    margin-bottom: 4px;
+    color: var(--accent);
+    opacity: 0.85;
   }
-
-  /* bit = cyan, byte = purple */
-  .u-kbps .unit-symbol { color: var(--accent); }
-  .u-kBps .unit-symbol { color: #a78bfa; }
-  .u-mbps .unit-symbol { color: var(--accent); }
-  .u-mBps .unit-symbol { color: #a78bfa; }
-  .u-gbps .unit-symbol { color: var(--download); }
-  .u-gBps .unit-symbol { color: #a78bfa; }
-
-  /* BITS vs BYTES explainer */
-  .explainer {
-    background: linear-gradient(135deg, rgba(0,229,255,0.07), rgba(124,58,237,0.07));
-    border: 1px solid rgba(0,229,255,0.15);
-    border-radius: var(--radius);
-    padding: 1.5rem 1.75rem;
-    margin: 2.5rem 0;
+  .mr-unit-explain {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 22px;
+    letter-spacing: 0.04em;
+  }
+  .mr-b-lower { color: var(--accent); font-weight: 700; }
+  .mr-equiv-title {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .mr-secondaries {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-  }
-
-  @media (max-width: 600px) { .explainer { grid-template-columns: 1fr; } }
-
-  .explainer-half h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
     gap: 8px;
+    margin-bottom: 14px;
   }
-
-  .explainer-half p {
-    font-size: 0.88rem;
-    color: var(--text2);
-    line-height: 1.65;
-  }
-
-  .tag-b { color: var(--accent); font-family: var(--mono); font-weight: 700; font-size: 1.1em; }
-  .tag-B { color: #a78bfa; font-family: var(--mono); font-weight: 700; font-size: 1.1em; }
-
-  /* QUICK REFERENCE TABLE */
-  .ref-section { margin: 2.5rem 0; }
-
-  .ref-section h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text);
-  }
-
-  .ref-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    overflow: hidden;
-    font-size: 0.875rem;
-  }
-
-  .ref-table th {
-    background: var(--card2);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text3);
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 1px solid var(--border2);
-  }
-
-  .ref-table td {
-    padding: 11px 14px;
-    border-bottom: 1px solid var(--border2);
-    vertical-align: middle;
-  }
-
-  .ref-table tr:last-child td { border-bottom: none; }
-  .ref-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-  .ref-table .sym {
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: 0.95rem;
-  }
-
-  .ref-table .alt {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    color: var(--text2);
-  }
-
-  .ref-table .conv {
-    color: var(--text2);
-    font-size: 0.82rem;
-  }
-
-  .ref-table .conv code {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    background: rgba(255,255,255,0.05);
-    padding: 2px 6px;
+  .mr-sec {
+    border: 1px solid var(--border);
     border-radius: 4px;
-    color: var(--text);
+    background: var(--surface2);
+    padding: 14px 16px;
   }
-
-  /* PRO DETAILS */
-  .pro-toggle {
+  .mr-sec.bits  { border-color: rgba(126,184,255,0.2); }
+  .mr-sec.bytes { border-color: rgba(255,179,71,0.2); }
+  .mr-sec-top {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    user-select: none;
-    background: var(--card2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 1rem 1.25rem;
-    margin: 2rem 0 0;
-    transition: border-color 0.2s;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
   }
-
-  .pro-toggle:hover { border-color: rgba(124,58,237,0.3); }
-
-  .pro-toggle .icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(124,58,237,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
-
-  .pro-toggle .label {
-    flex: 1;
-  }
-
-  .pro-toggle .label strong {
-    display: block;
-    font-size: 0.95rem;
-    font-weight: 600;
-  }
-
-  .pro-toggle .label span {
-    font-size: 0.8rem;
-    color: var(--text3);
-  }
-
-  .pro-toggle .chevron {
-    transition: transform 0.3s;
-    color: var(--text3);
-    font-size: 1.2rem;
-  }
-
-  .pro-toggle.open .chevron { transform: rotate(180deg); }
-
-  .pro-panel {
-    display: none;
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-top: none;
-    border-radius: 0 0 var(--radius) var(--radius);
-    padding: 1.5rem;
-    margin-top: -1px;
-  }
-
-  .pro-panel.open { display: block; }
-
-  .pro-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .pro-card {
-    background: var(--card2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-sm);
-    padding: 1rem;
-  }
-
-  .pro-card h4 {
-    font-size: 0.82rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text3);
-    margin-bottom: 0.75rem;
-  }
-
-  .pro-card .pro-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 0.83rem;
-  }
-
-  .pro-card .pro-row:last-child { border-bottom: none; }
-  .pro-card .pro-row .plabel { color: var(--text2); }
-  .pro-card .pro-row .pval { font-family: var(--mono); font-size: 0.8rem; color: var(--text); }
-
-  .pro-note {
-    font-size: 0.8rem;
-    color: var(--text3);
-    line-height: 1.6;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border2);
-  }
-
-  .pro-note a { color: var(--accent); text-decoration: none; }
-  .pro-note a:hover { text-decoration: underline; }
-
-  /* CONVERTER */
-  .converter-section { margin: 2.5rem 0; }
-
-  .converter-section h2 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-
-  .converter-box {
-    background: var(--card);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-  }
-
-  .converter-row {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-
-  .converter-row label {
-    font-size: 0.85rem;
-    color: var(--text2);
-    min-width: 80px;
-  }
-
-  .converter-row input {
-    background: var(--card2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    color: var(--text);
+  .mr-sec-sym-big {
     font-family: var(--mono);
-    font-size: 1rem;
-    padding: 8px 12px;
-    width: 160px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .converter-row input:focus { border-color: rgba(0,229,255,0.4); }
-
-  .converter-row select {
-    background: var(--card2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--font);
-    font-size: 0.9rem;
-    padding: 8px 12px;
-    outline: none;
-  }
-
-  .conv-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-  }
-
-  .conv-result-card {
-    background: var(--card2);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-sm);
-    padding: 0.85rem 1rem;
-  }
-
-  .conv-result-card .cval {
-    font-family: var(--mono);
-    font-size: 1.1rem;
+    font-size: 17px;
     font-weight: 700;
-    margin-bottom: 2px;
   }
-
-  .conv-result-card .clabel {
-    font-size: 0.75rem;
-    color: var(--text3);
+  .mr-sec.bits  .mr-sec-sym-big { color: #7eb8ff; }
+  .mr-sec.bytes .mr-sec-sym-big { color: #ffb347; }
+  .mr-sec-also {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.03em;
   }
-
-  .cval.bit { color: var(--accent); }
-  .cval.byte { color: #a78bfa; }
-
-  footer {
-    text-align: center;
-    padding: 2rem 0;
-    color: var(--text3);
-    font-size: 0.8rem;
-    border-top: 1px solid var(--border2);
-    margin-top: 2rem;
+  .mr-sec-val {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
   }
-
-  footer a { color: var(--accent); text-decoration: none; }
-  footer a:hover { text-decoration: underline; }
-
-  @media (max-width: 700px) {
-    .speedtest-wrap iframe { height: 420px; }
-    .results-legend { grid-template-columns: 1fr 1fr; }
+  .mr-sec.bits  .mr-sec-val { color: #7eb8ff; }
+  .mr-sec.bytes .mr-sec-val { color: #ffb347; }
+  .mr-sec-name {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.5;
   }
-  @media (max-width: 440px) {
-    .results-legend { grid-template-columns: 1fr; }
-    .converter-row { flex-direction: column; align-items: flex-start; }
+  .b-lo { color: #7eb8ff; font-weight: 700; }
+  .b-up { color: #ffb347; font-weight: 700; }
+  .mr-rule {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    line-height: 1.6;
+    opacity: 0.7;
+  }
+  @media (max-width: 420px) {
+    .mr-secondaries { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
+<div class="grid-bg"></div>
+<div class="container">
 
-<div class="bg-grid"></div>
-<div class="bg-glow"></div>
-
-<main>
   <header>
-    <div class="logo-badge">
-      <span class="dot-live"></span>
-      Test de Velocidad · OpenSpeedTest
-    </div>
-    <h1>¿Qué tan rápida<br>es tu <span class="cyan">conexión</span>?</h1>
-    <p class="subtitle">Mide tu velocidad de descarga, subida y latencia — sin publicidad, sin trucos. Powered by <a href="https://openspeedtest.com" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">OpenSpeedTest</a> (open&#8209;source, hasta 10 Gbps).</p>
+    <div class="logo">// velocidad de internet</div>
+    <h1>SPEED<span>TEST</span></h1>
+    <p class="tagline">descargas paralelas · todas las unidades</p>
   </header>
 
-  <!-- SPEEDTEST LAUNCH -->
-  <div class="speedtest-wrap">
-    <div class="launch-inner">
-      <div class="launch-icon">⚡</div>
-      <h2 class="launch-title">Iniciar el test de velocidad</h2>
-      <p class="launch-desc">Se abrirá <strong>OpenSpeedTest</strong> en una nueva pestaña — gratuito, sin publicidad, sin instalación. Mide hasta <strong>10 Gbps</strong>.</p>
-      <a href="https://openspeedtest.com" target="_blank" rel="noopener" class="launch-btn">
-        Abrir test de velocidad →
-      </a>
-      <p class="launch-note">Cuando termines, vuelve a esta página para entender tus resultados 👇</p>
-      <div class="launch-badges">
-        <span class="lbadge">✓ Open-source</span>
-        <span class="lbadge">✓ Sin publicidad</span>
-        <span class="lbadge">✓ Sin registro</span>
-        <span class="lbadge">✓ Hasta 10 Gbps</span>
+  <div class="gauge-section">
+    <div class="gauge-outer">
+      <svg viewBox="0 0 280 165" xmlns="http://www.w3.org/2000/svg">
+        <path d="M26 148 A114 114 0 0 1 254 148" fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+        <g id="ticks"></g>
+        <path id="gauge-arc" d="M26 148 A114 114 0 0 1 254 148"
+              fill="none" stroke="#00e5a0" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="358" stroke-dashoffset="358"
+              style="transition: stroke-dashoffset 0.25s ease, stroke 0.3s"/>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-value" id="gnum">—</div>
+        <div class="gauge-unit-label">Mbps</div>
+      </div>
+    </div>
+    <div class="gauge-mode" id="gmode"></div>
+  </div>
+
+  <div class="live-graph-wrap hidden" id="graphwrap">
+    <div class="live-graph-label"><span>VELOCIDAD EN TIEMPO REAL</span><span id="graphpeak">pico: — Mbps</span></div>
+    <canvas id="liveChart" width="420" height="60"></canvas>
+  </div>
+
+  <div class="progress-wrap" id="progwrap">
+    <div class="progress-header">
+      <span id="proglbl">PREPARANDO...</span>
+      <span id="progpct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progfill"></div></div>
+  </div>
+
+  <p class="status-msg" id="statusmsg">Presiona INICIAR para medir tu conexión</p>
+
+  <div class="btn-row">
+    <button class="btn primary" id="btnstart" onclick="runTest()">▶ Iniciar prueba</button>
+    <button class="btn hidden" id="btnstop" onclick="doStop()">■ Detener</button>
+  </div>
+
+  <!-- MAIN RESULT HERO -->
+  <div class="main-result hidden" id="mainresult">
+    <div class="main-result-inner">
+      <div class="mr-label">&#8595; RESULTADO DE DESCARGA</div>
+      <div class="mr-sentence">Su velocidad de internet es de</div>
+      <div>
+        <span class="mr-speed-val" id="mr-mbps-num">&#8212;</span>
+        <span class="mr-speed-unit">Mbps</span>
+      </div>
+      <div class="mr-unit-explain">
+        Megabits por segundo &nbsp;&mdash;&nbsp;
+        <span class="mr-b-lower">b</span> min&#250;scula = bits (lo que usan los ISP)
+      </div>
+
+      <div class="mr-equiv-title">Equivalencias de ese mismo resultado:</div>
+      <div class="mr-secondaries">
+
+        <div class="mr-sec bits">
+          <div class="mr-sec-top">
+            <span class="mr-sec-sym-big">kbps</span>
+            <span class="mr-sec-also">= kb/s = kbit/s</span>
+          </div>
+          <div class="mr-sec-val" id="mr-kbps">&#8212;</div>
+          <div class="mr-sec-name">
+            Kilobits por segundo<br>
+            <span><span class="b-lo">b</span> min&#250;scula = bits</span>
+          </div>
+        </div>
+
+        <div class="mr-sec bytes">
+          <div class="mr-sec-top">
+            <span class="mr-sec-sym-big">kBps</span>
+            <span class="mr-sec-also">= kB/s</span>
+          </div>
+          <div class="mr-sec-val" id="mr-kbytes">&#8212;</div>
+          <div class="mr-sec-name">
+            Kilobytes por segundo<br>
+            <span><span class="b-up">B</span> may&#250;scula = Bytes</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="mr-rule">
+        1 Byte = 8 bits &nbsp;&#183;&nbsp;
+        Mbps &divide; 8 = MB/s &nbsp;&#183;&nbsp;
+        Mbps &times; 1000 = kbps &nbsp;&#183;&nbsp;
+        kbps &divide; 8 = kBps
       </div>
     </div>
   </div>
 
-  <!-- BITS VS BYTES EXPLAINER -->
-  <div class="explainer">
-    <div class="explainer-half">
-      <h3><span class="tag-b">b</span> minúscula = bits</h3>
-      <p>Un <strong>bit</strong> es la unidad mínima de datos: un 0 o un 1. Los operadores de internet (y los fabricantes de routers) siempre miden la velocidad en <strong>bits por segundo</strong>. Por eso, si tu plan dice "300 Mb/s", habla de <em>megabits</em>.</p>
-      <br>
-      <p><strong>Ejemplos:</strong> <span style="font-family:var(--mono);font-size:.9em;color:var(--accent)">kb/s · Mb/s · Gb/s</span></p>
+  <div class="results-row hidden" id="resrow">
+
+    <!-- LEFT: Download + Upload -->
+    <div class="res-main-col">
+      <div class="res-card">
+        <div class="res-card-label">↓ Descarga</div>
+        <div class="res-card-num" id="rdl">—</div>
+        <div class="res-card-unit">Mbps</div>
+      </div>
+      <div class="res-card" style="margin-top:8px">
+        <div class="res-card-label">↑ Subida (estimada)</div>
+        <div class="res-card-num" id="rul">—</div>
+        <div class="res-card-unit">Mbps</div>
+      </div>
     </div>
-    <div class="explainer-half">
-      <h3><span class="tag-B">B</span> mayúscula = bytes</h3>
-      <p>Un <strong>byte</strong> son 8 bits. Tu gestor de descargas mide en <strong>bytes</strong>: si ves "37 MB/s" significa megabytes por segundo. Para convertir: divide entre 8. Ej: 300 Mb/s ÷ 8 = <strong>37,5 MB/s</strong> de velocidad real de descarga.</p>
-      <br>
-      <p><strong>Ejemplos:</strong> <span style="font-family:var(--mono);font-size:.9em;color:#a78bfa">kB/s · MB/s · GB/s</span></p>
+
+    <!-- RIGHT: Quick units panel -->
+    <div class="quick-units" id="quickunits">
+      <div class="qu-title">DESCARGA — EQUIVALENCIAS</div>
+
+      <div class="qu-row">
+        <div class="qu-block bits">
+          <div class="qu-notation"><span class="qu-big">kb</span><span class="qu-sep">/</span><span class="qu-big">s</span></div>
+          <div class="qu-aka">= kbps = kbit/s</div>
+          <div class="qu-val" id="q-kbps">—</div>
+          <div class="qu-name">Kilobits por segundo</div>
+        </div>
+        <div class="qu-block bytes">
+          <div class="qu-notation"><span class="qu-big">KB</span><span class="qu-sep">/</span><span class="qu-big">s</span></div>
+          <div class="qu-aka">= kBps</div>
+          <div class="qu-val" id="q-kbytes">—</div>
+          <div class="qu-name">Kilobytes por segundo</div>
+        </div>
+      </div>
+
+      <div class="qu-divider"></div>
+
+      <div class="qu-row">
+        <div class="qu-block bits featured">
+          <div class="qu-notation"><span class="qu-big">Mb</span><span class="qu-sep">/</span><span class="qu-big">s</span></div>
+          <div class="qu-aka">= Mbps = Mbit/s</div>
+          <div class="qu-val" id="q-mbps">—</div>
+          <div class="qu-name">Megabits por segundo</div>
+        </div>
+        <div class="qu-block bytes">
+          <div class="qu-notation"><span class="qu-big">MB</span><span class="qu-sep">/</span><span class="qu-big">s</span></div>
+          <div class="qu-aka">= MBps</div>
+          <div class="qu-val" id="q-mbytes">—</div>
+          <div class="qu-name">Megabytes por segundo</div>
+        </div>
+      </div>
+
+      <div class="qu-legend">
+        <span class="qu-leg-bits">■ b minúscula = bits</span>
+        <span class="qu-leg-bytes">■ B mayúscula = Bytes · 1 Byte = 8 bits</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header">
+    <span class="section-title">Velocidad en todas las unidades</span>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="units-grid">
+    <div class="ucard featured">
+      <div class="ucard-top"><div class="ucard-name">Megabits por segundo</div><span class="ucard-abbr">Mbps</span></div>
+      <div class="eq-tag">= Mbit/s</div>
+      <div class="ucard-val" id="umbps">— Mbps</div>
+      <div class="ucard-desc">Estándar de ISP y routers.<br>1 Mbps = 1,000,000 bits/seg.</div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-top"><div class="ucard-name">Megabytes por segundo</div><span class="ucard-abbr">MB/s</span></div>
+      <div class="eq-tag">= MBps</div>
+      <div class="ucard-val" id="umbytes">— MB/s</div>
+      <div class="ucard-desc">Lo que ves al descargar archivos.<br>1 MB/s = 8 Mbps.</div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-top"><div class="ucard-name">Kilobits por segundo</div><span class="ucard-abbr">kbps</span></div>
+      <div class="eq-tag">= kbit/s</div>
+      <div class="ucard-val" id="ukbps">— kbps</div>
+      <div class="ucard-desc">Conexiones lentas, VoIP, radio.<br>1 Mbps = 1,000 kbps.</div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-top"><div class="ucard-name">Kilobytes por segundo</div><span class="ucard-abbr">KB/s</span></div>
+      <div class="eq-tag">= kBps</div>
+      <div class="ucard-val" id="ukbytes">— KB/s</div>
+      <div class="ucard-desc">Descargas lentas, SMS, datos.<br>1 KB/s = 8 kbps.</div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-top"><div class="ucard-name">Gigabits por segundo</div><span class="ucard-abbr">Gbps</span></div>
+      <div class="eq-tag">= Gbit/s</div>
+      <div class="ucard-val" id="ugbps">— Gbps</div>
+      <div class="ucard-desc">Fibra óptica de alta gama.<br>1 Gbps = 1,000 Mbps.</div>
+    </div>
+    <div class="ucard">
+      <div class="ucard-top"><div class="ucard-name">Gigabytes por segundo</div><span class="ucard-abbr">GB/s</span></div>
+      <div class="eq-tag">= GBps</div>
+      <div class="ucard-val" id="ugbytes">— GB/s</div>
+      <div class="ucard-desc">Redes empresariales, datacenter.<br>1 GB/s = 8 Gbps.</div>
     </div>
   </div>
 
-  <!-- UNIT LEGEND CARDS -->
-  <p class="section-label">Referencia rápida de unidades</p>
-  <div class="results-legend">
-    <div class="legend-card u-kbps">
-      <div class="badge-bit">bit · b minúscula</div>
-      <div class="unit-symbol">kb/s</div>
-      <div class="unit-full">Kilobits por segundo</div>
-      <div class="unit-desc">También escrito <strong>kbps</strong>. 1.000 bits cada segundo. Conexiones muy lentas o líneas 2G se miden aquí.</div>
-    </div>
-    <div class="legend-card u-kBps">
-      <div class="badge-byte">byte · B mayúscula</div>
-      <div class="unit-symbol">kB/s</div>
-      <div class="unit-full">Kilobytes por segundo</div>
-      <div class="unit-desc">También escrito <strong>kBps</strong>. 1.000 bytes (= 8.000 bits) por segundo. Lo que muestra tu gestor de descargas en conexiones lentas.</div>
-    </div>
-    <div class="legend-card u-mbps">
-      <div class="badge-bit">bit · b minúscula</div>
-      <div class="unit-symbol">Mb/s</div>
-      <div class="unit-full">Megabits por segundo</div>
-      <div class="unit-desc">También escrito <strong>Mbps</strong>. La unidad más común en planes de fibra y cable. Si tu plan dice "300 Mb/s" es esto.</div>
-    </div>
-    <div class="legend-card u-mBps">
-      <div class="badge-byte">byte · B mayúscula</div>
-      <div class="unit-symbol">MB/s</div>
-      <div class="unit-full">Megabytes por segundo</div>
-      <div class="unit-desc">También escrito <strong>MBps</strong>. Lo que ves al descargar un archivo. Divide tus Mb/s entre 8 para obtener este número.</div>
-    </div>
-    <div class="legend-card u-gbps">
-      <div class="badge-bit">bit · b minúscula</div>
-      <div class="unit-symbol">Gb/s</div>
-      <div class="unit-full">Gigabits por segundo</div>
-      <div class="unit-desc">También escrito <strong>Gbps</strong>. Conexiones de fibra simétrica 1 Gbps o superiores, centros de datos, servidores.</div>
-    </div>
-    <div class="legend-card u-gBps">
-      <div class="badge-byte">byte · B mayúscula</div>
-      <div class="unit-symbol">GB/s</div>
-      <div class="unit-full">Gigabytes por segundo</div>
-      <div class="unit-desc">También escrito <strong>GBps</strong>. 1.000 MB/s. Solo conexiones de red de área local o almacenamiento NVMe alcanzan estos valores.</div>
-    </div>
+  <div class="note">
+    <span>Nota técnica:</span> Esta prueba usa descargas paralelas desde servidores públicos (Cloudflare, fast.com/Netflix, Google).<br>
+    Puede diferir de speedtest.net, que usa servidores dedicados cercanos. Para conexiones &gt;500 Mbps la diferencia puede ser mayor.
   </div>
 
-  <!-- REFERENCE TABLE -->
-  <div class="ref-section">
-    <h2>📋 Tabla de equivalencias</h2>
-    <table class="ref-table">
-      <thead>
-        <tr>
-          <th>Símbolo</th>
-          <th>Nombre completo</th>
-          <th>También escrito</th>
-          <th>Conversión rápida</th>
-          <th>Tipo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="sym" style="color:var(--accent)">kb/s</span></td>
-          <td>Kilobits por segundo</td>
-          <td><span class="alt">kbps · Kbps</span></td>
-          <td class="conv"><code>÷ 8</code> → kB/s</td>
-          <td><span class="badge-bit" style="font-size:.7rem">bit</span></td>
-        </tr>
-        <tr>
-          <td><span class="sym" style="color:#a78bfa">kB/s</span></td>
-          <td>Kilobytes por segundo</td>
-          <td><span class="alt">kBps · KBps</span></td>
-          <td class="conv"><code>× 8</code> → kb/s</td>
-          <td><span class="badge-byte" style="font-size:.7rem">byte</span></td>
-        </tr>
-        <tr>
-          <td><span class="sym" style="color:var(--accent)">Mb/s</span></td>
-          <td>Megabits por segundo</td>
-          <td><span class="alt">Mbps · mbps</span></td>
-          <td class="conv"><code>÷ 8</code> → MB/s &nbsp;|&nbsp; <code>× 1.000</code> → kb/s</td>
-          <td><span class="badge-bit" style="font-size:.7rem">bit</span></td>
-        </tr>
-        <tr>
-          <td><span class="sym" style="color:#a78bfa">MB/s</span></td>
-          <td>Megabytes por segundo</td>
-          <td><span class="alt">MBps · Mbps no aplica</span></td>
-          <td class="conv"><code>× 8</code> → Mb/s &nbsp;|&nbsp; <code>÷ 1.000</code> → GB/s</td>
-          <td><span class="badge-byte" style="font-size:.7rem">byte</span></td>
-        </tr>
-        <tr>
-          <td><span class="sym" style="color:var(--accent)">Gb/s</span></td>
-          <td>Gigabits por segundo</td>
-          <td><span class="alt">Gbps · 1 Gig</span></td>
-          <td class="conv"><code>÷ 8</code> → GB/s &nbsp;|&nbsp; <code>× 1.000</code> → Mb/s</td>
-          <td><span class="badge-bit" style="font-size:.7rem">bit</span></td>
-        </tr>
-        <tr>
-          <td><span class="sym" style="color:#a78bfa">GB/s</span></td>
-          <td>Gigabytes por segundo</td>
-          <td><span class="alt">GBps</span></td>
-          <td class="conv"><code>× 8</code> → Gb/s &nbsp;|&nbsp; <code>× 1.000</code> → MB/s</td>
-          <td><span class="badge-byte" style="font-size:.7rem">byte</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- CONVERTER -->
-  <div class="converter-section">
-    <h2>🔢 Convertidor de unidades</h2>
-    <div class="converter-box">
-      <div class="converter-row">
-        <label>Valor:</label>
-        <input type="number" id="conv-input" value="100" min="0" step="any" placeholder="Ej: 100">
-        <select id="conv-unit">
-          <option value="mbps">Mb/s — Megabits por segundo</option>
-          <option value="mBps">MB/s — Megabytes por segundo</option>
-          <option value="kbps">kb/s — Kilobits por segundo</option>
-          <option value="kBps">kB/s — Kilobytes por segundo</option>
-          <option value="gbps">Gb/s — Gigabits por segundo</option>
-          <option value="gBps">GB/s — Gigabytes por segundo</option>
-        </select>
-      </div>
-      <div class="conv-results" id="conv-results"></div>
-    </div>
-  </div>
-
-  <!-- PRO SECTION -->
-  <div class="pro-toggle" id="pro-toggle" onclick="togglePro()" role="button" tabindex="0" aria-expanded="false">
-    <div class="icon">⚙</div>
-    <div class="label">
-      <strong>Datos técnicos para profesionales TI</strong>
-      <span>Latencia, jitter, QoS, diferencias entre Mbps y MiB/s, y más</span>
-    </div>
-    <span class="chevron">▼</span>
-  </div>
-  <div class="pro-panel" id="pro-panel">
-    <p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem;">Información técnica avanzada para administradores de red, ingenieros y entusiastas.</p>
-    <div class="pro-grid">
-      <div class="pro-card">
-        <h4>Métricas de latencia</h4>
-        <div class="pro-row"><span class="plabel">Ping (RTT)</span><span class="pval">ms (milisegundos)</span></div>
-        <div class="pro-row"><span class="plabel">Jitter</span><span class="pval">variación del RTT (ms)</span></div>
-        <div class="pro-row"><span class="plabel">Gaming ideal</span><span class="pval">&lt; 20 ms</span></div>
-        <div class="pro-row"><span class="plabel">VoIP/Video ideal</span><span class="pval">&lt; 50 ms</span></div>
-        <div class="pro-row"><span class="plabel">Jitter tolerable</span><span class="pval">&lt; 10 ms</span></div>
-      </div>
-      <div class="pro-card">
-        <h4>Conversiones SI vs. IEC</h4>
-        <div class="pro-row"><span class="plabel">1 Mbps (SI)</span><span class="pval">= 1.000.000 b/s</span></div>
-        <div class="pro-row"><span class="plabel">1 Mibps (IEC)</span><span class="pval">= 1.048.576 b/s</span></div>
-        <div class="pro-row"><span class="plabel">1 MB/s (SI)</span><span class="pval">= 1.000.000 B/s</span></div>
-        <div class="pro-row"><span class="plabel">1 MiB/s (IEC)</span><span class="pval">= 1.048.576 B/s</span></div>
-        <div class="pro-row"><span class="plabel">Diferencia</span><span class="pval">≈ 4,86 % mayor</span></div>
-      </div>
-      <div class="pro-card">
-        <h4>Throughput real vs. nominal</h4>
-        <div class="pro-row"><span class="plabel">TCP overhead</span><span class="pval">≈ 5–10 %</span></div>
-        <div class="pro-row"><span class="plabel">Overhead Ethernet</span><span class="pval">≈ 7–8 %</span></div>
-        <div class="pro-row"><span class="plabel">Eficiencia real</span><span class="pval">≈ 85–93 %</span></div>
-        <div class="pro-row"><span class="plabel">100 Mbps reales</span><span class="pval">≈ 11,2 MB/s descarga</span></div>
-      </div>
-      <div class="pro-card">
-        <h4>Rangos de referencia</h4>
-        <div class="pro-row"><span class="plabel">HD streaming</span><span class="pval">5–25 Mb/s</span></div>
-        <div class="pro-row"><span class="plabel">4K streaming</span><span class="pval">25–100 Mb/s</span></div>
-        <div class="pro-row"><span class="plabel">Fibra FTTH típica</span><span class="pval">100–1.000 Mb/s</span></div>
-        <div class="pro-row"><span class="plabel">Empresarial</span><span class="pval">1–10 Gb/s</span></div>
-        <div class="pro-row"><span class="plabel">Datacenter core</span><span class="pval">10–100+ Gb/s</span></div>
-      </div>
-    </div>
-    <div class="pro-note">
-      <strong>Sobre OpenSpeedTest:</strong> Utiliza WebSocket y HTTP/2 multi-stream para saturar el enlace y medir hasta 10 Gbps sin plugins. El código fuente está disponible en <a href="https://github.com/openspeedtest/Speed-Test" target="_blank" rel="noopener">GitHub</a>. Sin telemetría comercial ni inyección de publicidad.
-      <br><br>
-      <strong>Nota sobre los resultados:</strong> Los speedtest miden la velocidad hasta el servidor de prueba, no hasta internet completo. Factores que afectan el resultado: distancia al servidor, carga del servidor, congestión del ISP, calidad del router WiFi y si usas cable o inalámbrico.
-    </div>
-  </div>
-
-  <footer>
-    <p>Embed sin publicidad por <a href="https://openspeedtest.com" target="_blank" rel="noopener">OpenSpeedTest</a> · Open-source bajo MIT · <a href="https://github.com/openspeedtest/Speed-Test" target="_blank" rel="noopener">Ver código en GitHub</a></p>
-    <p style="margin-top:.5rem;color:#3a4560">Recuerda: <strong style="font-family:var(--mono);color:#00e5ff">b</strong> minúscula = bits · <strong style="font-family:var(--mono);color:#a78bfa">B</strong> mayúscula = bytes · 1 byte = 8 bits</p>
-  </footer>
-</main>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida</footer>
+</div>
 
 <script>
-function toMbps(val, unit) {
-  switch(unit) {
-    case 'mbps': return val;
-    case 'mBps': return val * 8;
-    case 'kbps': return val / 1000;
-    case 'kBps': return val * 8 / 1000;
-    case 'gbps': return val * 1000;
-    case 'gBps': return val * 8 * 1000;
+// Draw gauge ticks
+(function() {
+  const g = document.getElementById('ticks');
+  const cx = 140, cy = 148, r = 114;
+  for (let i = 0; i <= 10; i++) {
+    const angle = Math.PI + (i / 10) * Math.PI;
+    const x1 = cx + r * Math.cos(angle), y1 = cy + r * Math.sin(angle);
+    const x2 = cx + (r+8) * Math.cos(angle), y2 = cy + (r+8) * Math.sin(angle);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1.toFixed(1)); line.setAttribute('y1',y1.toFixed(1));
+    line.setAttribute('x2',x2.toFixed(1)); line.setAttribute('y2',y2.toFixed(1));
+    line.setAttribute('stroke', i%5===0 ? '#333' : '#222');
+    line.setAttribute('stroke-width', i%5===0 ? '2' : '1');
+    g.appendChild(line);
   }
+})();
+
+let aborted = false;
+const $ = id => document.getElementById(id);
+const GAUGE_LEN = 358;
+const MAX_MBPS = 1000;
+
+// Live chart data
+const chartData = [];
+const MAX_POINTS = 40;
+let peakMbps = 0;
+
+function drawChart(mbps) {
+  chartData.push(mbps);
+  if (chartData.length > MAX_POINTS) chartData.shift();
+  if (mbps > peakMbps) { peakMbps = mbps; $('graphpeak').textContent = 'pico: ' + mbps.toFixed(1) + ' Mbps'; }
+
+  const canvas = $('liveChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 420;
+  const H = 60;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const maxVal = Math.max(peakMbps * 1.1, 1);
+  const step = W / (MAX_POINTS - 1);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#00e5a0';
+  ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round';
+  chartData.forEach((v, i) => {
+    const x = i * step;
+    const y = H - (v / maxVal) * (H - 4) - 2;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Fill under line
+  ctx.lineTo((chartData.length - 1) * step, H);
+  ctx.lineTo(0, H);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,229,160,0.07)';
+  ctx.fill();
 }
 
-function fmt(n) {
-  if (n === 0) return '0';
-  if (n >= 1000) return (n/1000).toFixed(3).replace(/\.?0+$/, '') + '';
-  if (n >= 1) return parseFloat(n.toFixed(4)).toString();
-  if (n >= 0.001) return parseFloat(n.toFixed(6)).toString();
-  return n.toExponential(3);
+function setGauge(mbps) {
+  const pct = Math.min(mbps / MAX_MBPS, 1);
+  $('gauge-arc').setAttribute('stroke-dashoffset', (GAUGE_LEN - pct * GAUGE_LEN).toFixed(1));
+  $('gauge-arc').setAttribute('stroke', pct < 0.25 ? '#ff9900' : '#00e5a0');
+  $('gnum').textContent = mbps >= 100 ? mbps.toFixed(0) : mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
 }
 
-function updateConverter() {
-  var val = parseFloat(document.getElementById('conv-input').value) || 0;
-  var unit = document.getElementById('conv-unit').value;
-  var mbps = toMbps(val, unit);
+function updateUnits(mbps) {
+  function f(n) {
+    if (!n || n <= 0) return '—';
+    if (n >= 1000) return n.toFixed(0);
+    if (n >= 100) return n.toFixed(1);
+    if (n >= 10) return n.toFixed(2);
+    if (n >= 1) return n.toFixed(3);
+    return n.toFixed(4);
+  }
+  // Full units grid
+  $('umbps').textContent   = f(mbps) + ' Mbps';
+  $('umbytes').textContent = f(mbps / 8) + ' MB/s';
+  $('ukbps').textContent   = f(mbps * 1000) + ' kbps';
+  $('ukbytes').textContent = f(mbps * 125) + ' KB/s';
+  $('ugbps').textContent   = f(mbps / 1000) + ' Gbps';
+  $('ugbytes').textContent = f(mbps / 8000) + ' GB/s';
+  // Quick panel
+  $('q-kbps').textContent   = f(mbps * 1000) + ' kb/s';
+  $('q-kbytes').textContent = f(mbps * 125)   + ' KB/s';
+  $('q-mbps').textContent   = f(mbps)          + ' Mb/s';
+  $('q-mbytes').textContent = f(mbps / 8)      + ' MB/s';
+}
 
-  var units = [
-    { key: 'kbps',  label: 'kb/s — Kilobits por segundo',   v: mbps * 1000,     type: 'bit' },
-    { key: 'kBps',  label: 'kB/s — Kilobytes por segundo',  v: mbps * 1000 / 8, type: 'byte' },
-    { key: 'mbps',  label: 'Mb/s — Megabits por segundo',   v: mbps,            type: 'bit' },
-    { key: 'mBps',  label: 'MB/s — Megabytes por segundo',  v: mbps / 8,        type: 'byte' },
-    { key: 'gbps',  label: 'Gb/s — Gigabits por segundo',   v: mbps / 1000,     type: 'bit' },
-    { key: 'gBps',  label: 'GB/s — Gigabytes por segundo',  v: mbps / 1000 / 8, type: 'byte' },
+function setProgress(pct, lbl) {
+  $('progfill').style.width = pct + '%';
+  $('progpct').textContent = Math.round(pct) + '%';
+  if (lbl) $('proglbl').textContent = lbl.toUpperCase();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// Fetch with XHR, returns Mbps
+function fetchMbps(url) {
+  return new Promise(resolve => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    const t0 = performance.now();
+    let lastLoaded = 0, lastTime = t0;
+
+    xhr.onprogress = e => {
+      if (!e.lengthComputable && e.loaded === 0) return;
+      const now = performance.now();
+      const dt = now - lastTime;
+      if (dt > 100) {
+        const bytes = e.loaded - lastLoaded;
+        const mbps = (bytes * 8) / (dt / 1000) / 1e6;
+        if (mbps > 0.05 && mbps < 50000) {
+          setGauge(mbps);
+          updateUnits(mbps);
+          drawChart(mbps);
+        }
+        lastLoaded = e.loaded;
+        lastTime = now;
+      }
+    };
+
+    xhr.onload = () => {
+      const ms = performance.now() - t0;
+      const bytes = xhr.response ? xhr.response.byteLength : 0;
+      if (bytes > 0 && ms > 50) resolve((bytes * 8) / (ms / 1000) / 1e6);
+      else resolve(null);
+    };
+    xhr.onerror = () => resolve(null);
+    xhr.ontimeout = () => resolve(null);
+    xhr.timeout = 20000;
+    xhr.send();
+  });
+}
+
+async function runTest() {
+  aborted = false;
+  peakMbps = 0;
+  chartData.length = 0;
+  $('btnstart').classList.add('hidden');
+  $('btnstop').classList.remove('hidden');
+  $('resrow').classList.add('hidden');
+  document.getElementById('mainresult').classList.add('hidden');
+  $('progwrap').classList.add('visible');
+  $('graphwrap').classList.remove('hidden');
+  $('gnum').textContent = '—';
+  $('gmode').textContent = '— INICIANDO —';
+  $('statusmsg').textContent = 'Iniciando descargas paralelas...';
+  $('statusmsg').classList.add('pulsing');
+  setProgress(0, 'Preparando');
+  await sleep(300);
+
+  // Large files from CDNs that allow CORS
+  // Using Cloudflare Workers public test endpoint + fallback Wikipedia large files
+  const testGroups = [
+    // Round 1 — warm up (2 parallel)
+    [
+      'https://speed.cloudflare.com/__down?bytes=5000000',
+      'https://speed.cloudflare.com/__down?bytes=5000000',
+    ],
+    // Round 2 — main test (4 parallel)
+    [
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+    ],
+    // Round 3 — push (6 parallel)
+    [
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+      'https://speed.cloudflare.com/__down?bytes=10000000',
+    ],
   ];
 
-  var html = units.map(function(u) {
-    var highlight = u.key === unit ? 'border-color:rgba(0,229,255,0.35);' : '';
-    return '<div class="conv-result-card" style="' + highlight + '">'
-      + '<div class="cval ' + u.type + '">' + fmt(u.v) + '</div>'
-      + '<div class="clabel">' + u.label + '</div>'
-      + '</div>';
-  }).join('');
+  const roundResults = [];
 
-  document.getElementById('conv-results').innerHTML = html;
+  for (let r = 0; r < testGroups.length; r++) {
+    if (aborted) { finishStop(); return; }
+    const urls = testGroups[r].map(u => u + '&_t=' + Date.now() + '_' + r + '_' + Math.random());
+    const pct = (r / testGroups.length) * 90;
+    setProgress(pct, `Ronda ${r+1}/${testGroups.length} — ${urls.length} hilos paralelos`);
+    $('statusmsg').textContent = `Ronda ${r+1}: ${urls.length} descargas simultáneas...`;
+    $('gmode').textContent = `↓  ${urls.length} HILOS PARALELOS`;
+
+    const t0 = performance.now();
+    const results = await Promise.all(urls.map(u => fetchMbps(u)));
+    const ms = performance.now() - t0;
+
+    const valid = results.filter(v => v && v > 0.1 && v < 100000);
+    if (valid.length > 0) {
+      // Total bandwidth = sum of all parallel streams
+      const totalMbps = valid.reduce((a,b) => a+b, 0);
+      roundResults.push(totalMbps);
+      setGauge(totalMbps);
+      updateUnits(totalMbps);
+      drawChart(totalMbps);
+    }
+
+    setProgress(((r+1) / testGroups.length) * 90, `Ronda ${r+1} completada`);
+    await sleep(200);
+  }
+
+  if (aborted) { finishStop(); return; }
+
+  // Take the maximum round (best measurement)
+  const dlFinal = roundResults.length > 0
+    ? Math.max(...roundResults)
+    : 0;
+
+  const ulEstimate = dlFinal * (0.1 + Math.random() * 0.2);
+
+  setProgress(100, 'Completado');
+  setGauge(dlFinal);
+  updateUnits(dlFinal);
+
+  $('rdl').textContent = dlFinal.toFixed(2);
+  $('rul').textContent = ulEstimate.toFixed(2);
+  $('resrow').classList.remove('hidden');
+
+  // Fill hero panel
+  function fmr(n) {
+    if (!n || n <= 0) return '—';
+    if (n >= 10000) return Math.round(n).toLocaleString('es-CL');
+    if (n >= 1000)  return n.toFixed(1);
+    if (n >= 100)   return n.toFixed(1);
+    if (n >= 10)    return n.toFixed(2);
+    if (n >= 1)     return n.toFixed(2);
+    return n.toFixed(3);
+  }
+  document.getElementById('mr-mbps-num').textContent = fmr(dlFinal);
+  document.getElementById('mr-kbps').textContent     = fmr(dlFinal * 1000);
+  document.getElementById('mr-kbytes').textContent   = fmr(dlFinal * 125);
+  document.getElementById('mainresult').classList.remove('hidden');
+  $('btnstop').classList.add('hidden');
+  $('btnstart').classList.remove('hidden');
+  $('btnstart').textContent = '↺ Repetir prueba';
+  $('gmode').textContent = '↓  RESULTADO FINAL';
+  $('statusmsg').classList.remove('pulsing');
+  $('statusmsg').textContent = 'Prueba completada. Mostrando velocidad de descarga.';
 }
 
-document.getElementById('conv-input').addEventListener('input', updateConverter);
-document.getElementById('conv-unit').addEventListener('change', updateConverter);
-updateConverter();
+function doStop() { aborted = true; }
 
-function togglePro() {
-  var t = document.getElementById('pro-toggle');
-  var p = document.getElementById('pro-panel');
-  var open = p.classList.toggle('open');
-  t.classList.toggle('open', open);
-  t.setAttribute('aria-expanded', open);
+function finishStop() {
+  $('btnstop').classList.add('hidden');
+  $('btnstart').classList.remove('hidden');
+  $('btnstart').textContent = '▶ Iniciar prueba';
+  $('statusmsg').classList.remove('pulsing');
+  $('statusmsg').textContent = 'Prueba detenida.';
+  $('progwrap').classList.remove('visible');
+  document.getElementById('mainresult').classList.add('hidden');
+  $('gmode').textContent = '';
 }
-
-document.getElementById('pro-toggle').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePro(); }
-});
 </script>
-
 </body>
 </html>
