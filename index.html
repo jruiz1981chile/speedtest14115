@@ -1074,7 +1074,7 @@ async function runTest() {
   $('graphwrap').classList.add('hidden');
   $('gnum').textContent = '—';
   $('gmode').textContent = '— INICIANDO —';
-  $('statusmsg').textContent = 'Iniciando descargas paralelas...';
+  $('statusmsg').classList.add('hidden');
   $('statusmsg').classList.add('pulsing');
   setProgress(0, 'Preparando');
   await sleep(300);
@@ -1170,6 +1170,7 @@ async function runTest() {
   $('btnstart').classList.remove('hidden');
   $('btnstart').textContent = '↺ Repetir prueba';
   $('gmode').textContent = '↓  RESULTADO FINAL';
+  $('statusmsg').classList.remove('hidden');
   $('statusmsg').classList.remove('pulsing');
   $('statusmsg').textContent = 'Prueba completada. Resultado: percentil 90 de las rondas de medición.';
 }
@@ -1180,6 +1181,7 @@ function finishStop() {
   $('btnstop').classList.add('hidden');
   $('btnstart').classList.remove('hidden');
   $('btnstart').textContent = '▶ Iniciar prueba';
+  $('statusmsg').classList.remove('hidden');
   $('statusmsg').classList.remove('pulsing');
   $('statusmsg').textContent = 'Prueba detenida.';
   $('progwrap').classList.remove('visible');
