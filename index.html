@@ -674,7 +674,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; <span id="attempt-counter" style="color:var(--accent);opacity:1">intento #1</span> &nbsp;·&nbsp; v2025-05-18</footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2025-05-18 19:42</span></footer>
 </div>
 
 <script>
@@ -697,7 +697,6 @@
 
 // ─── State ─────────────────────────────────────────────────────────────────
 let aborted = false;
-let attemptCount = 0;
 const $ = id => document.getElementById(id);
 const GAUGE_LEN = 358, MAX_MBPS = 1000;
 const chartData = [];
@@ -1096,8 +1095,6 @@ function makeUrls(threads, bytes) {
 // ─── Run Test ──────────────────────────────────────────────────────────────
 async function runTest() {
   aborted = false;
-  attemptCount++;
-  $('attempt-counter').textContent = 'intento #' + attemptCount;
   peakMbps = 0;
   chartData.length = 0;
   allSamples.length = 0;
