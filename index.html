@@ -1056,6 +1056,23 @@ function updateITLive(latestMbps) {
   $('diag-verdict-note').textContent = '⟳ Actualizando en tiempo real...';
 }
 
+// ─── Smoothing buffer for main display ────────────────────────────────────
+const smoothBuf = [];
+const SMOOTH_N = 12; // average over last ~1.8s at 150ms ticks
+
+function smoothedMbps(raw) {
+  smoothBuf.push(raw);
+  if (smoothBuf.length > SMOOTH_N) smoothBuf.shift();
+  // Weighted average: more recent samples get higher weight
+  let weightedSum = 0, totalWeight = 0;
+  smoothBuf.forEach((v, i) => {
+    const w = i + 1;
+    weightedSum += v * w;
+    totalWeight += w;
+  });
+  return weightedSum / totalWeight;
+}
+
 // Ejecuta N descargas en paralelo midiendo velocidad TOTAL agregada en tiempo real
 function runParallel(urls) {
   return new Promise(resolve => {
@@ -1073,10 +1090,11 @@ function runParallel(urls) {
       if (dt > 0 && newBytes > 0) {
         const mbps = (newBytes * 8) / (dt / 1000) / 1e6;
         if (mbps > 0.05 && mbps < 100000) {
-          setGauge(mbps);
-          updateUnits(mbps);
-          drawChart(mbps);
-          // Update IT panel live
+          const display = smoothedMbps(mbps); // suavizado para el gauge principal
+          setGauge(display);
+          updateUnits(display);
+          drawChart(mbps);        // gráfica muestra valor crudo
+          // Update IT panel live con valor crudo
           allSamples.push(mbps);
           updateITLive(mbps);
         }
@@ -1140,6 +1158,7 @@ async function runTest() {
   allSamples.length = 0;
   roundLog.length = 0;
   activeXhrs.length = 0;
+  smoothBuf.length = 0;
 
   $('btnstart').classList.add('hidden');
   $('btnstop').classList.remove('hidden');
