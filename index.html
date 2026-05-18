@@ -605,9 +605,9 @@
     <div class="it-section-title">Métricas de rendimiento</div>
     <div class="it-grid">
       <div class="it-metric">
-        <div class="it-metric-name">Velocidad Pico</div>
+        <div class="it-metric-name">Percentil 90</div>
         <div class="it-metric-val" id="it-peak">—</div>
-        <div class="it-metric-sub">Mbps máximo observado</div>
+        <div class="it-metric-sub">Mbps p90 — descarta spikes altos</div>
       </div>
       <div class="it-metric">
         <div class="it-metric-name">Velocidad Media</div>
@@ -623,11 +623,6 @@
         <div class="it-metric-name">Desv. Estándar (σ)</div>
         <div class="it-metric-val" id="it-std">—</div>
         <div class="it-metric-sub">Variabilidad del enlace</div>
-      </div>
-      <div class="it-metric">
-        <div class="it-metric-name">Coef. Variación</div>
-        <div class="it-metric-val" id="it-cv">—</div>
-        <div class="it-metric-sub">&lt;20% = estable · &gt;40% = inestable</div>
       </div>
       <div class="it-metric">
         <div class="it-metric-name">Muestras totales</div>
@@ -662,24 +657,14 @@
     <div class="it-section-title" style="margin-top:14px">Diagnóstico de calidad de enlace</div>
     <div class="it-diag" id="it-diag">
       <div class="it-diag-item">
-        <div class="it-diag-key">Estabilidad del enlace</div>
-        <div class="it-diag-val" id="diag-stability">—</div>
-        <div class="it-diag-note" id="diag-stability-note">—</div>
-      </div>
-      <div class="it-diag-item">
         <div class="it-diag-key">Eficiencia multi-hilo</div>
         <div class="it-diag-val" id="diag-multith">—</div>
         <div class="it-diag-note" id="diag-multith-note">—</div>
       </div>
       <div class="it-diag-item">
-        <div class="it-diag-key">Throughput final vs. pico</div>
+        <div class="it-diag-key">Throughput final vs. p90</div>
         <div class="it-diag-val" id="diag-peakratio">—</div>
         <div class="it-diag-note" id="diag-peakratio-note">—</div>
-      </div>
-      <div class="it-diag-item">
-        <div class="it-diag-key">Interpretación</div>
-        <div class="it-diag-val" id="diag-verdict" style="font-size:13px;">—</div>
-        <div class="it-diag-note" id="diag-verdict-note">—</div>
       </div>
     </div>
 
@@ -823,6 +808,12 @@ function updateITMetrics(finalMbps) {
   const std = Math.sqrt(variance);
   const cv = avg > 0 ? (std / avg) * 100 : 0;
 
+  function p90(arr) {
+    if (!arr.length) return 0;
+    const s = [...arr].sort((a,b) => a-b);
+    return s[Math.min(Math.floor(s.length * 0.9), s.length-1)];
+  }
+
   function f(n) {
     if (!n || n <= 0) return '—';
     const fmt = (val, dec) =>
@@ -833,15 +824,13 @@ function updateITMetrics(finalMbps) {
     return fmt(n, 3);
   }
 
-  $('it-peak').textContent    = f(mx) + ' Mbps';
+  const p90val = p90(allSamples);
+
+  $('it-peak').textContent    = f(p90val) + ' Mbps';
   $('it-avg').textContent     = f(avg) + ' Mbps';
   $('it-min').textContent     = f(mn) + ' Mbps';
   $('it-std').textContent     = f(std) + ' Mbps';
   $('it-samples').textContent = allSamples.length;
-
-  const cvEl = $('it-cv');
-  cvEl.textContent = cv.toLocaleString('es-CL', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
-  cvEl.className = 'it-metric-val ' + (cv < 20 ? 'good' : cv < 40 ? '' : cv < 60 ? 'warn' : 'bad');
 
   drawHistogram(allSamples);
 
@@ -865,40 +854,18 @@ function updateITMetrics(finalMbps) {
   });
 
   // Diagnostics
-  const stability = cv < 20 ? '✓ Estable' : cv < 40 ? '⚠ Moderada' : '✗ Inestable';
-  const stabilityNote = cv < 20
-    ? 'Enlace consistente entre rondas. Normal para WiFi6 / fibra.'
-    : cv < 40 ? 'Variabilidad moderada entre rondas. Puede ser congestión puntual o throttling TCP.'
-    : 'Alta variabilidad. Investigar interferencias, saturación o pérdida de paquetes.';
-
-  $('diag-stability').textContent = stability;
-  $('diag-stability').style.color = cv < 20 ? 'var(--accent)' : cv < 40 ? 'var(--warn)' : '#ff4444';
-  $('diag-stability-note').textContent = stabilityNote;
-
   const rounds = roundLog.length;
-  const speedupR1R3 = rounds >= 3 && roundLog[0].mbps > 0
+  const speedupR1Rn = rounds >= 2 && roundLog[0].mbps > 0
     ? (roundLog[rounds-1].mbps / roundLog[0].mbps).toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2}) + 'x'
     : '—';
-  $('diag-multith').textContent = speedupR1R3;
-  $('diag-multith-note').textContent = rounds >= 3
-    ? 'Ratio velocidad ronda 3 vs ronda 1. >1 = beneficio de más hilos paralelos.'
+  $('diag-multith').textContent = speedupR1Rn;
+  $('diag-multith-note').textContent = rounds >= 2
+    ? 'Ratio velocidad última ronda vs primera. >1 = beneficio de más hilos paralelos.'
     : 'Ejecute la prueba completa para ver este dato.';
 
-  const peakRatio = mx > 0 ? ((finalMbps / mx) * 100).toLocaleString('es-CL',{maximumFractionDigits:0}) + '%' : '—';
-  $('diag-peakratio').textContent = peakRatio;
-  $('diag-peakratio-note').textContent = 'Resultado final como porcentaje del pico observado. <85% puede indicar throttling.';
-
-  let verdict, verdictNote;
-  if (cv < 20 && finalMbps > mx * 0.80) {
-    verdict = '✓ Enlace sano'; verdictNote = 'Conexión estable y consistente entre rondas.';
-  } else if (cv < 40) {
-    verdict = '⚠ Revisar'; verdictNote = 'Variabilidad moderada. Puede ser normal en WiFi con otros dispositivos activos.';
-  } else {
-    verdict = '✗ Problema detectado'; verdictNote = 'Alta variabilidad entre rondas. Investigar interferencias o saturación del canal.';
-  }
-  $('diag-verdict').textContent = verdict;
-  $('diag-verdict').style.color = cv < 15 ? 'var(--accent)' : cv < 30 ? 'var(--warn)' : '#ff4444';
-  $('diag-verdict-note').textContent = verdictNote;
+  const p90ratio = p90val > 0 ? ((finalMbps / p90val) * 100).toLocaleString('es-CL',{maximumFractionDigits:0}) + '%' : '—';
+  $('diag-peakratio').textContent = p90ratio;
+  $('diag-peakratio-note').textContent = 'Resultado final como % del p90. Cercano a 100% = medición consistente.';
 }
 
 // ─── Gauge ─────────────────────────────────────────────────────────────────
@@ -1002,11 +969,11 @@ function updateITLive(latestMbps) {
   if (!allSamples.length) return;
   const sorted = [...allSamples].sort((a, b) => a - b);
   const mn = sorted[0];
-  const mx = sorted[sorted.length - 1];
   const avg = allSamples.reduce((a, b) => a + b, 0) / allSamples.length;
   const variance = allSamples.reduce((a, b) => a + (b - avg) ** 2, 0) / allSamples.length;
   const std = Math.sqrt(variance);
-  const cv = avg > 0 ? (std / avg) * 100 : 0;
+  const p90idx = Math.min(Math.floor(sorted.length * 0.9), sorted.length - 1);
+  const p90val = sorted[p90idx];
 
   function fl(n) {
     if (!n || n <= 0) return '—';
@@ -1018,42 +985,20 @@ function updateITLive(latestMbps) {
     return fmt(n, 3);
   }
 
-  $('it-peak').textContent    = fl(mx) + ' Mbps';
+  $('it-peak').textContent    = fl(p90val) + ' Mbps';
   $('it-avg').textContent     = fl(avg) + ' Mbps';
   $('it-min').textContent     = fl(mn) + ' Mbps';
   $('it-std').textContent     = fl(std) + ' Mbps';
   $('it-samples').textContent = allSamples.length;
 
-  const cvEl = $('it-cv');
-  cvEl.textContent = cv.toLocaleString('es-CL', {minimumFractionDigits:1, maximumFractionDigits:1}) + '%';
-  cvEl.className = 'it-metric-val ' + (cv < 20 ? 'good' : cv < 40 ? '' : cv < 60 ? 'warn' : 'bad');
-
-  // Draw live histogram
   drawHistogram(allSamples);
 
-  // Live stability diagnosis
-  const stability = cv < 20 ? '✓ Estable' : cv < 40 ? '⚠ Moderada' : '✗ Inestable';
-  $('diag-stability').textContent = stability;
-  $('diag-stability').style.color = cv < 20 ? 'var(--accent)' : cv < 40 ? 'var(--warn)' : '#ff4444';
-  $('diag-stability-note').textContent = cv < 20
-    ? 'Enlace consistente. Normal para WiFi6 / fibra.'
-    : cv < 40 ? 'Variabilidad moderada. Puede ser congestión puntual.'
-    : 'Alta variabilidad. Investigar interferencias o saturación.';
-
-  $('diag-peakratio').textContent = mx > 0 ? ((latestMbps / mx) * 100).toLocaleString('es-CL',{maximumFractionDigits:0}) + '%' : '—';
-  $('diag-peakratio-note').textContent = 'Velocidad actual vs pico observado. En tiempo real.';
+  $('diag-peakratio').textContent = p90val > 0 ? ((latestMbps / p90val) * 100).toLocaleString('es-CL',{maximumFractionDigits:0}) + '%' : '—';
+  $('diag-peakratio-note').textContent = 'Velocidad actual vs p90. En tiempo real.';
   $('diag-multith').textContent = roundLog.length >= 2
     ? (roundLog[roundLog.length-1].mbps / roundLog[0].mbps).toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2}) + 'x'
     : '...midiendo';
   $('diag-multith-note').textContent = 'Ratio velocidad última ronda vs primera. >1 = beneficio de más hilos.';
-
-  let verdict;
-  if (cv < 20 && latestMbps > mx * 0.80) { verdict = '✓ Enlace sano'; }
-  else if (cv < 40) { verdict = '⚠ Revisar'; }
-  else { verdict = '✗ Problema detectado'; }
-  $('diag-verdict').textContent = verdict;
-  $('diag-verdict').style.color = cv < 15 ? 'var(--accent)' : cv < 30 ? 'var(--warn)' : '#ff4444';
-  $('diag-verdict-note').textContent = '⟳ Actualizando en tiempo real...';
 }
 
 // ─── Smoothing buffer for main display ────────────────────────────────────
@@ -1169,15 +1114,13 @@ async function runTest() {
   $('fullgrid-header').classList.add('hidden');
   $('fullgrid').classList.add('hidden');
   $('progwrap').classList.add('visible');
-  // Show gauge live during test (don't hide it)
-  $('gauge-outer').style.display = '';
-  $('gmode').style.display = '';
+  // Hide everything except progress bar during test
+  $('gauge-outer').style.display = 'none';
+  $('gmode').style.display = 'none';
+  $('graphwrap').classList.add('hidden');
+  $('statusmsg').classList.add('hidden');
   $('measuring-anim').classList.remove('active');
-  $('graphwrap').classList.remove('hidden');
-  $('gnum').textContent = '0';
-  $('gmode').textContent = '↓ MIDIENDO...';
-  $('statusmsg').classList.remove('hidden');
-  $('statusmsg').classList.add('pulsing');
+  $('progwrap').classList.add('visible');
   setProgress(0, 'Preparando');
   await sleep(300);
 
@@ -1238,10 +1181,10 @@ async function runTest() {
   const ulEstimate = dlFinal * (0.1 + Math.random() * 0.2);
 
   setProgress(100, 'Completado');
-  // Hide animation, show gauge with final result
-  $('measuring-anim').classList.remove('active');
+  // Restore gauge and graph
   $('gauge-outer').style.display = '';
   $('gmode').style.display = '';
+  $('graphwrap').classList.remove('hidden');
   setGauge(dlFinal);
   updateUnits(dlFinal);
 
