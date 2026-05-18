@@ -713,6 +713,7 @@ let peakMbps = 0;
 // IT Pro state
 const allSamples = [];    // all mbps readings
 const roundLog = [];      // {round, threads, mbps, ms}
+const activeXhrs = [];    // in-flight XHRs, for abort
 
 // ─── IT Panel toggle ───────────────────────────────────────────────────────
 function toggleIT() {
@@ -949,6 +950,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function fetchMbps(url, onProgress) {
   return new Promise(resolve => {
     const xhr = new XMLHttpRequest();
+    activeXhrs.push(xhr);
     xhr.open('GET', url, true);
     xhr.responseType = 'arraybuffer';
     const t0 = performance.now();
@@ -966,14 +968,21 @@ function fetchMbps(url, onProgress) {
       }
     };
 
+    const cleanup = () => {
+      const i = activeXhrs.indexOf(xhr);
+      if (i !== -1) activeXhrs.splice(i, 1);
+    };
+
     xhr.onload = () => {
+      cleanup();
       const ms = performance.now() - t0;
       const bytes = xhr.response ? xhr.response.byteLength : 0;
       if (bytes > 0 && ms > 50) resolve({ mbps: (bytes * 8) / (ms / 1000) / 1e6, ms });
       else resolve(null);
     };
-    xhr.onerror = () => resolve(null);
-    xhr.ontimeout = () => resolve(null);
+    xhr.onerror   = () => { cleanup(); resolve(null); };
+    xhr.ontimeout = () => { cleanup(); resolve(null); };
+    xhr.onabort   = () => { cleanup(); resolve(null); };
     xhr.timeout = 30000;
     xhr.send();
   });
@@ -1057,6 +1066,7 @@ async function runTest() {
   chartData.length = 0;
   allSamples.length = 0;
   roundLog.length = 0;
+  activeXhrs.length = 0;
 
   $('btnstart').classList.add('hidden');
   $('btnstop').classList.remove('hidden');
@@ -1105,10 +1115,6 @@ async function runTest() {
     const pct = (r / testGroups.length) * 90;
     const label = warmup ? `Ronda ${r+1} — calentamiento TCP` : `Ronda ${r+1}/${testGroups.length} — ${threads} hilos`;
     setProgress(pct, label);
-    $('statusmsg').textContent = warmup
-      ? `Calentando enlace (${threads} hilos)...`
-      : `Ronda ${r+1}: ${threads} hilos paralelos — midiendo velocidad agregada...`;
-    $('gmode').textContent = `↓  ${threads} HILOS PARALELOS`;
 
     const t0 = performance.now();
     const { aggregatedMbps, results } = await runParallel(urls);
@@ -1175,7 +1181,12 @@ async function runTest() {
   $('statusmsg').textContent = 'Prueba completada. Resultado: percentil 90 de las rondas de medición.';
 }
 
-function doStop() { aborted = true; }
+function doStop() {
+  aborted = true;
+  // Abort all in-flight XHRs immediately
+  activeXhrs.forEach(x => { try { x.abort(); } catch(e){} });
+  activeXhrs.length = 0;
+}
 
 function finishStop() {
   $('btnstop').classList.add('hidden');
