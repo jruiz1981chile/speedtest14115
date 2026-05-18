@@ -912,41 +912,48 @@ function fetchMbps(url, onProgress) {
 // Ejecuta N descargas en paralelo midiendo velocidad TOTAL agregada en tiempo real
 function runParallel(urls) {
   return new Promise(resolve => {
-    // Estado compartido entre hilos
-    const bytesPerHilo = new Array(urls.length).fill(0);
-    const lastBytesPerHilo = new Array(urls.length).fill(0);
-    let lastAggTime = performance.now();
-    let aggBytes = 0;     // bytes acumulados entre ticks
+    const t0 = performance.now();
+    let totalBytesReceived = 0;  // bytes acumulados de TODOS los hilos
+    let lastTickBytes = 0;
+    let lastTickTime = t0;
     let aggInterval = null;
 
-    // Ticker cada 150ms agrega bytes de todos los hilos y actualiza gauge
+    // Ticker cada 150ms: calcula Mbps = (bytes nuevos desde el tick anterior) / dt
     aggInterval = setInterval(() => {
       const now = performance.now();
-      const dt = now - lastAggTime;
-      if (dt > 0 && aggBytes > 0) {
-        const mbps = (aggBytes * 8) / (dt / 1000) / 1e6;
+      const dt = now - lastTickTime;
+      const newBytes = totalBytesReceived - lastTickBytes;
+      if (dt > 0 && newBytes > 0) {
+        const mbps = (newBytes * 8) / (dt / 1000) / 1e6;
         if (mbps > 0.05 && mbps < 100000) {
           setGauge(mbps);
           updateUnits(mbps);
           drawChart(mbps);
         }
-        aggBytes = 0;
-        lastAggTime = now;
       }
+      lastTickBytes = totalBytesReceived;
+      lastTickTime = now;
     }, 150);
 
-    const results = [];
     let done = 0;
+    const results = new Array(urls.length).fill(null);
 
     urls.forEach((url, i) => {
       fetchMbps(url, (bytes) => {
-        aggBytes += bytes;
+        // Acumular bytes de todos los hilos en un solo contador
+        totalBytesReceived += bytes;
       }).then(res => {
         results[i] = res;
         done++;
         if (done === urls.length) {
           clearInterval(aggInterval);
-          resolve(results);
+          // Resultado final: bytes totales de todos los hilos / tiempo total transcurrido
+          const totalMs = performance.now() - t0;
+          const totalBytes = results
+            .filter(r => r)
+            .reduce((sum, r) => sum + (r.mbps * r.ms / 1000 / 8 * 1e6), 0);
+          const aggregatedMbps = (totalBytes * 8) / (totalMs / 1000) / 1e6;
+          resolve({ aggregatedMbps, results });
         }
       });
     });
@@ -1029,19 +1036,16 @@ async function runTest() {
     $('gmode').textContent = `↓  ${threads} HILOS PARALELOS`;
 
     const t0 = performance.now();
-    const results = await runParallel(urls);
+    const { aggregatedMbps, results } = await runParallel(urls);
     const totalMs = performance.now() - t0;
 
-    const valid = results.filter(v => v && v.mbps > 0.1 && v.mbps < 100000);
-    if (valid.length > 0) {
-      // Suma total de todos los hilos = ancho de banda real del enlace
-      const totalMbps = valid.reduce((a, b) => a + b.mbps, 0);
-      roundResults.push(totalMbps);
-      roundLog.push({ round: r+1, threads, mbps: totalMbps, ms: totalMs, warmup });
-      if (!warmup) measureSamples.push(totalMbps);
-      setGauge(totalMbps);
-      updateUnits(totalMbps);
-      drawChart(totalMbps);
+    if (aggregatedMbps > 0.1 && aggregatedMbps < 100000) {
+      roundResults.push(aggregatedMbps);
+      roundLog.push({ round: r+1, threads, mbps: aggregatedMbps, ms: totalMs, warmup });
+      if (!warmup) measureSamples.push(aggregatedMbps);
+      setGauge(aggregatedMbps);
+      updateUnits(aggregatedMbps);
+      drawChart(aggregatedMbps);
     }
 
     setProgress(((r+1) / testGroups.length) * 90, `Ronda ${r+1} completada`);
