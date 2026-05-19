@@ -1,8 +1,9 @@
 
+```html
 <!DOCTYPE html>
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>..:Speedtest 14115:..</title>
+<title>..Speedtest 14115..</title>
 <link href="./SPEEDTEST 14115 EN NEON, FALTA CORREGIR ALGO DE MEDICION_files/css2" rel="stylesheet">
 <style>
 :root {
@@ -68,18 +69,18 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
 
-/* GAUGE - velocímetro grande fijo */
-#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.4em;gap:0.2em;position:relative;overflow:hidden;}
+/* GAUGE */
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.3em;gap:0.15em;position:relative;overflow:hidden;}
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
-#gauge-wrap{position:relative;width:min(38vw,42vh,300px);aspect-ratio:1;flex-shrink:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(55vw,28vh,260px);}}
+#gauge-wrap{position:relative;width:min(44vw,52vh,360px);aspect-ratio:1;flex-shrink:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(62vw,32vh,300px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(28px,5vw,52px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(20px,3.2vw,36px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 25px var(--neon-ul),0 0 50px rgba(191,0,255,0.3);}
-#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(10px,1.2vw,14px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.15em;}
-#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,1vw,13px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.08em;}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(9px,1vw,12px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.1em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.05em;}
 #status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,13px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
@@ -169,23 +170,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes neon-flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:0.4;}94%{opacity:1;}96%{opacity:0.6;}97%{opacity:1;}}
 
 @media (orientation:portrait) {
-  #units-card-body {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25em;
-    padding: 0.3em;
-  }
-  .urow {
-    padding: 0.2em 0.3em 0.2em 0.45em;
-    overflow: visible;
-  }
+  #units-card-body { grid-template-columns: 1fr 1fr; gap: 0.25em; padding: 0.3em; }
+  .urow { padding: 0.2em 0.3em 0.2em 0.45em; overflow: visible; }
   .urow-sym { font-size: 11px; }
   .urow-eq { font-size: 8px; }
-  .urow-val {
-    font-size: 15px;
-    overflow: visible;
-    white-space: nowrap;
-    word-break: keep-all;
-  }
+  .urow-val { font-size: 15px; overflow: visible; white-space: nowrap; word-break: keep-all; }
   .urow-desc { display: none; }
   .units-note-row .unote { font-size: 8px; }
 }
@@ -366,7 +355,6 @@ const UL_URL = 'https://speed.cloudflare.com/__up';
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
-// Formato fijo odómetro: "0000.0" siempre mismo ancho
 function formatFixed(mbps) {
   if (mbps <= 0) return '000.0';
   const val = Math.min(mbps, 9999.9);
@@ -484,10 +472,8 @@ function setStatus(txt, prog){
 
 function measureDownloadRound(numThreads, roundDurationMs) {
   return new Promise((resolve) => {
-    let totalBytesReceived = 0;
-    let finished = false;
-    const startTime = performance.now();
-    const abortControllers = [];
+    let totalBytesReceived = 0, finished = false;
+    const startTime = performance.now(), abortControllers = [];
     let activeThreads = 0;
     const DISCARD_MS = 1500;
     let steadyStartTime = 0, steadyStartBytes = 0, steadyStateReached = false;
@@ -709,3 +695,9 @@ drawChart();
 </script>
 
 </body></html>
+```
+
+**Cambios:**
+- **Gauge mucho más grande:** Landscape `min(44vw, 52vh, 360px)`, Portrait `min(62vw, 32vh, 300px)`
+- **Contador más pequeño dentro:** `clamp(20px, 3.2vw, 36px)` — cabe perfectamente dentro del arco del gauge sin salirse
+- El número `000.0` + `Mbps` + `↓ DL` quedan todos centrados dentro del círculo del velocímetro, como el odómetro de un auto
