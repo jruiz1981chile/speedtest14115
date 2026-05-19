@@ -1,478 +1,663 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SPEEDTEST 14115</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0a0f;--bg2:#0f0f1a;--bg3:#13131f;--border:#1e1e3a;--accent:#4f8ef7;--accent2:#7c4fff;--red:#ff5252;--text:#e8e8f0;--text2:#8888aa;--text3:#555577;--font:'Space Mono','Courier New',monospace;--font2:'Syne',sans-serif}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:clamp(10px,1.2vw,14px)}
-.app{width:100dvw;height:100dvh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden}
-.app-header{display:flex;align-items:center;justify-content:space-between;padding:.4em 1.2em;background:var(--bg2);border-bottom:1px solid var(--border)}
-.app-header h1{font-family:var(--font2);font-size:clamp(12px,1.5vw,18px);letter-spacing:.3em;color:var(--accent);font-weight:800}
-.app-header .subtitle{font-size:clamp(8px,.85vw,10px);color:var(--text2);letter-spacing:.12em}
-.app-main{display:grid;grid-template-columns:1fr 1fr;gap:.6em;padding:.6em;overflow:hidden;min-height:0}
-.col-left{display:grid;grid-template-rows:1fr auto auto;gap:.5em;min-height:0;overflow:hidden}
-.col-right{display:grid;grid-template-rows:auto 1fr;gap:.5em;min-height:0;overflow:hidden}
-.app-footer{display:flex;align-items:center;justify-content:space-between;padding:.3em 1.2em;background:var(--bg2);border-top:1px solid var(--border);font-size:clamp(8px,.8vw,10px);color:var(--text2)}
-.panel{background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-.panel-label{font-size:clamp(7px,.8vw,9px);letter-spacing:.25em;color:var(--text2);padding:.35em .8em;border-bottom:1px solid var(--border);background:var(--bg3);flex-shrink:0}
-.panel-body{flex:1;display:flex;align-items:center;justify-content:center;padding:.5em;min-height:0;overflow:hidden}
-.gauge-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:.4em}
-.gauge-arc-container{position:relative;width:min(100%,26dvh);aspect-ratio:1;flex-shrink:0}
-.gauge-arc-container svg{width:100%;height:100%}
-.gauge-center-value{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.gauge-number{font-family:var(--font2);font-size:clamp(16px,4dvh,40px);font-weight:800;color:var(--accent);line-height:1}
-.gauge-unit{font-size:clamp(8px,1.1dvh,12px);color:var(--text2);letter-spacing:.2em;margin-top:.2em}
-.gauge-status{font-size:clamp(8px,1dvh,11px);color:var(--text2);letter-spacing:.15em;text-align:center}
-.progress-panel .panel-body{flex-direction:column;gap:.4em;align-items:stretch;padding:.6em .8em}
-.progress-label-row{display:flex;justify-content:space-between;font-size:clamp(7px,.85vw,9px);color:var(--text2);letter-spacing:.1em}
-.progress-bar-outer{height:clamp(5px,.9dvh,10px);background:var(--bg3);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
-.progress-bar-inner{height:100%;width:0%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;transition:width .3s ease}
-.realtime-row{display:flex;align-items:center;gap:.5em;font-size:clamp(7px,.8vw,9px);color:var(--text2);letter-spacing:.1em}
-.realtime-spark{flex:1;height:clamp(18px,2.8dvh,32px);background:var(--bg3);border-radius:3px;border:1px solid var(--border);overflow:hidden;position:relative}
-.realtime-spark canvas{width:100%;height:100%}
-.controls-panel .panel-body{flex-direction:column;gap:.5em;padding:.5em .8em}
-.btn-row{display:flex;gap:.5em;width:100%}
-.btn{flex:1;padding:.5em .8em;border:1px solid var(--border);border-radius:4px;background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:clamp(8px,.95vw,11px);letter-spacing:.12em;cursor:pointer;transition:all .15s;text-align:center}
-.btn:hover{border-color:var(--accent);color:var(--text)}
-.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold}
-.btn-primary:hover{background:#6fa3ff}
-.btn-stop{background:transparent;border-color:var(--red);color:var(--red)}
-.btn-stop:hover{background:var(--red);color:#fff}
-.mode-row{display:flex;gap:.4em;width:100%}
-.btn-mode{flex:1;padding:.3em .5em;font-size:clamp(7px,.8vw,9px);border:1px solid var(--border);border-radius:3px;background:var(--bg3);color:var(--text2);font-family:var(--font);cursor:pointer;transition:all .15s;text-align:center;letter-spacing:.1em}
-.btn-mode.active,.btn-mode:hover{border-color:var(--accent2);color:var(--accent2)}
-.hint-text{font-size:clamp(6px,.75vw,8px);color:var(--text3);text-align:center;letter-spacing:.08em}
-.results-bar{display:grid;grid-template-columns:1fr 1fr;gap:.5em;flex-shrink:0}
-.result-box{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.5em .8em;display:flex;flex-direction:column;align-items:center;gap:.15em}
-.result-box-label{font-size:clamp(7px,.75vw,9px);letter-spacing:.2em;color:var(--text2)}
-.result-box-value{font-family:var(--font2);font-size:clamp(14px,2.8dvh,30px);font-weight:800;color:var(--accent);line-height:1}
-.result-box-value.upload{color:var(--accent2)}
-.result-box-unit{font-size:clamp(7px,.75vw,9px);color:var(--text2);letter-spacing:.15em}
-.units-panel{flex:1;min-height:0}
-.units-panel .panel-body{align-items:stretch;padding:.3em .4em;overflow:hidden}
-.units-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:.35em;width:100%;height:100%}
-.unit-cell{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:.25em .5em;display:flex;flex-direction:column;justify-content:center;gap:.08em;min-height:0;overflow:hidden}
-.unit-cell-name{display:flex;align-items:baseline;gap:.35em}
-.unit-cell-abbr{font-size:clamp(8px,1vw,12px);font-weight:bold;color:var(--accent);letter-spacing:.05em}
-.unit-cell-eq{font-size:clamp(6px,.7vw,8px);color:var(--text2)}
-.unit-cell-value{font-family:var(--font2);font-size:clamp(10px,1.3vw,15px);font-weight:700;color:var(--text);line-height:1}
-.unit-cell-desc{font-size:clamp(6px,.65vw,7px);color:var(--text2);line-height:1.2}
-.diag-toggle{background:none;border:none;color:var(--text2);font-family:var(--font);font-size:clamp(7px,.8vw,9px);letter-spacing:.15em;cursor:pointer;display:flex;align-items:center;gap:.4em;padding:0;transition:color .15s}
-.diag-toggle:hover{color:var(--accent)}
-.diag-arrow{transition:transform .2s;display:inline-block}
-.diag-overlay{position:fixed;bottom:0;left:0;right:0;max-height:0;overflow:hidden;background:var(--bg2);border-top:2px solid var(--border);transition:max-height .3s ease;z-index:100}
-.diag-overlay.open{max-height:42dvh;overflow-y:auto}
-.diag-inner{padding:.7em 1.2em 1em;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6em}
-.diag-section-title{font-size:clamp(7px,.8vw,9px);letter-spacing:.2em;color:var(--text2);border-bottom:1px solid var(--border);padding-bottom:.3em;margin-bottom:.2em;grid-column:1/-1}
-.diag-metric{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:.4em .7em;display:flex;flex-direction:column;gap:.12em}
-.diag-metric-label{font-size:clamp(6px,.7vw,8px);color:var(--text2);letter-spacing:.12em}
-.diag-metric-value{font-family:var(--font2);font-size:clamp(11px,1.4vw,15px);font-weight:700;color:var(--accent)}
-.diag-metric-sub{font-size:clamp(6px,.65vw,7px);color:var(--text2)}
-.diag-overlay::-webkit-scrollbar{width:3px}
-.diag-overlay::-webkit-scrollbar-track{background:var(--bg3)}
-.diag-overlay::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.measuring .gauge-number{animation:pulse 1s ease-in-out infinite}
-@media(orientation:portrait){
-.app-main{grid-template-columns:1fr;grid-template-rows:1fr auto}
-.col-left{grid-template-rows:1fr auto auto}
-.col-right{grid-template-rows:auto auto}
-.gauge-arc-container{width:min(100%,20dvh)}
-.units-grid{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr)}
+:root {
+  --bg:#050508;--surface:#0d0d14;--surface2:#13131e;--border:#1e1e32;
+  --accent:#00ffe0;--accent2:#00bfaa;--neon-dl:#00ffe0;--neon-ul:#bf00ff;
+  --neon-y:#ffe000;--neon-o:#ff6a00;--neon-p:#ff00aa;--text:#e8e8ff;
+  --text-dim:#55556a;--text-mid:#9090b0;--danger:#ff2244;--ok:#00ffe0;
 }
-@media(max-height:480px) and (orientation:landscape){
-.app-header{padding:.2em .8em}
-.app-footer{padding:.2em .8em}
-.app-main{gap:.3em;padding:.3em}
-.gauge-arc-container{width:min(100%,16dvh)}
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
+#app{width:100vw;height:100vh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;}
+#header{display:flex;align-items:center;justify-content:space-between;padding:0.4em 1.2em;border-bottom:1px solid var(--border);background:linear-gradient(90deg,#0d0d14 0%,#0a0a16 50%,#0d0d14 100%);flex-shrink:0;gap:0.8em;}
+#header-left h1{font-family:'Orbitron',monospace;font-size:clamp(14px,2.2vw,26px);font-weight:900;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.18em;line-height:1;animation:neon-flicker 6s ease-in-out infinite;}
+#header-left .subtitle{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,1vw,12px);color:var(--text-dim);letter-spacing:0.12em;margin-top:0.15em;}
+.hdr-btn{padding:0.35em 0.9em;border-radius:3px;font-family:'Orbitron',monospace;font-size:clamp(8px,0.9vw,11px);font-weight:700;letter-spacing:0.1em;cursor:pointer;background:transparent;transition:all 0.18s;white-space:nowrap;}
+.hdr-btn-units{border:1px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 8px var(--neon-dl);}
+.hdr-btn-units:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 18px var(--neon-dl);}
+.hdr-btn-diag{border:1px solid var(--neon-ul);color:var(--neon-ul);text-shadow:0 0 8px var(--neon-ul);}
+.hdr-btn-diag:hover{background:var(--neon-ul);color:#fff;box-shadow:0 0 18px var(--neon-ul);}
+#main{display:grid;gap:0.55em;padding:0.55em;overflow:hidden;min-height:0;}
+@media(orientation:landscape){#main{grid-template-columns:1fr 1.5fr 1fr;grid-template-rows:1fr;}}
+@media(orientation:portrait){#main{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;}}
+.col{display:flex;flex-direction:column;gap:0.5em;overflow:hidden;min-height:0;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6em 0.8em;flex-shrink:0;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3;}
+.card.grow{flex:1;min-height:0;}
+.card-label{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.35em;}
+#results-bar{display:flex;gap:0.5em;flex-shrink:0;}
+.res-box{flex:1;background:var(--surface2);border-radius:6px;padding:0.5em 0.6em;text-align:center;position:relative;overflow:hidden;}
+.res-box-dl{border:2px solid var(--neon-dl);box-shadow:0 0 18px rgba(0,255,224,0.18),inset 0 0 20px rgba(0,255,224,0.04);}
+.res-box-ul{border:2px solid var(--neon-ul);box-shadow:0 0 18px rgba(191,0,255,0.18),inset 0 0 20px rgba(191,0,255,0.04);}
+.res-arrow{font-family:'Orbitron',monospace;font-size:clamp(10px,1.3vw,15px);font-weight:900;letter-spacing:0.1em;margin-bottom:0.1em;}
+.res-arrow-dl{color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);}
+.res-arrow-ul{color:var(--neon-ul);text-shadow:0 0 10px var(--neon-ul);}
+.res-val{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,46px);font-weight:900;line-height:1;letter-spacing:-0.02em;}
+.res-val-dl{color:var(--neon-dl);text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.4);}
+.res-val-ul{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.4);}
+.res-unit{font-family:'Orbitron',monospace;font-size:clamp(9px,1.1vw,13px);font-weight:700;letter-spacing:0.12em;margin-top:0.1em;}
+.res-unit-dl{color:var(--accent2);}
+.res-unit-ul{color:#9900cc;}
+#mode-tabs{display:flex;gap:0.4em;flex-shrink:0;}
+.tab{flex:1;padding:0.4em 0.3em;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:clamp(8px,0.95vw,11px);font-weight:700;letter-spacing:0.08em;cursor:pointer;border-radius:4px;transition:all 0.18s;text-align:center;line-height:1.3;}
+.tab.active{border-color:var(--neon-y);color:var(--neon-y);background:rgba(255,224,0,0.06);box-shadow:0 0 12px rgba(255,224,0,0.15);text-shadow:0 0 8px var(--neon-y);}
+.tab:not(.active):hover{border-color:var(--text-mid);color:var(--text-mid);}
+#units-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+#units-card-header{display:flex;align-items:center;justify-content:space-between;padding:0.4em 0.7em;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;flex-shrink:0;}
+#units-card-header .uch-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.15em;}
+#units-card-toggle{font-family:'Orbitron',monospace;font-size:clamp(9px,1vw,12px);color:var(--neon-dl);font-weight:700;transition:transform 0.2s;}
+#units-card-body{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;padding:0.45em;overflow-y:auto;flex:1;min-height:0;}
+.urow{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.45em;position:relative;overflow:hidden;}
+.urow::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;}
+.urow-c0::after{background:var(--neon-dl);}
+.urow-c1::after{background:var(--neon-ul);}
+.urow-c2::after{background:var(--neon-y);}
+.urow-c3::after{background:var(--neon-o);}
+.urow-c4::after{background:var(--neon-p);}
+.urow-c5::after{background:#44aaff;}
+.urow-sym{font-family:'Orbitron',monospace;font-size:clamp(9px,1.1vw,13px);font-weight:700;letter-spacing:0.05em;}
+.urow-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.75vw,9px);color:var(--text-dim);margin-left:0.3em;}
+.urow-val{font-family:'Orbitron',monospace;font-size:clamp(11px,1.4vw,17px);font-weight:900;color:var(--text);line-height:1.2;margin:0.12em 0;letter-spacing:-0.01em;}
+.urow-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;line-height:1.25;}
+.units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
+.units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.5em 0.6em;gap:0.3em;position:relative;overflow:hidden;}
+#gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
+#gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
+#gauge-wrap{position:relative;width:min(22vw,22vh,190px);aspect-ratio:1;flex-shrink:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(30vw,16vh,130px);}}
+#gauge-svg{width:100%;height:100%;}
+#gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,4vw,40px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
+#gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(7px,0.9vw,11px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.1em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.95vw,12px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.08em;}
+#status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1vw,13px);color:var(--text-mid);text-align:center;min-height:1.5em;letter-spacing:0.08em;flex-shrink:0;}
+#progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
+#progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
+#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;}
+.big-btn{padding:0.5em 1.2em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(10px,1.2vw,15px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
+#btn-start{background:transparent;border:2px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);box-shadow:0 0 14px rgba(0,255,224,0.2);}
+#btn-start:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 28px var(--neon-dl);}
+#btn-stop{background:transparent;border:2px solid var(--danger);color:var(--danger);text-shadow:0 0 10px var(--danger);display:none;}
+#btn-stop:hover{background:var(--danger);color:#fff;box-shadow:0 0 22px var(--danger);}
+#chart-card{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.3em 0.6em;display:flex;flex-direction:column;min-height:0;}
+#chart-label{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.82vw,10px);color:var(--text-dim);letter-spacing:0.12em;margin-bottom:0.2em;flex-shrink:0;}
+#chart-canvas{flex:1;width:100%;height:clamp(22px,4vh,42px);display:block;}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;}
+.m-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.5em;text-align:center;}
+.m-cell .mc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;}
+.m-cell .mc-val{font-family:'Orbitron',monospace;font-size:clamp(12px,1.6vw,20px);font-weight:900;margin:0.08em 0;letter-spacing:-0.01em;}
+.m-cell .mc-unit{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;}
+.mc-c0{color:var(--neon-dl);text-shadow:0 0 10px rgba(0,255,224,0.4);}
+.mc-c1{color:var(--neon-y);text-shadow:0 0 10px rgba(255,224,0,0.3);}
+.mc-c2{color:var(--neon-o);text-shadow:0 0 10px rgba(255,106,0,0.3);}
+.mc-c3{color:var(--neon-p);text-shadow:0 0 10px rgba(255,0,170,0.3);}
+#histo-canvas{width:100%;height:clamp(28px,5vh,50px);display:block;}
+#rounds-scroll{overflow-y:auto;flex:1;min-height:0;}
+#rounds-placeholder{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);font-style:italic;padding:0.3em 0;letter-spacing:0.08em;}
+#rounds-table{display:none;width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.88vw,11px);}
+#rounds-table th{padding:0.22em 0.4em;text-align:left;color:var(--text-dim);border-bottom:1px solid var(--border);font-weight:normal;letter-spacing:0.1em;font-family:'Orbitron',monospace;font-size:clamp(7px,0.78vw,9px);}
+#rounds-table td{padding:0.2em 0.4em;color:var(--text-mid);border-bottom:1px solid rgba(30,30,50,0.7);}
+.diag-link-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;}
+.dl-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.5em;text-align:center;}
+.dl-cell .dlc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);letter-spacing:0.1em;}
+.dl-cell .dlc-val{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,18px);font-weight:900;color:var(--neon-y);text-shadow:0 0 10px rgba(255,224,0,0.3);margin:0.08em 0;}
+.dl-cell .dlc-sub{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;}
+#footer{border-top:1px solid var(--border);background:var(--surface);padding:0.25em 1.2em;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:1em;}
+#footer p{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);line-height:1.5;flex:1;letter-spacing:0.05em;}
+#footer .f-right{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);text-align:right;white-space:nowrap;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--surface);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;max-height:88vh;}
+#units-modal .modal-box{width:min(94vw,520px);border:1px solid var(--neon-dl);box-shadow:0 0 40px rgba(0,255,224,0.15);}
+#diag-modal .modal-box{width:min(96vw,600px);border:1px solid var(--neon-ul);box-shadow:0 0 40px rgba(191,0,255,0.15);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:0.6em 1em;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-head-title{font-family:'Orbitron',monospace;font-size:clamp(10px,1.3vw,15px);font-weight:900;letter-spacing:0.14em;}
+#units-modal .modal-head-title{color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);}
+#diag-modal .modal-head-title{color:var(--neon-ul);text-shadow:0 0 10px var(--neon-ul);}
+.modal-close-btn{background:transparent;border:1px solid var(--danger);color:var(--danger);font-family:'Orbitron',monospace;font-size:clamp(8px,1vw,12px);font-weight:700;padding:0.25em 0.7em;border-radius:3px;cursor:pointer;letter-spacing:0.1em;transition:all 0.15s;}
+.modal-close-btn:hover{background:var(--danger);color:#fff;box-shadow:0 0 14px var(--danger);}
+#um-body{display:grid;grid-template-columns:1fr 1fr;gap:0.5em;padding:0.7em;overflow-y:auto;flex:1;}
+.um-row{background:var(--surface2);border-radius:5px;padding:0.55em 0.7em;position:relative;overflow:hidden;}
+.um-row::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.um-c0::after{background:var(--neon-dl);}
+.um-c1::after{background:var(--neon-ul);}
+.um-c2::after{background:var(--neon-y);}
+.um-c3::after{background:var(--neon-o);}
+.um-c4::after{background:var(--neon-p);}
+.um-c5::after{background:#44aaff;}
+.um-sym{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,17px);font-weight:900;letter-spacing:0.05em;}
+.um-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.85vw,10px);color:var(--text-dim);margin-left:0.4em;}
+.um-val{font-family:'Orbitron',monospace;font-size:clamp(15px,2vw,24px);font-weight:900;color:var(--text);line-height:1.15;margin:0.15em 0;letter-spacing:-0.01em;}
+.um-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(9px,0.95vw,12px);color:var(--text-dim);font-weight:600;line-height:1.3;}
+#um-note{grid-column:1/-1;font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,10px);color:var(--text-dim);padding:0.5em 0.7em;border-top:1px solid var(--border);line-height:1.65;}
+#dm-body{padding:0.7em;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:0.6em;}
+.dm-subtitle{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.1em;}
+.dm-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4em;}
+.dm-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.4em 0.5em;text-align:center;}
+.dm-cell .dmc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,9px);color:var(--text-dim);letter-spacing:0.1em;}
+.dm-cell .dmc-val{font-family:'Orbitron',monospace;font-size:clamp(14px,1.8vw,22px);font-weight:900;margin:0.1em 0;}
+.dm-cell .dmc-unit{font-family:'Rajdhani',sans-serif;font-size:clamp(8px,0.85vw,10px);color:var(--text-dim);font-weight:600;}
+.dmc-c0{color:var(--neon-dl);}
+.dmc-c1{color:var(--neon-y);}
+.dmc-c2{color:var(--neon-o);}
+.dmc-c3{color:var(--neon-p);}
+.dmc-c4{color:#44aaff;}
+.dmc-c5{color:var(--neon-ul);}
+.dm-sec-label{font-family:'Orbitron',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.14em;margin-bottom:0.25em;}
+#dm-histo{width:100%;height:clamp(40px,7vh,65px);display:block;background:var(--surface2);border:1px solid var(--border);border-radius:3px;}
+#dm-rounds-placeholder{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);font-style:italic;letter-spacing:0.08em;}
+#dm-rounds-table{display:none;width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);}
+#dm-rounds-table th{padding:0.25em 0.4em;text-align:left;color:var(--text-dim);border-bottom:1px solid var(--border);font-family:'Orbitron',monospace;font-size:clamp(7px,0.8vw,9px);font-weight:700;letter-spacing:0.1em;}
+#dm-rounds-table td{padding:0.22em 0.4em;color:var(--text-mid);border-bottom:1px solid rgba(30,30,50,0.7);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:#1e1e32;border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-dim);}
+@keyframes pulse-glow{0%,100%{opacity:1;}50%{opacity:0.55;}}
+.pulsing{animation:pulse-glow 0.9s ease-in-out infinite;}
+@keyframes neon-flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:0.4;}94%{opacity:1;}96%{opacity:0.6;}97%{opacity:1;}}
 </style>
 </head>
 <body>
-<div class="app" id="app">
-<header class="app-header">
-<h1>SPEEDTEST 14115</h1>
-<span class="subtitle">descargas paralelas · todas las unidades · resultados claros</span>
+<div id="app">
+
+<header id="header">
+  <div id="header-left">
+    <h1>⚡ SPEEDTEST 14115</h1>
+    <div class="subtitle">descargas paralelas · todas las unidades · resultados claros</div>
+  </div>
+  <div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;">
+    <button class="hdr-btn hdr-btn-units" id="btn-units-open">📊 UNIDADES</button>
+    <button class="hdr-btn hdr-btn-diag" id="btn-diag-open">⚙ DIAGNÓSTICO</button>
+  </div>
 </header>
-<main class="app-main">
-<div class="col-left">
-<div class="panel gauge-panel" id="gauge-panel">
-<div class="panel-label">↓ VELOCIDAD DE DESCARGA</div>
-<div class="panel-body">
-<div class="gauge-wrap">
-<div class="gauge-arc-container">
-<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-<stop offset="0%" stop-color="#7c4fff"/>
-<stop offset="100%" stop-color="#4f8ef7"/>
-</linearGradient>
-</defs>
-<circle cx="100" cy="100" r="80" fill="none" stroke="#1e1e3a" stroke-width="14" stroke-linecap="round" id="gauge-track"/>
-<circle cx="100" cy="100" r="80" fill="none" stroke="url(#gaugeGrad)" stroke-width="14" stroke-linecap="round" transform="rotate(135 100 100)" id="gauge-arc"/>
-</svg>
-<div class="gauge-center-value">
-<span class="gauge-number" id="gauge-number">—</span>
-<span class="gauge-unit" id="gauge-unit">Mbps</span>
+
+<div id="main">
+
+  <div class="col" id="col-left">
+    <div id="results-bar">
+      <div class="res-box res-box-dl">
+        <div class="res-arrow res-arrow-dl">↓ DESCARGA</div>
+        <div class="res-val res-val-dl" id="res-dl">—</div>
+        <div class="res-unit res-unit-dl">Mbps</div>
+      </div>
+      <div class="res-box res-box-ul">
+        <div class="res-arrow res-arrow-ul">↑ SUBIDA</div>
+        <div class="res-val res-val-ul" id="res-ul">—</div>
+        <div class="res-unit res-unit-ul">Mbps</div>
+      </div>
+    </div>
+    <div id="mode-tabs">
+      <button class="tab active" id="tab-fast" onclick="setMode('fast')">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~6s · 2 rondas</span></button>
+      <button class="tab" id="tab-detail" onclick="setMode('detail')">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">5 rondas</span></button>
+    </div>
+    <div id="units-card" class="grow">
+      <div id="units-card-header" onclick="toggleUnitsCard()">
+        <span class="uch-title">TODAS LAS UNIDADES</span>
+        <span id="units-card-toggle">▼</span>
+      </div>
+      <div id="units-card-body">
+        <div class="urow urow-c0">
+          <div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div>
+          <div class="urow-val" id="u-mbps">—</div>
+          <div class="urow-desc">Megabits/seg · estándar ISP</div>
+        </div>
+        <div class="urow urow-c1">
+          <div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div>
+          <div class="urow-val" id="u-MBps">—</div>
+          <div class="urow-desc">Megabytes/seg · gestor descarga</div>
+        </div>
+        <div class="urow urow-c2">
+          <div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div>
+          <div class="urow-val" id="u-kbps">—</div>
+          <div class="urow-desc">Kilobits/seg · VoIP, radio</div>
+        </div>
+        <div class="urow urow-c3">
+          <div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div>
+          <div class="urow-val" id="u-kBps">—</div>
+          <div class="urow-desc">Kilobytes/seg · descargas lentas</div>
+        </div>
+        <div class="urow urow-c4">
+          <div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div>
+          <div class="urow-val" id="u-gbps">—</div>
+          <div class="urow-desc">Gigabits/seg · fibra alta gama</div>
+        </div>
+        <div class="urow urow-c5">
+          <div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div>
+          <div class="urow-val" id="u-GBps">—</div>
+          <div class="urow-desc">Gigabytes/seg · datacenter</div>
+        </div>
+        <div class="urow units-note-row">
+          <div class="unote">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps &nbsp;|&nbsp; k · M · G · T</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col" id="col-center">
+    <div id="gauge-card" class="grow">
+      <div id="gauge-title">VELOCIDAD EN TIEMPO REAL</div>
+      <div id="gauge-wrap">
+        <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00ffe0"/>
+              <stop offset="50%" stop-color="#ffe000"/>
+              <stop offset="100%" stop-color="#bf00ff"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path id="gauge-fill" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"/>
+          <g id="gauge-ticks"></g>
+        </svg>
+        <div id="gauge-val">
+          <div id="gauge-num">—</div>
+          <div id="gauge-unit-lbl">Mbps</div>
+          <div id="gauge-dir-lbl">↓ DL</div>
+        </div>
+      </div>
+      <div id="status-line">Presiona INICIAR para medir tu conexión</div>
+      <div id="progress-wrap"><div id="progress-fill"></div></div>
+      <div id="btn-wrap" style="margin-top:0.4em;">
+        <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
+        <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
+      </div>
+    </div>
+    <div id="chart-card">
+      <div id="chart-label">VELOCIDAD EN TIEMPO REAL — fluctuaciones normales de red</div>
+      <canvas id="chart-canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="col" id="col-right">
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-label">MÉTRICAS DE RENDIMIENTO</div>
+      <div class="metrics-grid">
+        <div class="m-cell">
+          <div class="mc-lbl">Percentil 90</div>
+          <div class="mc-val mc-c0" id="m-p90">—</div>
+          <div class="mc-unit">Mbps p90</div>
+        </div>
+        <div class="m-cell">
+          <div class="mc-lbl">Velocidad Media</div>
+          <div class="mc-val mc-c1" id="m-avg">—</div>
+          <div class="mc-unit">promedio</div>
+        </div>
+        <div class="m-cell">
+          <div class="mc-lbl">Vel. Mínima</div>
+          <div class="mc-val mc-c2" id="m-min">—</div>
+          <div class="mc-unit">Mbps mín</div>
+        </div>
+        <div class="m-cell">
+          <div class="mc-lbl">Desv. Estándar σ</div>
+          <div class="mc-val mc-c3" id="m-std">—</div>
+          <div class="mc-unit">variabilidad</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-label">DISTRIBUCIÓN DE MUESTRAS</div>
+      <canvas id="histo-canvas"></canvas>
+    </div>
+    <div class="card grow" style="display:flex;flex-direction:column;">
+      <div class="card-label">RONDAS DE PRUEBA</div>
+      <div id="rounds-scroll">
+        <div id="rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div>
+        <table id="rounds-table">
+          <thead>
+            <tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="rounds-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-label">DIAGNÓSTICO DE ENLACE</div>
+      <div class="diag-link-grid">
+        <div class="dl-cell">
+          <div class="dlc-lbl">Efic. multi-hilo</div>
+          <div class="dlc-val" id="d-eff">—</div>
+          <div class="dlc-sub" id="d-eff-lbl">—</div>
+        </div>
+        <div class="dl-cell">
+          <div class="dlc-lbl">Final vs p90</div>
+          <div class="dlc-val" id="d-vs">—</div>
+          <div class="dlc-sub" id="d-vs-lbl">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
-</div>
-<span class="gauge-status" id="gauge-status">Presiona INICIAR</span>
-</div>
-</div>
-</div>
-<div class="panel progress-panel">
-<div class="panel-label">VELOCIDAD EN TIEMPO REAL</div>
-<div class="panel-body">
-<div class="progress-label-row">
-<span id="progress-stage">PREPARANDO...</span>
-<span id="progress-pct">0%</span>
-</div>
-<div class="progress-bar-outer">
-<div class="progress-bar-inner" id="progress-bar"></div>
-</div>
-<div class="realtime-row">
-<span>LIVE</span>
-<div class="realtime-spark" id="spark-container">
-<canvas id="spark-canvas"></canvas>
-</div>
-<span id="realtime-val">— Mbps</span>
-</div>
-</div>
-</div>
-<div class="panel controls-panel">
-<div class="panel-body">
-<div class="btn-row">
-<button class="btn btn-primary" id="btn-start">▶ Iniciar prueba</button>
-<button class="btn btn-stop" id="btn-stop" style="display:none">■ Detener</button>
-</div>
-<div class="mode-row">
-<button class="btn-mode active" id="mode-fast">⚡ Rápida</button>
-<button class="btn-mode" id="mode-detail">🔬 Detallada</button>
-</div>
-<span class="hint-text" id="mode-hint">~6s · 2 rondas descarga + 1 subida · móvil / datos</span>
-</div>
-</div>
-</div>
-<div class="col-right">
-<div class="results-bar">
-<div class="result-box">
-<span class="result-box-label">↓ DESCARGA</span>
-<span class="result-box-value" id="res-down">—</span>
-<span class="result-box-unit">Mbps</span>
-</div>
-<div class="result-box">
-<span class="result-box-label">↑ SUBIDA</span>
-<span class="result-box-value upload" id="res-up">—</span>
-<span class="result-box-unit">Mbps</span>
-</div>
-</div>
-<div class="panel units-panel">
-<div class="panel-label">TODAS LAS UNIDADES DE VELOCIDAD</div>
-<div class="panel-body">
-<div class="units-grid">
-<div class="unit-cell">
-<div class="unit-cell-name"><span class="unit-cell-abbr">Mbps</span><span class="unit-cell-eq">= Mb/s</span></div>
-<span class="unit-cell-value" id="u-mbps">—</span>
-<span class="unit-cell-desc">Megabits/s · estándar ISP</span>
-</div>
-<div class="unit-cell">
-<div class="unit-cell-name"><span class="unit-cell-abbr">MBps</span><span class="unit-cell-eq">= MB/s</span></div>
-<span class="unit-cell-value" id="u-MBps">—</span>
-<span class="unit-cell-desc">Megabytes/s · descarga archivos</span>
-</div>
-<div class="unit-cell">
-<div class="unit-cell-name"><span class="unit-cell-abbr">kbps</span><span class="unit-cell-eq">= kb/s</span></div>
-<span class="unit-cell-value" id="u-kbps">—</span>
-<span class="unit-cell-desc">Kilobits/s · VoIP, lento</span>
-</div>
-<div class="unit-cell">
-<div class="unit-cell-name"><span class="unit-cell-abbr">kBps</span><span class="unit-cell-eq">= kB/s</span></div>
-<span class="unit-cell-value" id="u-kBps">—</span>
-<span class="unit-cell-desc">Kilobytes/s · descargas lentas</span>
-</div>
-<div class="unit-cell">
-<div class="unit-cell-name"><span class="unit-cell-abbr">Gbps</span><span class="unit-cell-eq">= Gbit/s</span></div>
-<span class="unit-cell-value" id="u-gbps">—</span>
-<span class="unit-cell-desc">Gigabits/s · fibra alta gama</span>
-</div>
-<div class="unit-cell">
-<div class="unit-cell-name"><span class="unit-cell-abbr">GBps</span><span class="unit-cell-eq">= GB/s</span></div>
-<span class="unit-cell-value" id="u-GBps">—</span>
-<span class="unit-cell-desc">Gigabytes/s · datacenter</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-<footer class="app-footer">
-<span>speedtest · HTTP paralelo · sin instalación</span>
-<button class="diag-toggle" id="diag-toggle" onclick="toggleDiag()">⚙ Panel Diagnóstico Avanzado <span class="diag-arrow" id="diag-arrow">▲</span></button>
-<span>generado 2026-05-19</span>
+
+<footer id="footer">
+  <p><strong style="color:var(--text-mid);">NOTA TÉCNICA:</strong> 5 rondas · speed.cloudflare.com · archivos 25MB · hasta 20 hilos · ronda 1 = warmup TCP · resultado = p90. Puede diferir de speedtest.net.</p>
+  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>generado 2026-05-19</div>
 </footer>
+
 </div>
-<div class="diag-overlay" id="diag-overlay">
-<div class="diag-inner">
-<div class="diag-section-title">MÉTRICAS DE RENDIMIENTO</div>
-<div class="diag-metric"><span class="diag-metric-label">Percentil 90</span><span class="diag-metric-value" id="d-p90">—</span><span class="diag-metric-sub">Mbps p90 · descarta spikes altos</span></div>
-<div class="diag-metric"><span class="diag-metric-label">Velocidad Media</span><span class="diag-metric-value" id="d-avg">—</span><span class="diag-metric-sub">Promedio de todas las muestras</span></div>
-<div class="diag-metric"><span class="diag-metric-label">Velocidad Mín.</span><span class="diag-metric-value" id="d-min">—</span><span class="diag-metric-sub">Mbps mínimo observado</span></div>
-<div class="diag-metric"><span class="diag-metric-label">Desv. Estándar (σ)</span><span class="diag-metric-value" id="d-std">—</span><span class="diag-metric-sub">Variabilidad del enlace</span></div>
-<div class="diag-metric"><span class="diag-metric-label">Muestras totales</span><span class="diag-metric-value" id="d-samples">—</span><span class="diag-metric-sub">Puntos de datos analizados</span></div>
-<div class="diag-metric"><span class="diag-metric-label">Eficiencia multi-hilo</span><span class="diag-metric-value" id="d-efficiency">—</span><span class="diag-metric-sub">Resultado final vs. media de rondas</span></div>
+
+<div class="modal-overlay" id="units-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-head-title">📊 TODAS LAS UNIDADES</span>
+      <button class="modal-close-btn" onclick="closeUnitsModal()">✕ CERRAR</button>
+    </div>
+    <div id="um-body">
+      <div class="um-row um-c0">
+        <div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div>
+        <div class="um-val" id="mu-mbps">—</div>
+        <div class="um-desc">Megabits por segundo · estándar ISP y routers<br>1 Mbps = 1,000,000 bits/seg</div>
+      </div>
+      <div class="um-row um-c1">
+        <div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div>
+        <div class="um-val" id="mu-MBps">—</div>
+        <div class="um-desc">Megabytes por segundo · gestor de descarga<br>1 MBps = 8 Mbps</div>
+      </div>
+      <div class="um-row um-c2">
+        <div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div>
+        <div class="um-val" id="mu-kbps">—</div>
+        <div class="um-desc">Kilobits por segundo · VoIP, radio<br>1 Mbps = 1,000 kbps</div>
+      </div>
+      <div class="um-row um-c3">
+        <div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div>
+        <div class="um-val" id="mu-kBps">—</div>
+        <div class="um-desc">Kilobytes por segundo · descargas lentas<br>1 kBps = 8 kbps</div>
+      </div>
+      <div class="um-row um-c4">
+        <div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div>
+        <div class="um-val" id="mu-gbps">—</div>
+        <div class="um-desc">Gigabits por segundo · fibra óptica alta gama<br>1 Gbps = 1,000 Mbps</div>
+      </div>
+      <div class="um-row um-c5">
+        <div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div>
+        <div class="um-val" id="mu-GBps">—</div>
+        <div class="um-desc">Gigabytes por segundo · datacenter<br>1 GBps = 8 Gbps</div>
+      </div>
+      <div id="um-note">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>Prefijos SI: k = kilo · M = Mega · G = Giga · T = Tera</div>
+    </div>
+  </div>
 </div>
+
+<div class="modal-overlay" id="diag-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-head-title">⚙ DIAGNÓSTICO AVANZADO</span>
+      <button class="modal-close-btn" onclick="closeDiagModal()">✕ CERRAR</button>
+    </div>
+    <div id="dm-body">
+      <div class="dm-subtitle">Para profesionales TI · latencia · jitter · variabilidad · histograma</div>
+      <div class="dm-grid-3">
+        <div class="dm-cell">
+          <div class="dmc-lbl">Percentil 90</div>
+          <div class="dmc-val dmc-c0" id="dm-p90">—</div>
+          <div class="dmc-unit">Mbps p90</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Velocidad Media</div>
+          <div class="dmc-val dmc-c1" id="dm-avg">—</div>
+          <div class="dmc-unit">promedio</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Vel. Mínima</div>
+          <div class="dmc-val dmc-c2" id="dm-min">—</div>
+          <div class="dmc-unit">Mbps mín</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Desv. Est. σ</div>
+          <div class="dmc-val dmc-c3" id="dm-std">—</div>
+          <div class="dmc-unit">variabilidad</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Muestras</div>
+          <div class="dmc-val dmc-c4" id="dm-samples">—</div>
+          <div class="dmc-unit">puntos datos</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Efic. multi-hilo</div>
+          <div class="dmc-val dmc-c5" id="dm-eff">—</div>
+          <div class="dmc-unit" id="dm-eff-lbl">—</div>
+        </div>
+      </div>
+      <div>
+        <div class="dm-sec-label">HISTOGRAMA DE VELOCIDAD</div>
+        <canvas id="dm-histo"></canvas>
+      </div>
+      <div>
+        <div class="dm-sec-label">RONDAS DE PRUEBA</div>
+        <div id="dm-rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div>
+        <table id="dm-rounds-table">
+          <thead>
+            <tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="dm-rounds-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
+
 <script>
-const CONFIG={
-  fast:{rounds:3,threads:12,fileSizeMB:25,uploadSizeMB:4,label:'~10s · 3 rondas descarga + 1 subida · hasta ~1 Gbps'},
-  detail:{rounds:5,threads:20,fileSizeMB:25,uploadSizeMB:8,label:'~20s · 5 rondas descarga + 2 subida · conexión fija'}
-};
+const CFBase='https://speed.cloudflare.com/__down?bytes=';
+const FILE_SIZE=25*1024*1024;
+let running=false,mode='fast',abortCtrl=null,chartData=[],roundsData=[],allSamples=[],peakMbps=0,currentPhase='dl';
 
-const GAUGE_C=2*Math.PI*80;
-const GAUGE_USABLE=GAUGE_C*0.75;
-let mode='fast',running=false,abortController=null,sparkData=[];
-let gaugeMax=100;
-
-const $=id=>document.getElementById(id);
-
-function fmt(n,dec=2){
-  if(n===null||n===undefined||isNaN(n))return'—';
-  return n.toLocaleString('es-CL',{minimumFractionDigits:dec,maximumFractionDigits:dec});
-}
-
-(function initGauge(){
-  const arc=$('gauge-arc'),track=$('gauge-track');
-  arc.style.strokeDasharray=GAUGE_C;
-  arc.style.strokeDashoffset=GAUGE_C;
-  arc.style.transition='stroke-dashoffset .35s ease';
-  track.style.strokeDasharray=GAUGE_USABLE+' '+(GAUGE_C-GAUGE_USABLE);
-  track.style.strokeDashoffset=0;
-  track.setAttribute('transform','rotate(135 100 100)');
+(function buildTicks(){
+  const svg=document.getElementById('gauge-ticks');
+  const cx=60,cy=60,r=50,startA=Math.PI*1.1,endA=Math.PI*1.9;
+  for(let i=0;i<=10;i++){
+    const a=startA+(endA-startA)*(i/10),isMaj=i%5===0;
+    const r1=r-5,r2=r-(isMaj?13:9);
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',cx+r1*Math.cos(a));line.setAttribute('y1',cy+r1*Math.sin(a));
+    line.setAttribute('x2',cx+r2*Math.cos(a));line.setAttribute('y2',cy+r2*Math.sin(a));
+    line.setAttribute('stroke',isMaj?'#333':'#1e1e2a');line.setAttribute('stroke-width',isMaj?'2':'1');
+    svg.appendChild(line);
+  }
 })();
 
-function setGauge(mbps){
-  const arc=$('gauge-arc');
-  const pct=Math.min(Math.max(mbps/gaugeMax,0),1);
-  arc.style.strokeDashoffset=GAUGE_C-(GAUGE_USABLE*pct);
+function setGauge(mbps,maxMbps){
+  const fill=document.getElementById('gauge-fill');
+  const ratio=Math.min(mbps/(maxMbps||100),1),dash=ratio*251;
+  fill.setAttribute('stroke-dasharray',`${dash} ${251-dash}`);
+  document.getElementById('gauge-num').textContent=mbps>=10?mbps.toFixed(1):mbps.toFixed(2);
 }
 
-function autoGaugeMax(mbps){
-  const scales=[10,25,50,100,200,500,1000,2500,5000,10000];
-  for(const s of scales){if(mbps<s*0.9){gaugeMax=s;return}}
-  gaugeMax=10000;
+function drawChart(){
+  const canvas=document.getElementById('chart-canvas');
+  const dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
+  if(!w||!h)return;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+  const data=chartData.slice(-100);if(data.length<2)return;
+  const maxVal=Math.max(...data.map(d=>d.v),1);
+  const pad={t:4,b:4,l:2,r:2},gw=w-pad.l-pad.r,gh=h-pad.t-pad.b;
+  ctx.strokeStyle='rgba(30,30,50,0.8)';ctx.lineWidth=0.5;
+  for(let i=0;i<=3;i++){const y=pad.t+gh*(1-i/3);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+gw,y);ctx.stroke();}
+  const col=currentPhase==='dl'?'0,255,224':'191,0,255';
+  ctx.beginPath();
+  data.forEach((d,i)=>{const x=pad.l+(i/(data.length-1))*gw,y=pad.t+gh*(1-d.v/maxVal);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle=`rgba(${col},1)`;ctx.lineWidth=2;ctx.shadowColor=`rgba(${col},0.8)`;ctx.shadowBlur=6;ctx.stroke();ctx.shadowBlur=0;
+  ctx.lineTo(pad.l+gw,pad.t+gh);ctx.lineTo(pad.l,pad.t+gh);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+gh);
+  grad.addColorStop(0,`rgba(${col},0.3)`);grad.addColorStop(1,`rgba(${col},0.01)`);
+  ctx.fillStyle=grad;ctx.fill();
 }
 
-$('mode-fast').onclick=()=>setMode('fast');
-$('mode-detail').onclick=()=>setMode('detail');
-function setMode(m){mode=m;$('mode-fast').classList.toggle('active',m==='fast');$('mode-detail').classList.toggle('active',m==='detail');$('mode-hint').textContent=CONFIG[m].label}
-
-function toggleDiag(){const o=$('diag-overlay'),a=$('diag-arrow'),open=o.classList.toggle('open');a.style.transform=open?'rotate(180deg)':''}
-
-function initSpark(){const c=$('spark-canvas'),ct=$('spark-container');c.width=ct.clientWidth||200;c.height=ct.clientHeight||30;sparkData=[]}
-function pushSpark(v){sparkData.push(v);if(sparkData.length>80)sparkData.shift();drawSpark()}
-function drawSpark(){
-  const c=$('spark-canvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;
-  ctx.clearRect(0,0,w,h);
-  if(sparkData.length<2)return;
-  const max=Math.max(...sparkData)*1.1||1,step=w/(sparkData.length-1);
-  ctx.beginPath();ctx.strokeStyle='#4f8ef7';ctx.lineWidth=1.5;ctx.lineJoin='round';
-  sparkData.forEach((v,i)=>{const x=i*step,y=h-(v/max)*h*.88-h*.06;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
-  ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle='rgba(79,142,247,.07)';ctx.fill();
+function drawHisto(canvasId,samples){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;
+  if(!w||!h)return;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+  if(!samples||samples.length<2)return;
+  const BINS=18,mn=Math.min(...samples),mx=Math.max(...samples),range=mx-mn||1;
+  const bins=new Array(BINS).fill(0);
+  samples.forEach(v=>{const bi=Math.min(Math.floor(((v-mn)/range)*BINS),BINS-1);bins[bi]++;});
+  const maxBin=Math.max(...bins,1),bw=w/BINS;
+  const colors=['#00ffe0','#00eec0','#00dda0','#aaee00','#ffe000','#ffaa00','#ff6a00','#ff3300','#bf00ff'];
+  bins.forEach((cnt,i)=>{
+    const bh=(cnt/maxBin)*(h-2),x=i*bw,y=h-bh,ci=Math.floor((i/BINS)*(colors.length-1));
+    ctx.fillStyle=colors[ci];ctx.shadowColor=colors[ci];ctx.shadowBlur=4;ctx.fillRect(x+1,y,bw-2,bh);
+  });
+  ctx.shadowBlur=0;
 }
 
 function updateUnits(mbps){
-  const ids=['u-mbps','u-MBps','u-kbps','u-kBps','u-gbps','u-GBps'];
-  if(mbps===null||mbps===undefined){ids.forEach(id=>$(id).textContent='—');return}
-  $('u-mbps').textContent=fmt(mbps,2);
-  $('u-MBps').textContent=fmt(mbps/8,3);
-  $('u-kbps').textContent=fmt(mbps*1000,0);
-  $('u-kBps').textContent=fmt(mbps*1000/8,1);
-  $('u-gbps').textContent=fmt(mbps/1000,4);
-  $('u-GBps').textContent=fmt(mbps/8000,5);
+  const sets=[
+    ['u-mbps',mbps,mbps>=10?2:3],['u-MBps',mbps/8,3],['u-kbps',mbps*1000,0],
+    ['u-kBps',mbps*125,1],['u-gbps',mbps/1000,4],['u-GBps',mbps/8000,5],
+    ['mu-mbps',mbps,mbps>=10?2:3],['mu-MBps',mbps/8,3],['mu-kbps',mbps*1000,0],
+    ['mu-kBps',mbps*125,1],['mu-gbps',mbps/1000,4],['mu-GBps',mbps/8000,5],
+  ];
+  sets.forEach(([id,val,dec])=>{const el=document.getElementById(id);if(el)el.textContent=mbps===null?'—':val.toFixed(dec);});
 }
 
-function setStatus(t){$('gauge-status').textContent=t}
-function setGaugeNumber(mbps){
-  $('gauge-number').textContent=mbps!==null?fmt(mbps,1):'—';
-  if(mbps!==null){autoGaugeMax(mbps);$('gauge-unit').textContent='Mbps'}
-}
-function setRealtimeVal(mbps){$('realtime-val').textContent=mbps!==null?fmt(mbps,1)+' Mbps':'— Mbps'}
-function setProgress(pct,stage){$('progress-bar').style.width=pct+'%';$('progress-pct').textContent=Math.round(pct)+'%';if(stage)$('progress-stage').textContent=stage}
-
-function percentile(arr,p){const s=[...arr].sort((a,b)=>a-b);return s[Math.min(Math.floor(s.length*p/100),s.length-1)]}
-function average(arr){return arr.reduce((a,b)=>a+b,0)/arr.length}
-function stdDev(arr){const avg=average(arr);return Math.sqrt(arr.reduce((a,b)=>a+(b-avg)**2,0)/arr.length)}
-
-async function measureDownloadRound(cfg,onLive,signal){
-  const url=cfg.fileSizeMB<=10
-    ?'https://speed.cloudflare.com/__down?bytes=10485760'
-    :'https://speed.cloudflare.com/__down?bytes=26214400';
-
-  const t0=performance.now();
-  let totalBytes=0;
-  const mutex={lastBytes:0,lastTime:t0};
-
-  const fetchThread=async()=>{
-    const res=await fetch(url+'&_='+Math.random(),{signal,cache:'no-store'});
-    const reader=res.body.getReader();
-    let bytes=0;
-    while(true){
-      const{done,value}=await reader.read();
-      if(done)break;
-      bytes+=value.length;
-      totalBytes+=value.length;
-      const now=performance.now();
-      const dt=(now-mutex.lastTime)/1000;
-      if(dt>.2){
-        const live=((totalBytes-mutex.lastBytes)*8)/(dt*1e6);
-        mutex.lastTime=now;
-        mutex.lastBytes=totalBytes;
-        if(live>0)onLive(live);
-      }
-    }
-    return bytes;
-  };
-
-  const bytesArr=await Promise.all(Array.from({length:cfg.threads},()=>fetchThread()));
-  const elapsed=(performance.now()-t0)/1000;
-  const totalMB=bytesArr.reduce((a,b)=>a+b,0)/(1024*1024);
-  return(totalMB*8)/elapsed;
+function updateMetrics(){
+  if(!allSamples.length)return;
+  const s=[...allSamples].sort((a,b)=>a-b);
+  const p90=s[Math.floor(s.length*0.9)],avg=s.reduce((a,b)=>a+b,0)/s.length,mn=s[0];
+  const std=Math.sqrt(s.reduce((a,b)=>a+(b-avg)**2,0)/s.length);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('m-p90',p90.toFixed(2));set('dm-p90',p90.toFixed(2));
+  set('m-avg',avg.toFixed(2));set('dm-avg',avg.toFixed(2));
+  set('m-min',mn.toFixed(2));set('dm-min',mn.toFixed(2));
+  set('m-std',std.toFixed(2));set('dm-std',std.toFixed(2));
+  set('dm-samples',allSamples.length);
+  drawHisto('histo-canvas',allSamples);drawHisto('dm-histo',allSamples);
 }
 
-async function measureUpload(cfg,onLive,signal){
-  const sizeMB=cfg.uploadSizeMB;
-  const data=new Uint8Array(sizeMB*1024*1024).fill(65);
-  const blob=new Blob([data]);
-  const t0=performance.now();
-  let success=false;
+function addRound(round){
+  roundsData.push(round);
+  const peak=Math.max(...roundsData.map(r=>r.mbps));
+  ['rounds-table','dm-rounds-table'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='table';});
+  ['rounds-placeholder','dm-rounds-placeholder'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['rounds-tbody','dm-rounds-tbody'].forEach(tbId=>{
+    const tb=document.getElementById(tbId);if(!tb)return;tb.innerHTML='';
+    roundsData.forEach((r,i)=>{
+      const pct=((r.mbps/peak)*100).toFixed(0)+'%',warm=i===0&&mode==='detail';
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${r.round}</td><td>${r.threads}</td><td style="color:var(--neon-dl);font-family:'Orbitron',monospace;font-weight:900;">${r.mbps.toFixed(2)}</td><td style="color:var(--neon-y);">${pct}</td><td>${r.ms}</td><td style="color:${warm?'var(--text-dim)':'var(--ok)'};">${r.status}</td>`;
+      tb.appendChild(tr);
+    });
+  });
+}
+
+function setStatus(txt,prog){
+  document.getElementById('status-line').textContent=txt;
+  if(prog!==undefined)document.getElementById('progress-fill').style.width=prog+'%';
+}
+
+async function fetchWithProgress(url,onProgress,signal){
+  const res=await fetch(url,{signal});if(!res.ok)throw new Error('HTTP '+res.status);
+  const reader=res.body.getReader();let received=0;const t0=performance.now();
+  while(true){const{done,value}=await reader.read();if(done)break;received+=value.length;const elapsed=(performance.now()-t0)/1000;if(elapsed>0)onProgress((received*8)/(elapsed*1e6));}
+  const elapsed=(performance.now()-t0)/1000;return{bytes:received,elapsed,mbps:(received*8)/(elapsed*1e6)};
+}
+
+async function runDownloadRound(threads,signal,onSample){
+  const samples=[],t0=performance.now();
+  const promises=Array.from({length:threads},()=>fetchWithProgress(CFBase+FILE_SIZE+'&r='+Math.random(),mbps=>samples.push({t:performance.now(),mbps}),signal));
+  const intervalId=setInterval(()=>{
+    const now=performance.now(),recent=samples.filter(s=>s.t>now-400&&s.t>t0);
+    if(recent.length>0){const byThread={};recent.forEach(s=>{byThread[Math.round(s.t/50)]=(byThread[Math.round(s.t/50)]||0)+s.mbps;});const vals=Object.values(byThread);onSample(vals.reduce((a,b)=>a+b,0)/vals.length);}
+  },120);
   try{
-    const res=await fetch('https://speed.cloudflare.com/__up',{method:'POST',body:blob,signal,cache:'no-store'});
-    if(res.ok||res.status===200||res.status===201)success=true;
-  }catch(e){
-    if(e.name==='AbortError')throw e;
-  }
-  const elapsed=(performance.now()-t0)/1000;
-  if(!success&&elapsed<0.5)return null;
-  const mbps=(sizeMB*8)/elapsed;
-  onLive(mbps);
-  return mbps;
+    const results=await Promise.all(promises);clearInterval(intervalId);
+    const totalBytes=results.reduce((a,b)=>a+b.bytes,0),maxElapsed=Math.max(...results.map(r=>r.elapsed));
+    return{bytes:totalBytes,elapsed:maxElapsed,mbps:(totalBytes*8)/(maxElapsed*1e6)};
+  }catch(e){clearInterval(intervalId);throw e;}
 }
 
-$('btn-start').onclick=startTest;
-$('btn-stop').onclick=stopTest;
+async function runUploadRound(signal,onSample){
+  const CHUNK=1*1024*1024,REPS=6,data=new Uint8Array(CHUNK);let total=0;const t0=performance.now();
+  for(let i=0;i<REPS&&!signal.aborted;i++){
+    const ts=performance.now();
+    try{await fetch('https://speed.cloudflare.com/__up',{method:'POST',body:data,signal,headers:{'Content-Type':'application/octet-stream'}});const elapsed=(performance.now()-ts)/1000;total+=CHUNK;onSample((CHUNK*8)/(elapsed*1e6));}
+    catch(e){if(signal.aborted)break;}
+  }
+  const elapsed=(performance.now()-t0)/1000;return{mbps:total>0?(total*8)/(elapsed*1e6):0};
+}
 
 async function startTest(){
-  if(running)return;
-  running=true;
-  abortController=new AbortController();
-  const signal=abortController.signal;
-  const cfg=CONFIG[mode];
-
-  $('btn-start').style.display='none';
-  $('btn-stop').style.display='';
-  $('gauge-panel').classList.add('measuring');
-
-  initSpark();
-  updateUnits(null);
-  $('res-down').textContent='—';
-  $('res-up').textContent='—';
-  setProgress(0,'PREPARANDO...');
-  setStatus('Midiendo...');
-  setGaugeNumber(null);
-  setGauge(0);
-  gaugeMax=100;
-
-  const roundResults=[];
-
+  if(running)return;running=true;abortCtrl=new AbortController();
+  chartData=[];roundsData=[];allSamples=[];peakMbps=0;
+  document.getElementById('res-dl').textContent='—';document.getElementById('res-ul').textContent='—';
+  document.getElementById('btn-start').style.display='none';document.getElementById('btn-stop').style.display='';
+  document.getElementById('progress-fill').style.width='0%';document.getElementById('gauge-num').textContent='—';
+  document.getElementById('gauge-num').classList.remove('ul-mode');updateUnits(0);
+  const isFast=mode==='fast',threads=isFast?6:12,totalRounds=isFast?2:5;
   try{
-    for(let r=0;r<cfg.rounds;r++){
-      const isWarmup=r===0;
-      const stage=isWarmup?'WARMUP TCP':`DESCARGA — RONDA ${r}/${cfg.rounds-1}`;
-      setProgress((r/(cfg.rounds+1))*80,stage);
-
-      const roundMbps=await measureDownloadRound(cfg,(live)=>{
-        setGaugeNumber(live);
-        setGauge(live);
-        pushSpark(live);
-        setRealtimeVal(live);
-        if(!isWarmup)updateUnits(live);
-        setProgress((r/(cfg.rounds+1))*80+20,stage);
-      },signal);
-
-      if(!isWarmup){
-        roundResults.push(roundMbps);
+    currentPhase='dl';document.getElementById('gauge-dir-lbl').textContent='↓ DL';
+    for(let r=0;r<totalRounds;r++){
+      if(abortCtrl.signal.aborted)break;
+      const isWarmup=!isFast&&r===0;
+      setStatus(isWarmup?'WARMUP TCP...':`DESCARGA ${r+1}/${totalRounds}`,(r/totalRounds)*70);
+      const result=await runDownloadRound(isWarmup?2:threads,abortCtrl.signal,mbps=>{
+        if(!isWarmup){allSamples.push(mbps);chartData.push({v:mbps});if(mbps>peakMbps)peakMbps=mbps;setGauge(mbps,Math.max(peakMbps*1.2,100));updateUnits(mbps);updateMetrics();drawChart();}
+      });
+      addRound({round:r+1,threads:isWarmup?2:threads,mbps:result.mbps,ms:Math.round(result.elapsed*1000),status:isWarmup?'warmup':'OK ✓'});
+      if(!isWarmup){allSamples.push(result.mbps);if(result.mbps>peakMbps)peakMbps=result.mbps;}
+    }
+    const dlResult=allSamples.length>0?[...allSamples].sort((a,b)=>a-b)[Math.floor(allSamples.length*0.9)]:0;
+    document.getElementById('res-dl').textContent=dlResult.toFixed(2);updateUnits(dlResult);updateMetrics();
+    if(!abortCtrl.signal.aborted){
+      currentPhase='ul';document.getElementById('gauge-dir-lbl').textContent='↑ UL';document.getElementById('gauge-num').classList.add('ul-mode');setStatus('MIDIENDO SUBIDA...',75);
+      const ulSamples=[];
+      await runUploadRound(abortCtrl.signal,mbps=>{ulSamples.push(mbps);chartData.push({v:mbps});setGauge(mbps,Math.max(peakMbps*1.2,100));updateUnits(mbps);drawChart();});
+      const ulFinal=ulSamples.length>0?ulSamples.reduce((a,b)=>a+b,0)/ulSamples.length:0;
+      document.getElementById('res-ul').textContent=ulFinal.toFixed(2);
+    }
+    if(roundsData.length>1){
+      const measured=roundsData.filter((_,i)=>!(!isFast&&i===0));
+      if(measured.length>0){
+        const maxR=Math.max(...measured.map(r=>r.mbps)),lastR=measured[measured.length-1].mbps;
+        const dlResult2=[...allSamples].sort((a,b)=>a-b)[Math.floor(allSamples.length*0.9)];
+        const ep=((dlResult2/(maxR||1))*100).toFixed(0)+'%',vp=((lastR/(dlResult2||1))*100).toFixed(0)+'%';
+        const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+        set('d-eff',ep);set('d-vs',vp);set('d-eff-lbl',parseFloat(ep)>85?'✓ Excelente':'⚠ Variable');set('d-vs-lbl',parseFloat(vp)>85?'✓ Estable':'⚠ Inestable');set('dm-eff',ep);set('dm-eff-lbl',parseFloat(ep)>85?'✓ Excelente':'⚠ Variable');
       }
     }
-
-    setProgress(85,'MIDIENDO SUBIDA...');
-    setGaugeNumber(null);
-    setGauge(0);
-    gaugeMax=100;
-
-    let upMbps=null;
-    try{
-      upMbps=await measureUpload(cfg,(live)=>{
-        setRealtimeVal(live);
-        setProgress(93,'MIDIENDO SUBIDA...');
-      },signal);
-    }catch(e){
-      if(e.name==='AbortError')throw e;
-    }
-
-    setProgress(100,'COMPLETADO ✓');
-
-    const finalDown=roundResults.length>0?percentile(roundResults,90):0;
-
-    setGaugeNumber(finalDown);
-    setGauge(finalDown);
-    updateUnits(finalDown);
-    setRealtimeVal(finalDown);
-    setStatus('✓ Completado');
-
-    $('res-down').textContent=finalDown>0?fmt(finalDown,1):'—';
-    $('res-up').textContent=upMbps!==null&&upMbps>0?fmt(upMbps,1):'—';
-
-    if(roundResults.length>1){
-      const avg=average(roundResults);
-      const p90=percentile(roundResults,90);
-      $('d-p90').textContent=fmt(p90,2)+' Mbps';
-      $('d-avg').textContent=fmt(avg,2)+' Mbps';
-      $('d-min').textContent=fmt(Math.min(...roundResults),2)+' Mbps';
-      $('d-std').textContent=fmt(stdDev(roundResults),2)+' Mbps';
-      $('d-samples').textContent=roundResults.length;
-      $('d-efficiency').textContent=fmt((p90/avg)*100,1)+'%';
-    }
-
-  }catch(e){
-    if(e.name==='AbortError'){setStatus('Detenido');setProgress(0,'DETENIDO')}
-    else{setStatus('Error: '+e.message);console.error(e)}
-  }
-
-  running=false;
-  $('btn-stop').style.display='none';
-  $('btn-start').style.display='';
-  $('gauge-panel').classList.remove('measuring');
+    setStatus('✓ PRUEBA COMPLETADA',100);
+    const dlFinal=[...allSamples].sort((a,b)=>a-b)[Math.floor(allSamples.length*0.9)];
+    setGauge(dlFinal,Math.max(peakMbps*1.2,100));document.getElementById('gauge-num').textContent=dlFinal.toFixed(2);document.getElementById('gauge-num').classList.remove('ul-mode');document.getElementById('gauge-dir-lbl').textContent='↓ DL FINAL';
+  }catch(e){setStatus(abortCtrl.signal.aborted?'■ PRUEBA DETENIDA':'⚠ ERROR: '+e.message,0);}
+  running=false;document.getElementById('btn-start').style.display='';document.getElementById('btn-stop').style.display='none';
 }
 
 function stopTest(){
-  if(abortController)abortController.abort();
-  running=false;
-  $('btn-stop').style.display='none';
-  $('btn-start').style.display='';
-  setStatus('Detenido');
-  $('gauge-panel').classList.remove('measuring');
+  if(abortCtrl)abortCtrl.abort();running=false;setStatus('■ PRUEBA DETENIDA POR EL USUARIO',0);
+  document.getElementById('btn-start').style.display='';document.getElementById('btn-stop').style.display='none';
 }
 
-window.addEventListener('resize',()=>{
-  const c=$('spark-canvas'),ct=$('spark-container');
-  c.width=ct.clientWidth||200;c.height=ct.clientHeight||30;drawSpark();
-});
+function setMode(m){mode=m;document.getElementById('tab-fast').classList.toggle('active',m==='fast');document.getElementById('tab-detail').classList.toggle('active',m==='detail');}
+function openUnitsModal(){document.getElementById('units-modal').classList.add('open');}
+function closeUnitsModal(){document.getElementById('units-modal').classList.remove('open');}
+function openDiagModal(){document.getElementById('diag-modal').classList.add('open');}
+function closeDiagModal(){document.getElementById('diag-modal').classList.remove('open');}
+document.getElementById('btn-units-open').onclick=openUnitsModal;
+document.getElementById('btn-diag-open').onclick=openDiagModal;
+document.getElementById('units-modal').addEventListener('click',e=>{if(e.target===document.getElementById('units-modal'))closeUnitsModal();});
+document.getElementById('diag-modal').addEventListener('click',e=>{if(e.target===document.getElementById('diag-modal'))closeDiagModal();});
+let unitsOpen=true;
+function toggleUnitsCard(){unitsOpen=!unitsOpen;document.getElementById('units-card-body').style.display=unitsOpen?'grid':'none';document.getElementById('units-card-toggle').textContent=unitsOpen?'▼':'▶';}
+window.addEventListener('resize',()=>{drawChart();drawHisto('histo-canvas',allSamples);drawHisto('dm-histo',allSamples);});
+drawChart();
 </script>
 </body>
 </html>
+```
