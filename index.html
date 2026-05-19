@@ -1,9 +1,10 @@
 
 <!DOCTYPE html>
+<!-- saved from url=(0048)https://jruiz1981chile.github.io/speedtest14115/ -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>.:-SpeedTest 14115-:.</title>
-<link href="./SPEEDTEST 14115 EN NEON, FALTA CORREGIR ALGO DE MEDICION_files/css2" rel="stylesheet">
+<title>.:SpeedTest 14115:.</title>
+<link href="./casi ok_files/css2" rel="stylesheet">
 <style>
 :root {
   --bg:#050508;--surface:#0d0d14;--surface2:#13131e;--border:#1e1e32;
@@ -69,7 +70,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .urow-c5::after{background:#44aaff;}
 .urow-sym{font-family:'Orbitron',monospace;font-size:clamp(11px,1.1vw,14px);font-weight:700;letter-spacing:0.05em;}
 .urow-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.75vw,10px);color:var(--text-dim);margin-left:0.3em;}
-.urow-val{font-family:'Orbitron',monospace;font-size:clamp(13px,1.4vw,17px);font-weight:900;color:var(--text);line-height:1.2;margin:0.12em 0;letter-spacing:-0.01em;}
+/* MODIFICADO: contenedor de los dos valores dl/ul dentro de cada urow */
+.urow-vals{display:flex;gap:0.4em;align-items:baseline;margin:0.12em 0;flex-wrap:wrap;}
+.urow-val{font-family:'Orbitron',monospace;font-size:clamp(13px,1.4vw,17px);font-weight:900;color:var(--text);line-height:1.2;letter-spacing:-0.01em;}
+.urow-val-dl{color:var(--neon-dl);}
+.urow-val-ul{color:var(--neon-ul);}
+.urow-val-sep{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.75vw,10px);color:var(--text-dim);}
+.urow-val-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.68vw,9px);color:var(--text-dim);}
 .urow-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(9px,0.78vw,10px);color:var(--text-dim);font-weight:600;line-height:1.25;}
 .units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
@@ -145,7 +152,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .um-c5::after{background:#44aaff;}
 .um-sym{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,17px);font-weight:900;letter-spacing:0.05em;}
 .um-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.85vw,10px);color:var(--text-dim);margin-left:0.4em;}
-.um-val{font-family:'Orbitron',monospace;font-size:clamp(15px,2vw,24px);font-weight:900;color:var(--text);line-height:1.15;margin:0.15em 0;letter-spacing:-0.01em;}
+/* MODIFICADO: contenedor de los dos valores dl/ul dentro de cada um-row */
+.um-vals{display:flex;gap:0.5em;align-items:baseline;margin:0.15em 0;flex-wrap:wrap;}
+.um-val{font-family:'Orbitron',monospace;font-size:clamp(15px,2vw,24px);font-weight:900;color:var(--text);line-height:1.15;letter-spacing:-0.01em;}
+.um-val-dl{color:var(--neon-dl);}
+.um-val-ul{color:var(--neon-ul);}
+.um-val-sep{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.85vw,11px);color:var(--text-dim);}
+.um-val-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.75vw,9px);color:var(--text-dim);}
 .um-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(9px,0.95vw,12px);color:var(--text-dim);font-weight:600;line-height:1.3;}
 #um-note{grid-column:1/-1;font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,10px);color:var(--text-dim);padding:0.5em 0.7em;border-top:1px solid var(--border);line-height:1.65;}
 #dm-body{padding:0.7em;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:0.6em;}
@@ -213,19 +226,97 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
       <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
     </div>
+
+    <!-- PANEL LATERAL DE UNIDADES: ahora muestra ↓ DL y ↑ UL en cada fila -->
     <div id="units-card" class="grow">
       <div id="units-card-header" onclick="toggleUnitsCard()">
         <span class="uch-title">TODAS LAS UNIDADES</span>
         <span id="units-card-toggle">▼</span>
       </div>
       <div id="units-card-body">
-        <div class="urow urow-c0"><div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div><div class="urow-val" id="u-mbps">—</div><div class="urow-desc">Megabits/seg</div></div>
-        <div class="urow urow-c1"><div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div><div class="urow-val" id="u-MBps">—</div><div class="urow-desc">Megabytes/seg</div></div>
-        <div class="urow urow-c2"><div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div><div class="urow-val" id="u-kbps">—</div><div class="urow-desc">Kilobits/seg</div></div>
-        <div class="urow urow-c3"><div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div><div class="urow-val" id="u-kBps">—</div><div class="urow-desc">Kilobytes/seg</div></div>
-        <div class="urow urow-c4"><div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div><div class="urow-val" id="u-gbps">—</div><div class="urow-desc">Gigabits/seg</div></div>
-        <div class="urow urow-c5"><div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div><div class="urow-val" id="u-GBps">—</div><div class="urow-desc">Gigabytes/seg</div></div>
-        <div class="urow units-note-row"><div class="unote">■ b = bits | ■ B = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps</div></div>
+
+        <div class="urow urow-c0">
+          <div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div>
+          <div class="urow-vals">
+            <span class="urow-val urow-val-dl" id="u-mbps-dl">—</span>
+            <span class="urow-val-sep">·</span>
+            <span class="urow-val urow-val-ul" id="u-mbps-ul">—</span>
+          </div>
+          <div class="urow-desc">
+            <span style="color:var(--neon-dl);">↓</span> Desc &nbsp;
+            <span style="color:var(--neon-ul);">↑</span> Sub · Megabits/seg
+          </div>
+        </div>
+
+        <div class="urow urow-c1">
+          <div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div>
+          <div class="urow-vals">
+            <span class="urow-val urow-val-dl" id="u-MBps-dl">—</span>
+            <span class="urow-val-sep">·</span>
+            <span class="urow-val urow-val-ul" id="u-MBps-ul">—</span>
+          </div>
+          <div class="urow-desc">
+            <span style="color:var(--neon-dl);">↓</span> Desc &nbsp;
+            <span style="color:var(--neon-ul);">↑</span> Sub · Megabytes/seg
+          </div>
+        </div>
+
+        <div class="urow urow-c2">
+          <div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div>
+          <div class="urow-vals">
+            <span class="urow-val urow-val-dl" id="u-kbps-dl">—</span>
+            <span class="urow-val-sep">·</span>
+            <span class="urow-val urow-val-ul" id="u-kbps-ul">—</span>
+          </div>
+          <div class="urow-desc">
+            <span style="color:var(--neon-dl);">↓</span> Desc &nbsp;
+            <span style="color:var(--neon-ul);">↑</span> Sub · Kilobits/seg
+          </div>
+        </div>
+
+        <div class="urow urow-c3">
+          <div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div>
+          <div class="urow-vals">
+            <span class="urow-val urow-val-dl" id="u-kBps-dl">—</span>
+            <span class="urow-val-sep">·</span>
+            <span class="urow-val urow-val-ul" id="u-kBps-ul">—</span>
+          </div>
+          <div class="urow-desc">
+            <span style="color:var(--neon-dl);">↓</span> Desc &nbsp;
+            <span style="color:var(--neon-ul);">↑</span> Sub · Kilobytes/seg
+          </div>
+        </div>
+
+        <div class="urow urow-c4">
+          <div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div>
+          <div class="urow-vals">
+            <span class="urow-val urow-val-dl" id="u-gbps-dl">—</span>
+            <span class="urow-val-sep">·</span>
+            <span class="urow-val urow-val-ul" id="u-gbps-ul">—</span>
+          </div>
+          <div class="urow-desc">
+            <span style="color:var(--neon-dl);">↓</span> Desc &nbsp;
+            <span style="color:var(--neon-ul);">↑</span> Sub · Gigabits/seg
+          </div>
+        </div>
+
+        <div class="urow urow-c5">
+          <div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div>
+          <div class="urow-vals">
+            <span class="urow-val urow-val-dl" id="u-GBps-dl">—</span>
+            <span class="urow-val-sep">·</span>
+            <span class="urow-val urow-val-ul" id="u-GBps-ul">—</span>
+          </div>
+          <div class="urow-desc">
+            <span style="color:var(--neon-dl);">↓</span> Desc &nbsp;
+            <span style="color:var(--neon-ul);">↑</span> Sub · Gigabytes/seg
+          </div>
+        </div>
+
+        <div class="urow units-note-row">
+          <div class="unote">■ b = bits | ■ B = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps</div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -236,14 +327,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div id="gauge-wrap">
         <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
           <defs>
-            <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <lineargradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stop-color="#00ffe0"></stop>
               <stop offset="50%" stop-color="#ffe000"></stop>
               <stop offset="100%" stop-color="#bf00ff"></stop>
-            </linearGradient>
+            </lineargradient>
             <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="blur"></feGaussianBlur>
-              <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+              <fegaussianblur stdDeviation="2" result="blur"></fegaussianblur>
+              <femerge><femergenode in="blur"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
             </filter>
           </defs>
           <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"></path>
@@ -304,6 +395,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 </div>
 
+<!-- MODAL UNIDADES: ahora muestra ↓ DL y ↑ UL en cada fila -->
 <div class="modal-overlay" id="units-modal">
   <div class="modal-box">
     <div class="modal-head">
@@ -311,12 +403,91 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="modal-close-btn" onclick="closeUnitsModal()">✕ CERRAR</button>
     </div>
     <div id="um-body">
-      <div class="um-row um-c0"><div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div><div class="um-val" id="mu-mbps">—</div><div class="um-desc">Megabits por segundo<br>1 Mbps = 1,000,000 bits/seg</div></div>
-      <div class="um-row um-c1"><div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div><div class="um-val" id="mu-MBps">—</div><div class="um-desc">Megabytes por segundo<br>1 MBps = 8 Mbps</div></div>
-      <div class="um-row um-c2"><div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div><div class="um-val" id="mu-kbps">—</div><div class="um-desc">Kilobits por segundo<br>1 Mbps = 1,000 kbps</div></div>
-      <div class="um-row um-c3"><div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div><div class="um-val" id="mu-kBps">—</div><div class="um-desc">Kilobytes por segundo<br>1 kBps = 8 kbps</div></div>
-      <div class="um-row um-c4"><div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div><div class="um-val" id="mu-gbps">—</div><div class="um-desc">Gigabits por segundo<br>1 Gbps = 1,000 Mbps</div></div>
-      <div class="um-row um-c5"><div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div><div class="um-val" id="mu-GBps">—</div><div class="um-desc">Gigabytes por segundo<br>1 GBps = 8 Gbps</div></div>
+
+      <div class="um-row um-c0">
+        <div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div>
+        <div class="um-vals">
+          <span class="um-val um-val-dl" id="mu-mbps-dl">—</span>
+          <span class="um-val-sep">·</span>
+          <span class="um-val um-val-ul" id="mu-mbps-ul">—</span>
+        </div>
+        <div class="um-desc">
+          <span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp;
+          <span style="color:var(--neon-ul);">↑ Subida</span><br>
+          Megabits por segundo · 1 Mbps = 1,000,000 bits/seg
+        </div>
+      </div>
+
+      <div class="um-row um-c1">
+        <div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div>
+        <div class="um-vals">
+          <span class="um-val um-val-dl" id="mu-MBps-dl">—</span>
+          <span class="um-val-sep">·</span>
+          <span class="um-val um-val-ul" id="mu-MBps-ul">—</span>
+        </div>
+        <div class="um-desc">
+          <span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp;
+          <span style="color:var(--neon-ul);">↑ Subida</span><br>
+          Megabytes por segundo · 1 MBps = 8 Mbps
+        </div>
+      </div>
+
+      <div class="um-row um-c2">
+        <div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div>
+        <div class="um-vals">
+          <span class="um-val um-val-dl" id="mu-kbps-dl">—</span>
+          <span class="um-val-sep">·</span>
+          <span class="um-val um-val-ul" id="mu-kbps-ul">—</span>
+        </div>
+        <div class="um-desc">
+          <span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp;
+          <span style="color:var(--neon-ul);">↑ Subida</span><br>
+          Kilobits por segundo · 1 Mbps = 1,000 kbps
+        </div>
+      </div>
+
+      <div class="um-row um-c3">
+        <div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div>
+        <div class="um-vals">
+          <span class="um-val um-val-dl" id="mu-kBps-dl">—</span>
+          <span class="um-val-sep">·</span>
+          <span class="um-val um-val-ul" id="mu-kBps-ul">—</span>
+        </div>
+        <div class="um-desc">
+          <span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp;
+          <span style="color:var(--neon-ul);">↑ Subida</span><br>
+          Kilobytes por segundo · 1 kBps = 8 kbps
+        </div>
+      </div>
+
+      <div class="um-row um-c4">
+        <div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div>
+        <div class="um-vals">
+          <span class="um-val um-val-dl" id="mu-gbps-dl">—</span>
+          <span class="um-val-sep">·</span>
+          <span class="um-val um-val-ul" id="mu-gbps-ul">—</span>
+        </div>
+        <div class="um-desc">
+          <span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp;
+          <span style="color:var(--neon-ul);">↑ Subida</span><br>
+          Gigabits por segundo · 1 Gbps = 1,000 Mbps
+        </div>
+      </div>
+
+      <div class="um-row um-c5">
+        <div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div>
+        <div class="um-vals">
+          <span class="um-val um-val-dl" id="mu-GBps-dl">—</span>
+          <span class="um-val-sep">·</span>
+          <span class="um-val um-val-ul" id="mu-GBps-ul">—</span>
+        </div>
+        <div class="um-desc">
+          <span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp;
+          <span style="color:var(--neon-ul);">↑ Subida</span><br>
+          Gigabytes por segundo · 1 GBps = 8 Gbps
+        </div>
+      </div>
+
       <div id="um-note">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>Prefijos SI: k = kilo · M = Mega · G = Giga · T = Tera</div>
     </div>
   </div>
@@ -349,6 +520,9 @@ const DL_URL = 'https://speed.cloudflare.com/__down?bytes=26214400';
 const UL_URL = 'https://speed.cloudflare.com/__up';
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
+
+// Almacena el último resultado de descarga y subida en Mbps para updateUnits
+let lastDlMbps = 0, lastUlMbps = 0;
 
 function formatFixed(mbps) {
   if (mbps <= 0) return '000.0';
@@ -419,15 +593,52 @@ function drawHisto(canvasId, samples){
   ctx.shadowBlur = 0;
 }
 
-function updateUnits(mbps){
-  const fmt = (v, d) => v === null || mbps === 0 ? '—' : v.toFixed(d);
-  const sets = [
-    ['u-mbps',mbps, mbps>=10?2:3],['u-MBps',mbps/8, 3],['u-kbps',mbps*1000, 0],
-    ['u-kBps',mbps*125, 1],['u-gbps',mbps/1000, 4],['u-GBps',mbps/8000, 5],
-    ['mu-mbps',mbps, mbps>=10?2:3],['mu-MBps',mbps/8, 3],['mu-kbps',mbps*1000, 0],
-    ['mu-kBps',mbps*125, 1],['mu-gbps',mbps/1000, 4],['mu-GBps',mbps/8000, 5],
-  ];
-  sets.forEach(([id,val,dec]) => { const el = document.getElementById(id); if(el) el.textContent = fmt(val, dec); });
+// MODIFICADO: updateUnits ahora acepta dl y ul, actualiza ambos en panel lateral y modal
+function updateUnits(dlMbps, ulMbps) {
+  // Guardamos los últimos valores conocidos
+  if (dlMbps !== undefined) lastDlMbps = dlMbps;
+  if (ulMbps !== undefined) lastUlMbps = ulMbps;
+
+  const dl = lastDlMbps, ul = lastUlMbps;
+
+  function fmtDl(val, dec) { return dl <= 0 ? '—' : val.toFixed(dec); }
+  function fmtUl(val, dec) { return ul <= 0 ? '—' : val.toFixed(dec); }
+
+  // Panel lateral: ↓ DL
+  const setDL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtDl(val, dec); };
+  setDL('u-mbps-dl',  dl,        dl>=10?2:3);
+  setDL('u-MBps-dl',  dl/8,      3);
+  setDL('u-kbps-dl',  dl*1000,   0);
+  setDL('u-kBps-dl',  dl*125,    1);
+  setDL('u-gbps-dl',  dl/1000,   4);
+  setDL('u-GBps-dl',  dl/8000,   5);
+
+  // Panel lateral: ↑ UL
+  const setUL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtUl(val, dec); };
+  setUL('u-mbps-ul',  ul,        ul>=10?2:3);
+  setUL('u-MBps-ul',  ul/8,      3);
+  setUL('u-kbps-ul',  ul*1000,   0);
+  setUL('u-kBps-ul',  ul*125,    1);
+  setUL('u-gbps-ul',  ul/1000,   4);
+  setUL('u-GBps-ul',  ul/8000,   5);
+
+  // Modal: ↓ DL
+  const setMDL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtDl(val, dec); };
+  setMDL('mu-mbps-dl',  dl,        dl>=10?2:3);
+  setMDL('mu-MBps-dl',  dl/8,      3);
+  setMDL('mu-kbps-dl',  dl*1000,   0);
+  setMDL('mu-kBps-dl',  dl*125,    1);
+  setMDL('mu-gbps-dl',  dl/1000,   4);
+  setMDL('mu-GBps-dl',  dl/8000,   5);
+
+  // Modal: ↑ UL
+  const setMUL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtUl(val, dec); };
+  setMUL('mu-mbps-ul',  ul,        ul>=10?2:3);
+  setMUL('mu-MBps-ul',  ul/8,      3);
+  setMUL('mu-kbps-ul',  ul*1000,   0);
+  setMUL('mu-kBps-ul',  ul*125,    1);
+  setMUL('mu-gbps-ul',  ul/1000,   4);
+  setMUL('mu-GBps-ul',  ul/8000,   5);
 }
 
 function updateMetrics(){
@@ -488,7 +699,8 @@ function measureDownloadRound(numThreads, roundDurationMs) {
           allSamples.push(ewma); chartData.push({v: ewma});
           if (ewma > peakMbps) peakMbps = ewma;
           setGaugeArc(ewma, Math.max(peakMbps * 1.2, 100));
-          updateUnits(ewma); updateMetrics(); drawChart();
+          // Durante descarga, solo actualiza DL en las unidades
+          updateUnits(ewma, undefined); updateMetrics(); drawChart();
         }
         lastSampleBytes = totalBytesReceived; lastSampleTime = now;
       }
@@ -568,6 +780,7 @@ async function startTest() {
   if (running) return;
   running = true; shouldStop = false;
   chartData = []; roundsData = []; allSamples = []; peakMbps = 0;
+  lastDlMbps = 0; lastUlMbps = 0;
   document.getElementById('res-dl').textContent = '—';
   document.getElementById('res-ul').textContent = '—';
   document.getElementById('btn-start').disabled = true;
@@ -579,7 +792,7 @@ async function startTest() {
   document.getElementById('gauge-num').textContent = '000.0';
   document.getElementById('gauge-num').classList.remove('ul-mode');
   document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
-  updateUnits(0);
+  updateUnits(0, 0);
   ['d-eff','d-vs','d-eff-lbl','d-vs-lbl','dm-eff','dm-eff-lbl'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
 
   const isFast = mode === 'fast';
@@ -617,7 +830,8 @@ async function startTest() {
     }
 
     document.getElementById('res-dl').textContent = dlResult.toFixed(2);
-    updateUnits(dlResult); updateMetrics();
+    // Actualiza unidades con resultado final de DL (UL sigue siendo 0 aún)
+    updateUnits(dlResult, undefined); updateMetrics();
 
     if (!shouldStop) {
       currentPhase = 'ul';
@@ -626,6 +840,8 @@ async function startTest() {
       setStatus('MIDIENDO SUBIDA...', 80);
       const ulResult = await measureUploadRound(8, 5000);
       document.getElementById('res-ul').textContent = ulResult.mbps.toFixed(2);
+      // AQUÍ: actualiza unidades con ambos valores finales DL + UL
+      updateUnits(dlResult, ulResult.mbps);
       setStatus('SUBIDA: ' + ulResult.mbps.toFixed(1) + ' Mbps', 95);
     }
 
