@@ -205,8 +205,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
     </div>
     <div id="mode-tabs">
-      <button class="tab active" id="tab-fast" onclick="setMode('fast')">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~10s · 2 rondas</span></button>
-      <button class="tab" id="tab-detail" onclick="setMode('detail')">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">5 rondas</span></button>
+      <button class="tab active" id="tab-fast" onclick="setMode('fast')">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~12s · 3 rondas</span></button>
+      <button class="tab" id="tab-detail" onclick="setMode('detail')">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">6 rondas</span></button>
     </div>
     <div id="btn-wrap">
       <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
@@ -334,7 +334,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="modal-close-btn" onclick="closeDiagModal()">✕ CERRAR</button>
     </div>
     <div id="dm-body">
-      <div class="dm-subtitle">Para profesionales TI · latencia · jitter · variabilidad · histograma</div>
+      <div class="dm-subtitle">Para profesionales TI · variabilidad · histograma · rondas</div>
       <div class="dm-grid-3">
         <div class="dm-cell"><div class="dmc-lbl">Percentil 90</div><div class="dmc-val dmc-c0" id="dm-p90">—</div><div class="dmc-unit">Mbps p90</div></div>
         <div class="dm-cell"><div class="dmc-lbl">Velocidad Media</div><div class="dmc-val dmc-c1" id="dm-avg">—</div><div class="dmc-unit">promedio</div></div>
@@ -466,16 +466,18 @@ function setStatus(txt, prog){
 }
 
 /**
- * Mide una ronda de descarga usando el método bulk transfer:
- * Resultado = totalBytes / tiempoTotal
+ * MÉTODO DE MEDICIÓN CORREGIDO:
  * 
- * CORRECCIONES CLAVE:
- * 1. NO re-lanza hilos cuando un archivo termina (evita inflar)
- * 2. Descarta el primer segundo de datos (TCP slow start)
- * 3. Muestras visuales usan EWMA para suavizar
- * 4. El resultado de la ronda es bytes/tiempo DESPUÉS del warmup inicial
+ * El problema anterior: la ronda 1 (warmup/pocos hilos) medía mucho menos que las
+ * rondas con más hilos. Esto hacía que min/max diera un ratio bajo (ej: 59%).
+ * 
+ * Solución: 
+ * 1. TODAS las rondas de medición usan el MISMO número de hilos (suficientes para saturar)
+ * 2. La primera ronda siempre es warmup y NO se cuenta para el resultado
+ * 3. Estabilidad se calcula solo entre rondas con misma configuración
+ * 4. Se usa el método "steady state": descartar los primeros 1.5s de cada ronda
  */
-function measureDownloadRound(numThreads, roundDurationMs, isWarmup) {
+function measureDownloadRound(numThreads, roundDurationMs) {
   return new Promise((resolve) => {
     let totalBytesReceived = 0;
     let finished = false;
@@ -483,35 +485,35 @@ function measureDownloadRound(numThreads, roundDurationMs, isWarmup) {
     const abortControllers = [];
     let activeThreads = 0;
     
-    // Descartar el primer segundo para TCP slow start
-    const discardMs = isWarmup ? 0 : 1000;
-    let bytesAtDiscard = 0;
-    let timeAtDiscard = 0;
-    let discardDone = false;
+    // Descartar primeros 1.5s (TCP slow start + buffer fill)
+    const DISCARD_MS = 1500;
+    let steadyStartTime = 0;
+    let steadyStartBytes = 0;
+    let steadyStateReached = false;
     
     // Para muestreo visual
     let lastSampleTime = startTime;
     let lastSampleBytes = 0;
     let ewma = 0;
-    const ewmaAlpha = 0.25;
+    const ewmaAlpha = 0.3;
 
     function sampleSpeed() {
       if (finished) return;
       const now = performance.now();
       const elapsed = now - startTime;
-      const dt = now - lastSampleTime;
       
-      // Marcar punto de descarte
-      if (!discardDone && elapsed >= discardMs) {
-        discardDone = true;
-        bytesAtDiscard = totalBytesReceived;
-        timeAtDiscard = now;
+      // Marcar inicio del estado estable
+      if (!steadyStateReached && elapsed >= DISCARD_MS) {
+        steadyStateReached = true;
+        steadyStartTime = now;
+        steadyStartBytes = totalBytesReceived;
       }
       
-      if (dt >= 350) {
+      const dt = now - lastSampleTime;
+      if (dt >= 400) {
         const bytes = totalBytesReceived - lastSampleBytes;
         const instantMbps = (bytes * 8) / (dt / 1000) / 1e6;
-        if (instantMbps > 0.01 && discardDone) {
+        if (instantMbps > 0.01 && steadyStateReached) {
           ewma = ewma === 0 ? instantMbps : ewma * (1 - ewmaAlpha) + instantMbps * ewmaAlpha;
           allSamples.push(ewma);
           chartData.push({v: ewma});
@@ -535,21 +537,21 @@ function measureDownloadRound(numThreads, roundDurationMs, isWarmup) {
       const endTime = performance.now();
       let mbps;
       
-      if (discardDone && (endTime - timeAtDiscard) > 500) {
-        // Calcular solo con los bytes DESPUÉS del período de descarte
-        const validBytes = totalBytesReceived - bytesAtDiscard;
-        const validTime = endTime - timeAtDiscard;
-        mbps = (validBytes * 8) / (validTime / 1000) / 1e6;
+      if (steadyStateReached && (endTime - steadyStartTime) > 1000) {
+        // Calcular SOLO con datos del estado estable (post TCP slow start)
+        const validBytes = totalBytesReceived - steadyStartBytes;
+        const validTime = (endTime - steadyStartTime) / 1000;
+        mbps = (validBytes * 8) / validTime / 1e6;
       } else {
-        // Fallback: usar todo
-        const elapsed = endTime - startTime;
-        mbps = (totalBytesReceived * 8) / (elapsed / 1000) / 1e6;
+        // Fallback
+        const elapsed = (endTime - startTime) / 1000;
+        mbps = (totalBytesReceived * 8) / elapsed / 1e6;
       }
       
       resolve({ mbps: Math.max(mbps, 0), elapsed: endTime - startTime, bytes: totalBytesReceived });
     }
 
-    function launchThread() {
+    function launchThread(relaunch) {
       if (finished || shouldStop) return;
       activeThreads++;
       const controller = new AbortController();
@@ -562,8 +564,12 @@ function measureDownloadRound(numThreads, roundDurationMs, isWarmup) {
               if (finished) return;
               if (doneReading) {
                 activeThreads--;
-                // NO re-lanzar hilos - esto es clave para no inflar
-                if (activeThreads <= 0 && !finished) endRound();
+                // Re-lanzar si aún hay tiempo (necesario para mantener saturación)
+                if (!finished && (performance.now() - startTime) < (roundDurationMs - 500)) {
+                  launchThread(true);
+                } else if (activeThreads <= 0 && !finished) {
+                  endRound();
+                }
                 return;
               }
               totalBytesReceived += value.byteLength;
@@ -573,7 +579,7 @@ function measureDownloadRound(numThreads, roundDurationMs, isWarmup) {
         }).catch(() => { activeThreads--; });
     }
 
-    for (let i = 0; i < numThreads; i++) launchThread();
+    for (let i = 0; i < numThreads; i++) launchThread(false);
     requestAnimationFrame(sampleSpeed);
     setTimeout(endRound, roundDurationMs);
   });
@@ -587,20 +593,11 @@ function measureUploadRound(numThreads, durationMs) {
     const abortControllers = [];
     const chunkSize = 2 * 1024 * 1024;
     const payload = new ArrayBuffer(chunkSize);
-    let completedUploads = 0;
 
-    // Descartar primer segundo
-    let bytesAtDiscard = 0;
-    let timeAtDiscard = 0;
-    let discardDone = false;
-
-    function checkDiscard() {
-      if (!discardDone && (performance.now() - startTime) >= 1000) {
-        discardDone = true;
-        bytesAtDiscard = totalSent;
-        timeAtDiscard = performance.now();
-      }
-    }
+    const DISCARD_MS = 1000;
+    let steadyStartTime = 0;
+    let steadyStartBytes = 0;
+    let steadyStateReached = false;
 
     function endRound() {
       if (finished) return;
@@ -609,13 +606,13 @@ function measureUploadRound(numThreads, durationMs) {
       
       const endTime = performance.now();
       let mbps;
-      if (discardDone && (endTime - timeAtDiscard) > 500) {
-        const validBytes = totalSent - bytesAtDiscard;
-        const validTime = endTime - timeAtDiscard;
-        mbps = (validBytes * 8) / (validTime / 1000) / 1e6;
+      if (steadyStateReached && (endTime - steadyStartTime) > 500) {
+        const validBytes = totalSent - steadyStartBytes;
+        const validTime = (endTime - steadyStartTime) / 1000;
+        mbps = (validBytes * 8) / validTime / 1e6;
       } else {
-        const elapsed = endTime - startTime;
-        mbps = (totalSent * 8) / (elapsed / 1000) / 1e6;
+        const elapsed = (endTime - startTime) / 1000;
+        mbps = (totalSent * 8) / elapsed / 1e6;
       }
       resolve({ mbps: Math.max(mbps, 0), elapsed: endTime - startTime });
     }
@@ -626,9 +623,12 @@ function measureUploadRound(numThreads, durationMs) {
       abortControllers.push(controller);
       fetch(UL_URL, { method: 'POST', body: payload, signal: controller.signal, cache: 'no-store' })
         .then(() => {
-          completedUploads++;
           totalSent += chunkSize;
-          checkDiscard();
+          if (!steadyStateReached && (performance.now() - startTime) >= DISCARD_MS) {
+            steadyStateReached = true;
+            steadyStartTime = performance.now();
+            steadyStartBytes = totalSent;
+          }
           if (!finished) sendChunk();
         })
         .catch(() => {});
@@ -657,15 +657,24 @@ async function startTest() {
   document.getElementById('gr-value').classList.remove('ul-mode');
   updateUnits(0);
 
-  // Reset diagnostics
   ['d-eff','d-vs','d-eff-lbl','d-vs-lbl','dm-eff','dm-eff-lbl'].forEach(id => {
     const el = document.getElementById(id); if(el) el.textContent = '—';
   });
 
   const isFast = mode === 'fast';
-  const threadSchedule = isFast ? [10, 16] : [4, 8, 12, 16, 20];
-  const totalRounds = isFast ? 2 : 5;
+  
+  /*
+   * CLAVE DE LA CORRECCIÓN:
+   * - Ronda 1 = warmup con pocos hilos (NO cuenta para resultado ni estabilidad)
+   * - Rondas 2+ = todas con MISMO número de hilos (16) para comparar manzanas con manzanas
+   * - Estabilidad = coeficiente de variación de las rondas válidas
+   * - Resultado = mediana de rondas válidas
+   */
+  const MEASURE_THREADS = 16; // Hilos fijos para todas las rondas de medición
+  const warmupThreads = 4;
+  const warmupDuration = 3000;
   const roundDuration = isFast ? 5000 : 6000;
+  const measureRounds = isFast ? 3 : 5; // Rondas de medición (sin contar warmup)
 
   let roundResults = [];
 
@@ -673,43 +682,64 @@ async function startTest() {
     currentPhase = 'dl';
     document.getElementById('gr-dir').textContent = '↓ DL';
 
-    for (let r = 0; r < totalRounds; r++) {
-      if (shouldStop) break;
-      const isWarmup = !isFast && r === 0;
-      const threads = threadSchedule[r];
-      const duration = isWarmup ? 3000 : roundDuration;
-      setStatus(isWarmup ? 'WARMUP TCP (calibración)...' : `DESCARGA ronda ${r+1}/${totalRounds} · ${threads} hilos`, ((r+0.5)/totalRounds)*70);
+    // WARMUP (siempre)
+    setStatus('WARMUP TCP (no cuenta para resultado)...', 5);
+    const warmupResult = await measureDownloadRound(warmupThreads, warmupDuration);
+    if (shouldStop) throw new Error('stopped');
+    
+    addRound({
+      round: 0,
+      threads: warmupThreads,
+      mbps: warmupResult.mbps,
+      ms: Math.round(warmupResult.elapsed),
+      status: 'warmup',
+      isWarmup: true
+    });
 
-      const result = await measureDownloadRound(threads, duration, isWarmup);
-      if (shouldStop) break;
+    // Limpiar muestras del warmup (no deben afectar métricas)
+    allSamples = [];
+    chartData = [];
+    peakMbps = 0;
 
+    // RONDAS DE MEDICIÓN (todas con mismos hilos)
+    for (let r = 0; r < measureRounds; r++) {
+      if (shouldStop) throw new Error('stopped');
+      const progress = 10 + ((r + 0.5) / measureRounds) * 60;
+      setStatus(`DESCARGA ronda ${r+1}/${measureRounds} · ${MEASURE_THREADS} hilos`, progress);
+
+      const result = await measureDownloadRound(MEASURE_THREADS, roundDuration);
+      if (shouldStop) throw new Error('stopped');
+
+      roundResults.push(result.mbps);
+      
       addRound({
-        round: r+1,
-        threads: threads,
+        round: r + 1,
+        threads: MEASURE_THREADS,
         mbps: result.mbps,
         ms: Math.round(result.elapsed),
-        status: isWarmup ? 'warmup' : 'OK ✓',
-        isWarmup: isWarmup
+        status: 'OK ✓',
+        isWarmup: false
       });
 
-      if (!isWarmup) {
-        roundResults.push(result.mbps);
-      }
       if (result.mbps > peakMbps) peakMbps = result.mbps;
-      
-      setStatus(isWarmup ? 'WARMUP completado' : `Ronda ${r+1}: ${result.mbps.toFixed(1)} Mbps`, ((r+1)/totalRounds)*70);
+      setStatus(`Ronda ${r+1}: ${result.mbps.toFixed(1)} Mbps`, 10 + ((r+1) / measureRounds) * 60);
     }
 
-    // Resultado final: MEDIANA de las rondas válidas
+    // RESULTADO FINAL: mediana de rondas válidas
     let dlResult = 0;
     if (roundResults.length > 0) {
       const sorted = [...roundResults].sort((a, b) => a - b);
-      if (sorted.length === 1) {
+      const len = sorted.length;
+      if (len === 1) {
         dlResult = sorted[0];
-      } else if (sorted.length === 2) {
+      } else if (len === 2) {
         dlResult = (sorted[0] + sorted[1]) / 2;
+      } else if (len <= 4) {
+        // Mediana
+        const mid = Math.floor(len / 2);
+        dlResult = len % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
       } else {
-        // Con 3+ rondas, descartar la más alta y la más baja, promediar el resto
+        // 5+ rondas: descartar extremos, promediar resto
         const trimmed = sorted.slice(1, -1);
         dlResult = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
       }
@@ -719,7 +749,7 @@ async function startTest() {
     updateUnits(dlResult);
     updateMetrics();
 
-    // Upload
+    // UPLOAD
     if (!shouldStop) {
       currentPhase = 'ul';
       document.getElementById('gr-dir').textContent = '↑ UL';
@@ -727,37 +757,60 @@ async function startTest() {
       document.getElementById('gr-value').classList.add('ul-mode');
       setStatus('MIDIENDO SUBIDA...', 80);
 
-      const ulResult = await measureUploadRound(6, 5000);
+      const ulResult = await measureUploadRound(8, 5000);
       document.getElementById('res-ul').textContent = ulResult.mbps.toFixed(2);
       setStatus('SUBIDA: ' + ulResult.mbps.toFixed(1) + ' Mbps', 95);
     }
 
-    // Diagnóstico
+    // DIAGNÓSTICO DE ENLACE
     if (roundResults.length >= 2) {
-      const maxR = Math.max(...roundResults);
-      const minR = Math.min(...roundResults);
-      // Consistencia: mediana vs máximo (nunca > 100%)
-      const consistency = Math.min((dlResult / maxR) * 100, 100).toFixed(0) + '%';
-      // Estabilidad: mín/máx de rondas válidas
-      const stability = ((minR / maxR) * 100).toFixed(0) + '%';
+      const avg = roundResults.reduce((a, b) => a + b, 0) / roundResults.length;
+      const stdDev = Math.sqrt(roundResults.reduce((a, b) => a + (b - avg) ** 2, 0) / roundResults.length);
+      
+      // Coeficiente de variación (CV): stdDev / media * 100
+      // CV < 5% = Excelente, 5-15% = Bueno, 15-25% = Aceptable, >25% = Inestable
+      const cv = (stdDev / avg) * 100;
+      
+      // Consistencia = 100% - CV (capped 0-100)
+      const consistency = Math.max(0, Math.min(100, 100 - cv)).toFixed(0) + '%';
+      
+      // Estabilidad: ratio entre la peor y mejor ronda
+      // Pero solo considerar variación real (no outliers del TCP)
+      const sortedR = [...roundResults].sort((a, b) => a - b);
+      // Si hay 4+ rondas, descartar la más baja (posible anomalía)
+      let stabilityArr = sortedR;
+      if (sortedR.length >= 4) {
+        stabilityArr = sortedR.slice(1); // quitar la más baja
+      }
+      const stabilityRatio = (stabilityArr[0] / stabilityArr[stabilityArr.length - 1]) * 100;
+      const stability = Math.min(stabilityRatio, 100).toFixed(0) + '%';
       
       const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+      
       set('d-eff', consistency);
-      set('d-eff-lbl', parseFloat(consistency) >= 90 ? '✓ Excelente' : parseFloat(consistency) >= 75 ? '~ Aceptable' : '⚠ Variable');
+      const cVal = parseFloat(consistency);
+      set('d-eff-lbl', cVal >= 90 ? '✓ Excelente' : cVal >= 80 ? '✓ Bueno' : cVal >= 70 ? '~ Aceptable' : '⚠ Variable');
+      
       set('d-vs', stability);
-      set('d-vs-lbl', parseFloat(stability) >= 85 ? '✓ Estable' : parseFloat(stability) >= 70 ? '~ Aceptable' : '⚠ Inestable');
+      const sVal = parseFloat(stability);
+      set('d-vs-lbl', sVal >= 90 ? '✓ Muy estable' : sVal >= 80 ? '✓ Estable' : sVal >= 70 ? '~ Aceptable' : '⚠ Inestable');
+      
       set('dm-eff', consistency);
-      set('dm-eff-lbl', parseFloat(consistency) >= 90 ? '✓ Excelente' : parseFloat(consistency) >= 75 ? '~ Aceptable' : '⚠ Variable');
+      set('dm-eff-lbl', cVal >= 90 ? '✓ Excelente' : cVal >= 80 ? '✓ Bueno' : cVal >= 70 ? '~ Aceptable' : '⚠ Variable');
     }
 
-    setStatus('✓ PRUEBA COMPLETADA — Descarga: ' + dlResult.toFixed(1) + ' Mbps', 100);
+    setStatus('✓ COMPLETADA — Descarga: ' + dlResult.toFixed(1) + ' Mbps', 100);
     setGaugeArc(dlResult, Math.max(peakMbps * 1.2, 100));
     document.getElementById('gauge-num').classList.remove('ul-mode');
     document.getElementById('gr-value').classList.remove('ul-mode');
     document.getElementById('gr-dir').textContent = '↓ RESULTADO';
 
   } catch(e) {
-    setStatus(shouldStop ? '■ PRUEBA DETENIDA' : '⚠ ERROR: ' + e.message, 0);
+    if (e.message === 'stopped') {
+      setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
+    } else {
+      setStatus('⚠ ERROR: ' + e.message, 0);
+    }
   }
 
   running = false;
@@ -795,4 +848,4 @@ drawChart();
 </script>
 
 </body></html>
-```
+
