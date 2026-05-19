@@ -1,334 +1,588 @@
 
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ SPEEDTEST 14115</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SPEEDTEST 14115</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0f;--card:rgba(255,255,255,.02);--border:rgba(255,255,255,.06);--text:#e0e0e0;--muted:#888;--dim:#666;--accent:#00d4ff;--glow:rgba(0,212,255,.3);--purple:#a855f7;--red:#ff5555}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-
-header{text-align:center;padding:24px 16px 12px;border-bottom:1px solid var(--border)}
-header h1{font-size:1.5rem;color:var(--accent);text-shadow:0 0 20px var(--glow)}
-header p{font-size:.7rem;color:var(--dim);margin-top:4px}
-
-.nav-bar{display:flex;justify-content:center;gap:10px;padding:12px 16px}
-.nav-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:8px;font-size:.75rem;cursor:pointer;transition:.3s}
-.nav-btn:hover{background:rgba(0,212,255,.08);color:var(--accent);border-color:var(--accent)}
-
-/* RESULT CARDS */
-.result-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 16px;max-width:420px;margin:0 auto}
-.result-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center}
-.result-card .lbl{font-size:.65rem;color:var(--dim);letter-spacing:1.5px;margin-bottom:6px}
-.result-card .val{font-size:2rem;font-weight:700;color:var(--accent);line-height:1}
-.result-card .val.up{color:var(--purple)}
-.result-card .unt{font-size:.65rem;color:var(--dim);margin-top:4px}
-
-/* MODE */
-.mode-sel{display:flex;justify-content:center;gap:10px;padding:8px 16px}
-.mode-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:10px 18px;border-radius:10px;cursor:pointer;text-align:center;transition:.3s}
-.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.08)}
-.mode-btn .t{font-size:.8rem;font-weight:600}
-.mode-btn .d{font-size:.55rem;color:var(--dim);margin-top:2px}
-
-/* UNITS INLINE */
-.units-sec{text-align:center;padding:8px 16px}
-.units-tog{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;font-size:.7rem;cursor:pointer}
-.units-drop{display:none;max-width:460px;margin:10px auto 0;background:rgba(0,0,0,.6);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:left}
-.units-drop.open{display:block}
-.ur{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.ur:last-of-type{border-bottom:none}
-.ur .un{flex:0 0 70px;font-size:.75rem;color:var(--accent);font-weight:600}
-.ur .uv{flex:0 0 80px;font-size:.9rem;font-weight:700;color:#fff;text-align:center}
-.ur .ui{flex:1;font-size:.6rem;color:var(--dim)}
-.unote{margin-top:8px;padding:8px;background:rgba(0,212,255,.04);border-radius:6px;font-size:.6rem;color:var(--dim);line-height:1.5;text-align:center}
-
-/* GAUGE */
-.gauge-panel{max-width:560px;margin:16px auto;padding:0 16px}
-.gauge-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 16px}
-.gauge-title{text-align:center;font-size:.7rem;color:var(--dim);letter-spacing:1.5px;margin-bottom:20px}
-.gauge-wrap{position:relative;width:260px;height:150px;margin:0 auto 20px}
-.gauge-wrap svg{width:100%;height:100%;overflow:visible}
-.gauge-center{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none}
-.gauge-center .gv{font-size:2.6rem;font-weight:700;color:#fff;line-height:1}
-.gauge-center .gu{font-size:.7rem;color:var(--dim);margin-top:2px}
-.gauge-center .gd{font-size:.6rem;color:var(--accent);margin-top:1px}
-
-.status{text-align:center;font-size:.78rem;color:var(--muted);min-height:22px;margin-bottom:14px}
-.prog{width:100%;height:3px;background:rgba(255,255,255,.04);border-radius:2px;margin-bottom:16px;overflow:hidden;opacity:0;transition:opacity .3s}
-.prog.vis{opacity:1}
-.prog .pf{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:2px;transition:width .3s}
-
-.btns{display:flex;justify-content:center;gap:12px}
-.btn-go{background:linear-gradient(135deg,#00d4ff,#0099cc);color:#000;border:none;padding:12px 36px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;transition:.3s}
-.btn-go:hover{transform:scale(1.04);box-shadow:0 0 24px var(--glow)}
-.btn-go:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-no{background:rgba(255,50,50,.15);color:var(--red);border:1px solid rgba(255,50,50,.3);padding:12px 24px;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;display:none}
-.btn-no.vis{display:block}
-
-.rt-sec{margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-.rt-title{font-size:.6rem;color:var(--dim);text-align:center;margin-bottom:8px}
-.rt-chart{width:100%;height:56px;background:rgba(0,0,0,.3);border-radius:8px;overflow:hidden}
-.rt-chart canvas{width:100%;height:100%;display:block}
-
-/* METRICS */
-.metrics-panel{max-width:560px;margin:0 auto;padding:0 16px 16px}
-.mblock{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 14px;margin-bottom:14px}
-.mblock-title{font-size:.68rem;color:var(--dim);letter-spacing:1.5px;text-align:center;margin-bottom:14px}
-.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mi{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:12px 8px;text-align:center}
-.mi .ml{font-size:.6rem;color:var(--dim);margin-bottom:4px}
-.mi .mv{font-size:1.1rem;font-weight:700;color:#fff}
-.mi .mu{font-size:.55rem;color:var(--dim);margin-top:2px}
-
-.hchart{width:100%;height:90px;background:rgba(0,0,0,.3);border-radius:8px;overflow:hidden}
-.hchart canvas{width:100%;height:100%;display:block}
-
-.rph{text-align:center;font-size:.7rem;color:var(--dim);padding:10px}
-.rtbl{width:100%;font-size:.68rem;border-collapse:collapse;display:none}
-.rtbl th{color:var(--dim);padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.08);text-align:center;font-weight:600}
-.rtbl td{padding:7px 4px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted)}
-
-.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.di{text-align:center;padding:10px}
-.di .dl{font-size:.6rem;color:var(--dim);margin-bottom:4px}
-.di .dv{font-size:1rem;font-weight:700;color:#fff}
-.di .dn{font-size:.55rem;color:var(--dim);margin-top:2px}
-
-footer{text-align:center;padding:20px 16px 30px;font-size:.58rem;color:#333;line-height:1.7;border-top:1px solid var(--border);margin-top:10px}
-
-/* MODALS */
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;justify-content:center;align-items:center;padding:16px}
-.mbg.open{display:flex}
-.mbox{background:#12121f;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;max-width:500px;width:100%;max-height:82vh;overflow-y:auto}
-.mtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.mtop h2{font-size:.95rem;color:var(--accent)}
-.mx{background:rgba(255,255,255,.08);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center}
-
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.measuring .gv{animation:pulse 1s infinite}
+:root {
+  --bg:#050508;--surface:#0d0d14;--surface2:#13131e;--border:#1e1e32;
+  --accent:#00ffe0;--accent2:#00bfaa;--neon-dl:#00ffe0;--neon-ul:#bf00ff;
+  --neon-y:#ffe000;--neon-o:#ff6a00;--neon-p:#ff00aa;--text:#e8e8ff;
+  --text-dim:#55556a;--text-mid:#9090b0;--danger:#ff2244;--ok:#00ffe0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
+#app{width:100vw;height:100vh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;}
+#header{display:flex;align-items:center;justify-content:space-between;padding:0.4em 1.2em;border-bottom:1px solid var(--border);background:linear-gradient(90deg,#0d0d14 0%,#0a0a16 50%,#0d0d14 100%);flex-shrink:0;gap:0.8em;}
+#header-left h1{font-family:'Orbitron',monospace;font-size:clamp(14px,2.2vw,26px);font-weight:900;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.18em;line-height:1;animation:neon-flicker 6s ease-in-out infinite;}
+#header-left .subtitle{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,1vw,12px);color:var(--text-dim);letter-spacing:0.12em;margin-top:0.15em;}
+.hdr-btn{padding:0.35em 0.9em;border-radius:3px;font-family:'Orbitron',monospace;font-size:clamp(8px,0.9vw,11px);font-weight:700;letter-spacing:0.1em;cursor:pointer;background:transparent;transition:all 0.18s;white-space:nowrap;}
+.hdr-btn-units{border:1px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 8px var(--neon-dl);}
+.hdr-btn-units:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 18px var(--neon-dl);}
+.hdr-btn-diag{border:1px solid var(--neon-ul);color:var(--neon-ul);text-shadow:0 0 8px var(--neon-ul);}
+.hdr-btn-diag:hover{background:var(--neon-ul);color:#fff;box-shadow:0 0 18px var(--neon-ul);}
+#main{display:grid;gap:0.55em;padding:0.55em;overflow:hidden;min-height:0;}
+@media(orientation:landscape){#main{grid-template-columns:1fr 1.5fr 1fr;grid-template-rows:1fr;}}
+@media(orientation:portrait){#main{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;}}
+.col{display:flex;flex-direction:column;gap:0.5em;overflow:hidden;min-height:0;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6em 0.8em;flex-shrink:0;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3;}
+.card.grow{flex:1;min-height:0;}
+.card-label{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.35em;}
+#results-bar{display:flex;gap:0.5em;flex-shrink:0;}
+.res-box{flex:1;background:var(--surface2);border-radius:6px;padding:0.5em 0.6em;text-align:center;position:relative;overflow:hidden;}
+.res-box-dl{border:2px solid var(--neon-dl);box-shadow:0 0 18px rgba(0,255,224,0.18),inset 0 0 20px rgba(0,255,224,0.04);}
+.res-box-ul{border:2px solid var(--neon-ul);box-shadow:0 0 18px rgba(191,0,255,0.18),inset 0 0 20px rgba(191,0,255,0.04);}
+.res-arrow{font-family:'Orbitron',monospace;font-size:clamp(10px,1.3vw,15px);font-weight:900;letter-spacing:0.1em;margin-bottom:0.1em;}
+.res-arrow-dl{color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);}
+.res-arrow-ul{color:var(--neon-ul);text-shadow:0 0 10px var(--neon-ul);}
+.res-val{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,46px);font-weight:900;line-height:1;letter-spacing:-0.02em;}
+.res-val-dl{color:var(--neon-dl);text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.4);}
+.res-val-ul{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.4);}
+.res-unit{font-family:'Orbitron',monospace;font-size:clamp(9px,1.1vw,13px);font-weight:700;letter-spacing:0.12em;margin-top:0.1em;}
+.res-unit-dl{color:var(--accent2);}
+.res-unit-ul{color:#9900cc;}
+#mode-tabs{display:flex;gap:0.4em;flex-shrink:0;}
+.tab{flex:1;padding:0.4em 0.3em;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:clamp(8px,0.95vw,11px);font-weight:700;letter-spacing:0.08em;cursor:pointer;border-radius:4px;transition:all 0.18s;text-align:center;line-height:1.3;}
+.tab.active{border-color:var(--neon-y);color:var(--neon-y);background:rgba(255,224,0,0.06);box-shadow:0 0 12px rgba(255,224,0,0.15);text-shadow:0 0 8px var(--neon-y);}
+.tab:not(.active):hover{border-color:var(--text-mid);color:var(--text-mid);}
+#units-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+#units-card-header{display:flex;align-items:center;justify-content:space-between;padding:0.4em 0.7em;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;flex-shrink:0;}
+#units-card-header .uch-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.15em;}
+#units-card-toggle{font-family:'Orbitron',monospace;font-size:clamp(9px,1vw,12px);color:var(--neon-dl);font-weight:700;transition:transform 0.2s;}
+#units-card-body{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;padding:0.45em;overflow-y:auto;flex:1;min-height:0;}
+.urow{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.45em;position:relative;overflow:hidden;}
+.urow::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;}
+.urow-c0::after{background:var(--neon-dl);}
+.urow-c1::after{background:var(--neon-ul);}
+.urow-c2::after{background:var(--neon-y);}
+.urow-c3::after{background:var(--neon-o);}
+.urow-c4::after{background:var(--neon-p);}
+.urow-c5::after{background:#44aaff;}
+.urow-sym{font-family:'Orbitron',monospace;font-size:clamp(9px,1.1vw,13px);font-weight:700;letter-spacing:0.05em;}
+.urow-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.75vw,9px);color:var(--text-dim);margin-left:0.3em;}
+.urow-val{font-family:'Orbitron',monospace;font-size:clamp(11px,1.4vw,17px);font-weight:900;color:var(--text);line-height:1.2;margin:0.12em 0;letter-spacing:-0.01em;}
+.urow-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;line-height:1.25;}
+.units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
+.units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.5em 0.6em;gap:0.3em;position:relative;overflow:hidden;}
+#gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
+#gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
+#gauge-wrap{position:relative;width:min(22vw,22vh,190px);aspect-ratio:1;flex-shrink:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(30vw,16vh,130px);}}
+#gauge-svg{width:100%;height:100%;}
+#gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,4vw,40px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
+#gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(7px,0.9vw,11px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.1em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.95vw,12px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.08em;}
+#status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1vw,13px);color:var(--text-mid);text-align:center;min-height:1.5em;letter-spacing:0.08em;flex-shrink:0;}
+#progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
+#progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
+#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;}
+.big-btn{padding:0.5em 1.2em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(10px,1.2vw,15px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
+#btn-start{background:transparent;border:2px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);box-shadow:0 0 14px rgba(0,255,224,0.2);}
+#btn-start:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 28px var(--neon-dl);}
+#btn-stop{background:transparent;border:2px solid var(--danger);color:var(--danger);text-shadow:0 0 10px var(--danger);display:none;}
+#btn-stop:hover{background:var(--danger);color:#fff;box-shadow:0 0 22px var(--danger);}
+#chart-card{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.3em 0.6em;display:flex;flex-direction:column;min-height:0;}
+#chart-label{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.82vw,10px);color:var(--text-dim);letter-spacing:0.12em;margin-bottom:0.2em;flex-shrink:0;}
+#chart-canvas{flex:1;width:100%;height:clamp(22px,4vh,42px);display:block;}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;}
+.m-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.5em;text-align:center;}
+.m-cell .mc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;}
+.m-cell .mc-val{font-family:'Orbitron',monospace;font-size:clamp(12px,1.6vw,20px);font-weight:900;margin:0.08em 0;letter-spacing:-0.01em;}
+.m-cell .mc-unit{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;}
+.mc-c0{color:var(--neon-dl);text-shadow:0 0 10px rgba(0,255,224,0.4);}
+.mc-c1{color:var(--neon-y);text-shadow:0 0 10px rgba(255,224,0,0.3);}
+.mc-c2{color:var(--neon-o);text-shadow:0 0 10px rgba(255,106,0,0.3);}
+.mc-c3{color:var(--neon-p);text-shadow:0 0 10px rgba(255,0,170,0.3);}
+#histo-canvas{width:100%;height:clamp(28px,5vh,50px);display:block;}
+#rounds-scroll{overflow-y:auto;flex:1;min-height:0;}
+#rounds-placeholder{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);font-style:italic;padding:0.3em 0;letter-spacing:0.08em;}
+#rounds-table{display:none;width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.88vw,11px);}
+#rounds-table th{padding:0.22em 0.4em;text-align:left;color:var(--text-dim);border-bottom:1px solid var(--border);font-weight:normal;letter-spacing:0.1em;font-family:'Orbitron',monospace;font-size:clamp(7px,0.78vw,9px);}
+#rounds-table td{padding:0.2em 0.4em;color:var(--text-mid);border-bottom:1px solid rgba(30,30,50,0.7);}
+.diag-link-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;}
+.dl-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.5em;text-align:center;}
+.dl-cell .dlc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);letter-spacing:0.1em;}
+.dl-cell .dlc-val{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,18px);font-weight:900;color:var(--neon-y);text-shadow:0 0 10px rgba(255,224,0,0.3);margin:0.08em 0;}
+.dl-cell .dlc-sub{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;}
+#footer{border-top:1px solid var(--border);background:var(--surface);padding:0.25em 1.2em;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:1em;}
+#footer p{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);line-height:1.5;flex:1;letter-spacing:0.05em;}
+#footer .f-right{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);text-align:right;white-space:nowrap;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--surface);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;max-height:88vh;}
+#units-modal .modal-box{width:min(94vw,520px);border:1px solid var(--neon-dl);box-shadow:0 0 40px rgba(0,255,224,0.15);}
+#diag-modal .modal-box{width:min(96vw,600px);border:1px solid var(--neon-ul);box-shadow:0 0 40px rgba(191,0,255,0.15);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:0.6em 1em;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-head-title{font-family:'Orbitron',monospace;font-size:clamp(10px,1.3vw,15px);font-weight:900;letter-spacing:0.14em;}
+#units-modal .modal-head-title{color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);}
+#diag-modal .modal-head-title{color:var(--neon-ul);text-shadow:0 0 10px var(--neon-ul);}
+.modal-close-btn{background:transparent;border:1px solid var(--danger);color:var(--danger);font-family:'Orbitron',monospace;font-size:clamp(8px,1vw,12px);font-weight:700;padding:0.25em 0.7em;border-radius:3px;cursor:pointer;letter-spacing:0.1em;transition:all 0.15s;}
+.modal-close-btn:hover{background:var(--danger);color:#fff;box-shadow:0 0 14px var(--danger);}
+#um-body{display:grid;grid-template-columns:1fr 1fr;gap:0.5em;padding:0.7em;overflow-y:auto;flex:1;}
+.um-row{background:var(--surface2);border-radius:5px;padding:0.55em 0.7em;position:relative;overflow:hidden;}
+.um-row::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.um-c0::after{background:var(--neon-dl);}
+.um-c1::after{background:var(--neon-ul);}
+.um-c2::after{background:var(--neon-y);}
+.um-c3::after{background:var(--neon-o);}
+.um-c4::after{background:var(--neon-p);}
+.um-c5::after{background:#44aaff;}
+.um-sym{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,17px);font-weight:900;letter-spacing:0.05em;}
+.um-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.85vw,10px);color:var(--text-dim);margin-left:0.4em;}
+.um-val{font-family:'Orbitron',monospace;font-size:clamp(15px,2vw,24px);font-weight:900;color:var(--text);line-height:1.15;margin:0.15em 0;letter-spacing:-0.01em;}
+.um-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(9px,0.95vw,12px);color:var(--text-dim);font-weight:600;line-height:1.3;}
+#um-note{grid-column:1/-1;font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,10px);color:var(--text-dim);padding:0.5em 0.7em;border-top:1px solid var(--border);line-height:1.65;}
+#dm-body{padding:0.7em;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:0.6em;}
+.dm-subtitle{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.1em;}
+.dm-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4em;}
+.dm-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.4em 0.5em;text-align:center;}
+.dm-cell .dmc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,9px);color:var(--text-dim);letter-spacing:0.1em;}
+.dm-cell .dmc-val{font-family:'Orbitron',monospace;font-size:clamp(14px,1.8vw,22px);font-weight:900;margin:0.1em 0;}
+.dm-cell .dmc-unit{font-family:'Rajdhani',sans-serif;font-size:clamp(8px,0.85vw,10px);color:var(--text-dim);font-weight:600;}
+.dmc-c0{color:var(--neon-dl);}
+.dmc-c1{color:var(--neon-y);}
+.dmc-c2{color:var(--neon-o);}
+.dmc-c3{color:var(--neon-p);}
+.dmc-c4{color:#44aaff;}
+.dmc-c5{color:var(--neon-ul);}
+.dm-sec-label{font-family:'Orbitron',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.14em;margin-bottom:0.25em;}
+#dm-histo{width:100%;height:clamp(40px,7vh,65px);display:block;background:var(--surface2);border:1px solid var(--border);border-radius:3px;}
+#dm-rounds-placeholder{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);font-style:italic;letter-spacing:0.08em;}
+#dm-rounds-table{display:none;width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);}
+#dm-rounds-table th{padding:0.25em 0.4em;text-align:left;color:var(--text-dim);border-bottom:1px solid var(--border);font-family:'Orbitron',monospace;font-size:clamp(7px,0.8vw,9px);font-weight:700;letter-spacing:0.1em;}
+#dm-rounds-table td{padding:0.22em 0.4em;color:var(--text-mid);border-bottom:1px solid rgba(30,30,50,0.7);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:#1e1e32;border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-dim);}
+@keyframes pulse-glow{0%,100%{opacity:1;}50%{opacity:0.55;}}
+.pulsing{animation:pulse-glow 0.9s ease-in-out infinite;}
+@keyframes neon-flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:0.4;}94%{opacity:1;}96%{opacity:0.6;}97%{opacity:1;}}
 </style>
 </head>
 <body>
+<div id="app">
 
-<header>
-  <h1>⚡ SPEEDTEST 14115</h1>
-  <p>descargas paralelas · todas las unidades · resultados claros</p>
+<header id="header">
+  <div id="header-left">
+    <h1>⚡ SPEEDTEST 14115</h1>
+    <div class="subtitle">descargas paralelas · todas las unidades · resultados claros</div>
+  </div>
+  <div style="display:flex;gap:0.5em;align-items:center;flex-shrink:0;">
+    <button class="hdr-btn hdr-btn-units" id="btn-units-open">📊 UNIDADES</button>
+    <button class="hdr-btn hdr-btn-diag" id="btn-diag-open">⚙ DIAGNÓSTICO</button>
+  </div>
 </header>
 
-<div class="nav-bar">
-  <button class="nav-btn" onclick="openModal('modal-units')">📊 UNIDADES</button>
-  <button class="nav-btn" onclick="openModal('modal-diag')">⚙ DIAGNÓSTICO</button>
-</div>
+<div id="main">
 
-<div class="result-cards">
-  <div class="result-card">
-    <div class="lbl">↓ DESCARGA</div>
-    <div class="val" id="dl-result">—</div>
-    <div class="unt">Mbps</div>
-  </div>
-  <div class="result-card">
-    <div class="lbl">↑ SUBIDA</div>
-    <div class="val up" id="ul-result">—</div>
-    <div class="unt">Mbps</div>
-  </div>
-</div>
-
-<div class="mode-sel">
-  <div class="mode-btn active" id="mode-fast" onclick="setMode('fast')">
-    <div class="t">⚡ RÁPIDA</div>
-    <div class="d">~6s · 2 rondas</div>
-  </div>
-  <div class="mode-btn" id="mode-detail" onclick="setMode('detail')">
-    <div class="t">🔬 DETALLADA</div>
-    <div class="d">5 rondas</div>
-  </div>
-</div>
-
-<div class="units-sec">
-  <button class="units-tog" onclick="toggleUnits()">TODAS LAS UNIDADES ▼</button>
-  <div class="units-drop" id="units-drop">
-    <div class="ur"><span class="un">Mbps</span><span class="uv" id="u-mbps">—</span><span class="ui">Megabits/seg · estándar ISP</span></div>
-    <div class="ur"><span class="un">MBps</span><span class="uv" id="u-MBps">—</span><span class="ui">Megabytes/seg · gestor descarga</span></div>
-    <div class="ur"><span class="un">kbps</span><span class="uv" id="u-kbps">—</span><span class="ui">Kilobits/seg · VoIP, radio</span></div>
-    <div class="ur"><span class="un">kBps</span><span class="uv" id="u-kBps">—</span><span class="ui">Kilobytes/seg · descargas lentas</span></div>
-    <div class="ur"><span class="un">Gbps</span><span class="uv" id="u-gbps">—</span><span class="ui">Gigabits/seg · fibra alta gama</span></div>
-    <div class="ur"><span class="un">GBps</span><span class="uv" id="u-GBps">—</span><span class="ui">Gigabytes/seg · datacenter</span></div>
-    <div class="unote">■ b minúscula = bits | ■ B mayúscula = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps | k · M · G · T</div>
-  </div>
-</div>
-
-<div class="gauge-panel">
-  <div class="gauge-card" id="gauge-card">
-    <div class="gauge-title">VELOCIDAD EN TIEMPO REAL</div>
-    <div class="gauge-wrap">
-      <svg viewBox="0 0 260 140">
-        <defs>
-          <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#00d4ff"/>
-            <stop offset="50%" stop-color="#a855f7"/>
-            <stop offset="100%" stop-color="#ff5555"/>
-          </linearGradient>
-        </defs>
-        <path d="M 25 130 A 105 105 0 0 1 235 130" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="12" stroke-linecap="round"/>
-        <path d="M 25 130 A 105 105 0 0 1 235 130" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" id="gauge-arc" stroke-dasharray="330" stroke-dashoffset="330"/>
-      </svg>
-      <div class="gauge-center">
-        <div class="gv" id="gauge-val">—</div>
-        <div class="gu">Mbps</div>
-        <div class="gd" id="gauge-dir">↓ DL</div>
+  <div class="col" id="col-left">
+    <div id="results-bar">
+      <div class="res-box res-box-dl">
+        <div class="res-arrow res-arrow-dl">↓ DESCARGA</div>
+        <div class="res-val res-val-dl" id="res-dl">—</div>
+        <div class="res-unit res-unit-dl">Mbps</div>
+      </div>
+      <div class="res-box res-box-ul">
+        <div class="res-arrow res-arrow-ul">↑ SUBIDA</div>
+        <div class="res-val res-val-ul" id="res-ul">—</div>
+        <div class="res-unit res-unit-ul">Mbps</div>
       </div>
     </div>
-    <div class="status" id="status">Presiona INICIAR para medir tu conexión</div>
-    <div class="prog" id="prog"><div class="pf" id="progfill"></div></div>
-    <div class="btns">
-      <button class="btn-go" id="btn-go" onclick="startTest()">▶ INICIAR</button>
-      <button class="btn-no" id="btn-no" onclick="stopTest()">■ DETENER</button>
+    <div id="mode-tabs">
+      <button class="tab active" id="tab-fast" onclick="setMode('fast')">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~6s · 2 rondas</span></button>
+      <button class="tab" id="tab-detail" onclick="setMode('detail')">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">5 rondas</span></button>
     </div>
-    <div class="rt-sec">
-      <div class="rt-title">VELOCIDAD EN TIEMPO REAL — fluctuaciones normales de red</div>
-      <div class="rt-chart"><canvas id="rt-cv"></canvas></div>
+    <div id="units-card" class="grow">
+      <div id="units-card-header" onclick="toggleUnitsCard()">
+        <span class="uch-title">TODAS LAS UNIDADES</span>
+        <span id="units-card-toggle">▼</span>
+      </div>
+      <div id="units-card-body">
+        <div class="urow urow-c0">
+          <div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div>
+          <div class="urow-val" id="u-mbps">—</div>
+          <div class="urow-desc">Megabits/seg · estándar ISP</div>
+        </div>
+        <div class="urow urow-c1">
+          <div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div>
+          <div class="urow-val" id="u-MBps">—</div>
+          <div class="urow-desc">Megabytes/seg · gestor descarga</div>
+        </div>
+        <div class="urow urow-c2">
+          <div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div>
+          <div class="urow-val" id="u-kbps">—</div>
+          <div class="urow-desc">Kilobits/seg · VoIP, radio</div>
+        </div>
+        <div class="urow urow-c3">
+          <div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div>
+          <div class="urow-val" id="u-kBps">—</div>
+          <div class="urow-desc">Kilobytes/seg · descargas lentas</div>
+        </div>
+        <div class="urow urow-c4">
+          <div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div>
+          <div class="urow-val" id="u-gbps">—</div>
+          <div class="urow-desc">Gigabits/seg · fibra alta gama</div>
+        </div>
+        <div class="urow urow-c5">
+          <div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div>
+          <div class="urow-val" id="u-GBps">—</div>
+          <div class="urow-desc">Gigabytes/seg · datacenter</div>
+        </div>
+        <div class="urow units-note-row">
+          <div class="unote">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps &nbsp;|&nbsp; k · M · G · T</div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <div class="col" id="col-center">
+    <div id="gauge-card" class="grow">
+      <div id="gauge-title">VELOCIDAD EN TIEMPO REAL</div>
+      <div id="gauge-wrap">
+        <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
+          <defs>
+            <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00ffe0"/>
+              <stop offset="50%" stop-color="#ffe000"/>
+              <stop offset="100%" stop-color="#bf00ff"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path id="gauge-arc" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"/>
+          <g id="gauge-ticks"></g>
+        </svg>
+        <div id="gauge-val">
+          <div id="gauge-num">—</div>
+          <div id="gauge-unit-lbl">Mbps</div>
+          <div id="gauge-dir-lbl">↓ DL</div>
+        </div>
+      </div>
+      <div id="status-line">Presiona INICIAR para medir tu conexión</div>
+      <div id="progress-wrap"><div id="progress-fill"></div></div>
+      <div id="btn-wrap" style="margin-top:0.4em;">
+        <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
+        <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
+      </div>
+    </div>
+    <div id="chart-card">
+      <div id="chart-label">VELOCIDAD EN TIEMPO REAL — fluctuaciones normales de red</div>
+      <canvas id="chart-canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="col" id="col-right">
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-label">MÉTRICAS DE RENDIMIENTO</div>
+      <div class="metrics-grid">
+        <div class="m-cell">
+          <div class="mc-lbl">Percentil 90</div>
+          <div class="mc-val mc-c0" id="m-p90">—</div>
+          <div class="mc-unit">Mbps p90</div>
+        </div>
+        <div class="m-cell">
+          <div class="mc-lbl">Velocidad Media</div>
+          <div class="mc-val mc-c1" id="m-avg">—</div>
+          <div class="mc-unit">promedio</div>
+        </div>
+        <div class="m-cell">
+          <div class="mc-lbl">Vel. Mínima</div>
+          <div class="mc-val mc-c2" id="m-min">—</div>
+          <div class="mc-unit">Mbps mín</div>
+        </div>
+        <div class="m-cell">
+          <div class="mc-lbl">Desv. Estándar σ</div>
+          <div class="mc-val mc-c3" id="m-std">—</div>
+          <div class="mc-unit">variabilidad</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-label">DISTRIBUCIÓN DE MUESTRAS</div>
+      <canvas id="histo-canvas"></canvas>
+    </div>
+    <div class="card grow" style="display:flex;flex-direction:column;">
+      <div class="card-label">RONDAS DE PRUEBA</div>
+      <div id="rounds-scroll">
+        <div id="rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div>
+        <table id="rounds-table">
+          <thead>
+            <tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="rounds-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="flex-shrink:0;">
+      <div class="card-label">DIAGNÓSTICO DE ENLACE</div>
+      <div class="diag-link-grid">
+        <div class="dl-cell">
+          <div class="dlc-lbl">Efic. multi-hilo</div>
+          <div class="dlc-val" id="d-eff">—</div>
+          <div class="dlc-sub" id="d-eff-lbl">—</div>
+        </div>
+        <div class="dl-cell">
+          <div class="dlc-lbl">Final vs p90</div>
+          <div class="dlc-val" id="d-vs">—</div>
+          <div class="dlc-sub" id="d-vs-lbl">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<div class="metrics-panel">
-  <div class="mblock">
-    <div class="mblock-title">MÉTRICAS DE RENDIMIENTO</div>
-    <div class="mgrid">
-      <div class="mi"><div class="ml">Percentil 90</div><div class="mv" id="m-p90">—</div><div class="mu">Mbps p90</div></div>
-      <div class="mi"><div class="ml">Velocidad Media</div><div class="mv" id="m-avg">—</div><div class="mu">promedio</div></div>
-      <div class="mi"><div class="ml">Vel. Mínima</div><div class="mv" id="m-min">—</div><div class="mu">Mbps mín</div></div>
-      <div class="mi"><div class="ml">Desv. Estándar σ</div><div class="mv" id="m-std">—</div><div class="mu">variabilidad</div></div>
-    </div>
-  </div>
-  <div class="mblock">
-    <div class="mblock-title">DISTRIBUCIÓN DE MUESTRAS</div>
-    <div class="hchart"><canvas id="histo-cv"></canvas></div>
-  </div>
-  <div class="mblock">
-    <div class="mblock-title">RONDAS DE PRUEBA</div>
-    <div class="rph" id="rph">Ejecute la prueba para ver el detalle por ronda</div>
-    <table class="rtbl" id="rtbl"><thead><tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr></thead><tbody id="rbody"></tbody></table>
-  </div>
-  <div class="mblock">
-    <div class="mblock-title">DIAGNÓSTICO DE ENLACE</div>
-    <div class="dgrid">
-      <div class="di"><div class="dl">Efic. multi-hilo</div><div class="dv" id="d-eff">—</div><div class="dn" id="d-eff-n">—</div></div>
-      <div class="di"><div class="dl">Final vs p90</div><div class="dv" id="d-fin">—</div><div class="dn" id="d-fin-n">—</div></div>
-    </div>
-  </div>
-</div>
-
-<footer>
-  NOTA TÉCNICA: 5 rondas · speed.cloudflare.com · archivos 25MB · hasta 20 hilos · ronda 1 = warmup TCP · resultado = p90. Puede diferir de speedtest.net.<br>
-  speedtest · HTTP paralelo · sin instalación · generado 2026-05-19
+<footer id="footer">
+  <p><strong style="color:var(--text-mid);">NOTA TÉCNICA:</strong> 5 rondas · speed.cloudflare.com · archivos 25MB · hasta 20 hilos · ronda 1 = warmup TCP · resultado = p90. Puede diferir de speedtest.net.</p>
+  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>generado 2026-05-19</div>
 </footer>
 
-<!-- MODAL UNIDADES -->
-<div class="mbg" id="modal-units">
-  <div class="mbox">
-    <div class="mtop"><h2>📊 TODAS LAS UNIDADES</h2><button class="mx" onclick="closeModal('modal-units')">✕</button></div>
-    <div class="ur"><span class="un">Mbps</span><span class="uv" id="mu-mbps">—</span><span class="ui">Megabits/seg · estándar ISP · 1 Mbps = 1,000,000 bits/seg</span></div>
-    <div class="ur"><span class="un">MBps</span><span class="uv" id="mu-MBps">—</span><span class="ui">Megabytes/seg · 1 MBps = 8 Mbps</span></div>
-    <div class="ur"><span class="un">kbps</span><span class="uv" id="mu-kbps">—</span><span class="ui">Kilobits/seg · 1 Mbps = 1,000 kbps</span></div>
-    <div class="ur"><span class="un">kBps</span><span class="uv" id="mu-kBps">—</span><span class="ui">Kilobytes/seg · 1 kBps = 8 kbps</span></div>
-    <div class="ur"><span class="un">Gbps</span><span class="uv" id="mu-gbps">—</span><span class="ui">Gigabits/seg · 1 Gbps = 1,000 Mbps</span></div>
-    <div class="ur"><span class="un">GBps</span><span class="uv" id="mu-GBps">—</span><span class="ui">Gigabytes/seg · 1 GBps = 8 Gbps</span></div>
-    <div class="unote">■ b = bits | ■ B = Bytes | 1 Byte = 8 bits · Mbps ÷ 8 = MBps<br>k = kilo · M = Mega · G = Giga · T = Tera</div>
+</div>
+
+<div class="modal-overlay" id="units-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-head-title">📊 TODAS LAS UNIDADES</span>
+      <button class="modal-close-btn" onclick="closeUnitsModal()">✕ CERRAR</button>
+    </div>
+    <div id="um-body">
+      <div class="um-row um-c0">
+        <div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div>
+        <div class="um-val" id="mu-mbps">—</div>
+        <div class="um-desc">Megabits por segundo · estándar ISP y routers<br>1 Mbps = 1,000,000 bits/seg</div>
+      </div>
+      <div class="um-row um-c1">
+        <div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div>
+        <div class="um-val" id="mu-MBps">—</div>
+        <div class="um-desc">Megabytes por segundo · gestor de descarga<br>1 MBps = 8 Mbps</div>
+      </div>
+      <div class="um-row um-c2">
+        <div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div>
+        <div class="um-val" id="mu-kbps">—</div>
+        <div class="um-desc">Kilobits por segundo · VoIP, radio<br>1 Mbps = 1,000 kbps</div>
+      </div>
+      <div class="um-row um-c3">
+        <div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div>
+        <div class="um-val" id="mu-kBps">—</div>
+        <div class="um-desc">Kilobytes por segundo · descargas lentas<br>1 kBps = 8 kbps</div>
+      </div>
+      <div class="um-row um-c4">
+        <div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div>
+        <div class="um-val" id="mu-gbps">—</div>
+        <div class="um-desc">Gigabits por segundo · fibra óptica alta gama<br>1 Gbps = 1,000 Mbps</div>
+      </div>
+      <div class="um-row um-c5">
+        <div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div>
+        <div class="um-val" id="mu-GBps">—</div>
+        <div class="um-desc">Gigabytes por segundo · datacenter<br>1 GBps = 8 Gbps</div>
+      </div>
+      <div id="um-note">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>Prefijos SI: k = kilo · M = Mega · G = Giga · T = Tera</div>
+    </div>
   </div>
 </div>
 
-<!-- MODAL DIAGNÓSTICO -->
-<div class="mbg" id="modal-diag">
-  <div class="mbox">
-    <div class="mtop"><h2>⚙ DIAGNÓSTICO AVANZADO</h2><button class="mx" onclick="closeModal('modal-diag')">✕</button></div>
-    <p style="font-size:.65rem;color:#888;margin-bottom:14px">Para profesionales TI · latencia · jitter · variabilidad · histograma</p>
-    <div class="mgrid">
-      <div class="mi"><div class="ml">Percentil 90</div><div class="mv" id="md-p90">—</div><div class="mu">Mbps p90</div></div>
-      <div class="mi"><div class="ml">Velocidad Media</div><div class="mv" id="md-avg">—</div><div class="mu">promedio</div></div>
-      <div class="mi"><div class="ml">Vel. Mínima</div><div class="mv" id="md-min">—</div><div class="mu">Mbps mín</div></div>
-      <div class="mi"><div class="ml">Desv. Est. σ</div><div class="mv" id="md-std">—</div><div class="mu">variabilidad</div></div>
-      <div class="mi"><div class="ml">Muestras</div><div class="mv" id="md-samp">—</div><div class="mu">puntos datos</div></div>
-      <div class="mi"><div class="ml">Efic. multi-hilo</div><div class="mv" id="md-eff">—</div><div class="mu">—</div></div>
+<div class="modal-overlay" id="diag-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-head-title">⚙ DIAGNÓSTICO AVANZADO</span>
+      <button class="modal-close-btn" onclick="closeDiagModal()">✕ CERRAR</button>
     </div>
-    <div style="margin-top:16px"><div class="mblock-title">HISTOGRAMA DE VELOCIDAD</div><div class="hchart"><canvas id="mhisto-cv"></canvas></div></div>
-    <div style="margin-top:16px"><div class="mblock-title">RONDAS DE PRUEBA</div><div class="rph" id="mrph">Ejecute la prueba para ver detalle</div><table class="rtbl" id="mrtbl"><thead><tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr></thead><tbody id="mrbody"></tbody></table></div>
+    <div id="dm-body">
+      <div class="dm-subtitle">Para profesionales TI · latencia · jitter · variabilidad · histograma</div>
+      <div class="dm-grid-3">
+        <div class="dm-cell">
+          <div class="dmc-lbl">Percentil 90</div>
+          <div class="dmc-val dmc-c0" id="dm-p90">—</div>
+          <div class="dmc-unit">Mbps p90</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Velocidad Media</div>
+          <div class="dmc-val dmc-c1" id="dm-avg">—</div>
+          <div class="dmc-unit">promedio</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Vel. Mínima</div>
+          <div class="dmc-val dmc-c2" id="dm-min">—</div>
+          <div class="dmc-unit">Mbps mín</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Desv. Est. σ</div>
+          <div class="dmc-val dmc-c3" id="dm-std">—</div>
+          <div class="dmc-unit">variabilidad</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Muestras</div>
+          <div class="dmc-val dmc-c4" id="dm-samples">—</div>
+          <div class="dmc-unit">puntos datos</div>
+        </div>
+        <div class="dm-cell">
+          <div class="dmc-lbl">Efic. multi-hilo</div>
+          <div class="dmc-val dmc-c5" id="dm-eff">—</div>
+          <div class="dmc-unit" id="dm-eff-lbl">—</div>
+        </div>
+      </div>
+      <div>
+        <div class="dm-sec-label">HISTOGRAMA DE VELOCIDAD</div>
+        <canvas id="dm-histo"></canvas>
+      </div>
+      <div>
+        <div class="dm-sec-label">RONDAS DE PRUEBA</div>
+        <div id="dm-rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div>
+        <table id="dm-rounds-table">
+          <thead>
+            <tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="dm-rounds-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// ============================================================
-// LÓGICA DE MEDICIÓN (del archivo FUNCIONANDO index - copia.html)
-// ============================================================
+// =============================================
+// CONFIGURACIÓN
+// =============================================
+const DL_URL = 'https://speed.cloudflare.com/__down?bytes=26214400';
+const UL_URL = 'https://speed.cloudflare.com/__up';
 
-const CFG = {
-  dlURL: 'https://speed.cloudflare.com/__down?bytes=26214400',
-  ulURL: 'https://speed.cloudflare.com/__up',
-  fileSizeMB: 25
-};
+let running = false, mode = 'fast', shouldStop = false;
+let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
-let testMode = 'fast';
-let isRunning = false;
-let shouldStop = false;
-let allSamples = [];
-let roundResults = [];
-let rtData = [];
+// =============================================
+// GAUGE TICKS (visual)
+// =============================================
+(function buildTicks(){
+  const svg = document.getElementById('gauge-ticks');
+  const cx=60, cy=60, r=50, startA=Math.PI*1.1, endA=Math.PI*1.9;
+  for(let i=0; i<=10; i++){
+    const a = startA + (endA-startA)*(i/10), isMaj = i%5===0;
+    const r1 = r-5, r2 = r-(isMaj?13:9);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', cx+r1*Math.cos(a)); line.setAttribute('y1', cy+r1*Math.sin(a));
+    line.setAttribute('x2', cx+r2*Math.cos(a)); line.setAttribute('y2', cy+r2*Math.sin(a));
+    line.setAttribute('stroke', isMaj?'#333':'#1e1e2a'); line.setAttribute('stroke-width', isMaj?'2':'1');
+    svg.appendChild(line);
+  }
+})();
 
-// --- UI helpers ---
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-function toggleUnits(){document.getElementById('units-drop').classList.toggle('open')}
-function setMode(m){testMode=m;document.getElementById('mode-fast').classList.toggle('active',m==='fast');document.getElementById('mode-detail').classList.toggle('active',m==='detail')}
-function setStatus(t){document.getElementById('status').textContent=t}
-function setProgress(p){const tr=document.getElementById('prog'),f=document.getElementById('progfill');tr.classList.toggle('vis',p>0);f.style.width=p+'%'}
-function setGauge(v){document.getElementById('gauge-val').textContent=(v==null)?'—':v.toFixed(1);const a=document.getElementById('gauge-arc');a.setAttribute('stroke-dashoffset',330-(330*Math.min((v||0)/500,1)))}
+// =============================================
+// UI HELPERS (sin cambios visuales)
+// =============================================
+function setGaugeArc(mbps, maxMbps){
+  const arc = document.getElementById('gauge-arc');
+  const ratio = Math.min(mbps / (maxMbps||100), 1), dash = ratio * 251;
+  arc.setAttribute('stroke-dasharray', `${dash} ${251-dash}`);
+  document.getElementById('gauge-num').textContent = mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
+}
+
+function drawChart(){
+  const canvas = document.getElementById('chart-canvas');
+  const dpr = window.devicePixelRatio||1, w = canvas.clientWidth, h = canvas.clientHeight;
+  if(!w||!h) return;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+  const data = chartData.slice(-100); if(data.length < 2) return;
+  const maxVal = Math.max(...data.map(d=>d.v), 1);
+  const pad = {t:4, b:4, l:2, r:2}, gw = w-pad.l-pad.r, gh = h-pad.t-pad.b;
+  ctx.strokeStyle = 'rgba(30,30,50,0.8)'; ctx.lineWidth = 0.5;
+  for(let i=0; i<=3; i++){ const y = pad.t + gh*(1-i/3); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+gw, y); ctx.stroke(); }
+  const col = currentPhase==='dl' ? '0,255,224' : '191,0,255';
+  ctx.beginPath();
+  data.forEach((d, i) => { const x = pad.l + (i/(data.length-1))*gw, y = pad.t + gh*(1-d.v/maxVal); i===0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.strokeStyle = `rgba(${col},1)`; ctx.lineWidth = 2; ctx.shadowColor = `rgba(${col},0.8)`; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.lineTo(pad.l+gw, pad.t+gh); ctx.lineTo(pad.l, pad.t+gh); ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.t, 0, pad.t+gh);
+  grad.addColorStop(0, `rgba(${col},0.3)`); grad.addColorStop(1, `rgba(${col},0.01)`);
+  ctx.fillStyle = grad; ctx.fill();
+}
+
+function drawHisto(canvasId, samples){
+  const canvas = document.getElementById(canvasId); if(!canvas) return;
+  const dpr = window.devicePixelRatio||1, w = canvas.clientWidth, h = canvas.clientHeight;
+  if(!w||!h) return;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr); ctx.clearRect(0, 0, w, h);
+  if(!samples || samples.length < 2) return;
+  const BINS = 18, mn = Math.min(...samples), mx = Math.max(...samples), range = mx-mn||1;
+  const bins = new Array(BINS).fill(0);
+  samples.forEach(v => { const bi = Math.min(Math.floor(((v-mn)/range)*BINS), BINS-1); bins[bi]++; });
+  const maxBin = Math.max(...bins, 1), bw = w/BINS;
+  const colors = ['#00ffe0','#00eec0','#00dda0','#aaee00','#ffe000','#ffaa00','#ff6a00','#ff3300','#bf00ff'];
+  bins.forEach((cnt, i) => {
+    const bh = (cnt/maxBin)*(h-2), x = i*bw, y = h-bh, ci = Math.floor((i/BINS)*(colors.length-1));
+    ctx.fillStyle = colors[ci]; ctx.shadowColor = colors[ci]; ctx.shadowBlur = 4; ctx.fillRect(x+1, y, bw-2, bh);
+  });
+  ctx.shadowBlur = 0;
+}
 
 function updateUnits(mbps){
-  if(!mbps)return;
-  const v=[mbps.toFixed(2),(mbps/8).toFixed(2),(mbps*1000).toFixed(0),(mbps*1000/8).toFixed(0),(mbps/1000).toFixed(4),(mbps/8000).toFixed(5)];
-  ['u-mbps','u-MBps','u-kbps','u-kBps','u-gbps','u-GBps'].forEach((id,i)=>{const e=document.getElementById(id);if(e)e.textContent=v[i]});
-  ['mu-mbps','mu-MBps','mu-kbps','mu-kBps','mu-gbps','mu-GBps'].forEach((id,i)=>{const e=document.getElementById(id);if(e)e.textContent=v[i]});
+  const sets = [
+    ['u-mbps',mbps,mbps>=10?2:3],['u-MBps',mbps/8,3],['u-kbps',mbps*1000,0],
+    ['u-kBps',mbps*125,1],['u-gbps',mbps/1000,4],['u-GBps',mbps/8000,5],
+    ['mu-mbps',mbps,mbps>=10?2:3],['mu-MBps',mbps/8,3],['mu-kbps',mbps*1000,0],
+    ['mu-kBps',mbps*125,1],['mu-gbps',mbps/1000,4],['mu-GBps',mbps/8000,5],
+  ];
+  sets.forEach(([id,val,dec]) => { const el = document.getElementById(id); if(el) el.textContent = mbps===null ? '—' : val.toFixed(dec); });
 }
 
-// --- Charts ---
-function drawRT(){
-  const c=document.getElementById('rt-cv');if(!c)return;
-  const ctx=c.getContext('2d'),r=c.parentElement.getBoundingClientRect();
-  c.width=r.width*2;c.height=r.height*2;ctx.scale(2,2);
-  const w=r.width,h=r.height;ctx.clearRect(0,0,w,h);
-  if(rtData.length<2)return;
-  const mx=Math.max(...rtData,1);
-  ctx.beginPath();ctx.strokeStyle='#00d4ff';ctx.lineWidth=1.5;
-  rtData.forEach((v,i)=>{const x=(i/(rtData.length-1))*w,y=h-(v/mx)*(h-4);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
-  ctx.stroke();ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fillStyle='rgba(0,212,255,.08)';ctx.fill();
-}
-function drawHisto(cid,data){
-  const c=document.getElementById(cid);if(!c||!data.length)return;
-  const ctx=c.getContext('2d'),r=c.parentElement.getBoundingClientRect();
-  c.width=r.width*2;c.height=r.height*2;ctx.scale(2,2);
-  const w=r.width,h=r.height;ctx.clearRect(0,0,w,h);
-  const mn=Math.min(...data),mx=Math.max(...data),rng=mx-mn||1,bins=10,bw=rng/bins;
-  const cnts=Array(bins).fill(0);
-  data.forEach(v=>{let i=Math.floor((v-mn)/bw);if(i>=bins)i=bins-1;cnts[i]++});
-  const mc=Math.max(...cnts,1),barW=(w-20)/bins;
-  cnts.forEach((cnt,i)=>{const bH=(cnt/mc)*(h-16);ctx.fillStyle='rgba(0,212,255,.5)';ctx.fillRect(10+i*barW+1,h-8-bH,barW-2,bH)});
+function updateMetrics(){
+  if(!allSamples.length) return;
+  const s = [...allSamples].sort((a,b)=>a-b);
+  const p90 = s[Math.floor(s.length*0.9)], avg = s.reduce((a,b)=>a+b,0)/s.length, mn = s[0];
+  const std = Math.sqrt(s.reduce((a,b)=>a+(b-avg)**2, 0)/s.length);
+  const set = (id,v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('m-p90', p90.toFixed(2)); set('dm-p90', p90.toFixed(2));
+  set('m-avg', avg.toFixed(2)); set('dm-avg', avg.toFixed(2));
+  set('m-min', mn.toFixed(2)); set('dm-min', mn.toFixed(2));
+  set('m-std', std.toFixed(2)); set('dm-std', std.toFixed(2));
+  set('dm-samples', allSamples.length);
+  drawHisto('histo-canvas', allSamples); drawHisto('dm-histo', allSamples);
 }
 
-// ============================================================
-// MEDICIÓN - Lógica del archivo FUNCIONANDO
-// ============================================================
+function addRound(round){
+  roundsData.push(round);
+  const peak = Math.max(...roundsData.map(r=>r.mbps));
+  ['rounds-table','dm-rounds-table'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'table'; });
+  ['rounds-placeholder','dm-rounds-placeholder'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+  ['rounds-tbody','dm-rounds-tbody'].forEach(tbId => {
+    const tb = document.getElementById(tbId); if(!tb) return; tb.innerHTML = '';
+    roundsData.forEach((r, i) => {
+      const pct = ((r.mbps/peak)*100).toFixed(0)+'%', warm = i===0 && mode==='detail';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.round}</td><td>${r.threads}</td><td style="color:var(--neon-dl);font-family:'Orbitron',monospace;font-weight:900;">${r.mbps.toFixed(2)}</td><td style="color:var(--neon-y);">${pct}</td><td>${r.ms}</td><td style="color:${warm?'var(--text-dim)':'var(--ok)'};">${r.status}</td>`;
+      tb.appendChild(tr);
+    });
+  });
+}
 
+function setStatus(txt, prog){
+  document.getElementById('status-line').textContent = txt;
+  if(prog !== undefined) document.getElementById('progress-fill').style.width = prog+'%';
+}
+
+// =============================================
+// MEDICIÓN DE DESCARGA (lógica del archivo FUNCIONANDO)
+// Usa getReader() para leer bytes reales del stream
+// =============================================
 function measureDownloadRound(numThreads, roundDurationMs) {
   return new Promise((resolve) => {
     let totalBytesReceived = 0;
     let finished = false;
     const startTime = performance.now();
     const abortControllers = [];
-    const speedSamples = [];
     let lastSampleTime = startTime;
     let lastSampleBytes = 0;
 
@@ -340,20 +594,18 @@ function measureDownloadRound(numThreads, roundDurationMs) {
         const bytes = totalBytesReceived - lastSampleBytes;
         const mbps = (bytes * 8) / (dt / 1000) / 1e6;
         if (mbps > 0.1) {
-          speedSamples.push(mbps);
           allSamples.push(mbps);
-          rtData.push(mbps);
-          if (rtData.length > 100) rtData.shift();
-          setGauge(mbps);
-          drawRT();
+          chartData.push({v: mbps});
+          if (mbps > peakMbps) peakMbps = mbps;
+          setGaugeArc(mbps, Math.max(peakMbps * 1.2, 100));
+          updateUnits(mbps);
+          updateMetrics();
+          drawChart();
         }
         lastSampleBytes = totalBytesReceived;
         lastSampleTime = now;
       }
-      if (now - startTime >= roundDurationMs) {
-        endRound();
-        return;
-      }
+      if (now - startTime >= roundDurationMs) { endRound(); return; }
       requestAnimationFrame(sampleSpeed);
     }
 
@@ -363,43 +615,36 @@ function measureDownloadRound(numThreads, roundDurationMs) {
       abortControllers.forEach(c => { try { c.abort(); } catch(e){} });
       const elapsed = performance.now() - startTime;
       const mbps = (totalBytesReceived * 8) / (elapsed / 1000) / 1e6;
-      resolve({ mbps, elapsed, samples: speedSamples });
+      resolve({ mbps, elapsed });
     }
 
     function launchThread() {
       if (finished || shouldStop) return;
       const controller = new AbortController();
       abortControllers.push(controller);
-
-      fetch(CFG.dlURL + '&r=' + Math.random(), {
-        signal: controller.signal,
-        cache: 'no-store'
-      }).then(response => {
-        const reader = response.body.getReader();
-        function pump() {
-          reader.read().then(({ done: doneReading, value }) => {
-            if (finished) return;
-            if (doneReading) {
-              if (!finished) launchThread();
-              return;
-            }
-            totalBytesReceived += value.byteLength;
-            pump();
-          }).catch(() => {});
-        }
-        pump();
-      }).catch(() => {});
+      fetch(DL_URL + '&r=' + Math.random(), { signal: controller.signal, cache: 'no-store' })
+        .then(response => {
+          const reader = response.body.getReader();
+          (function pump() {
+            reader.read().then(({ done: doneReading, value }) => {
+              if (finished) return;
+              if (doneReading) { if (!finished) launchThread(); return; }
+              totalBytesReceived += value.byteLength;
+              pump();
+            }).catch(() => {});
+          })();
+        }).catch(() => {});
     }
 
-    for (let i = 0; i < numThreads; i++) {
-      launchThread();
-    }
-
+    for (let i = 0; i < numThreads; i++) launchThread();
     requestAnimationFrame(sampleSpeed);
     setTimeout(endRound, roundDurationMs + 3000);
   });
 }
 
+// =============================================
+// MEDICIÓN DE SUBIDA (lógica del archivo FUNCIONANDO)
+// =============================================
 function measureUploadRound(numThreads, durationMs) {
   return new Promise((resolve) => {
     let totalSent = 0;
@@ -422,161 +667,136 @@ function measureUploadRound(numThreads, durationMs) {
       if (finished || shouldStop) return;
       const controller = new AbortController();
       abortControllers.push(controller);
-
-      fetch(CFG.ulURL, {
-        method: 'POST',
-        body: payload,
-        signal: controller.signal,
-        cache: 'no-store'
-      }).then(() => {
-        totalSent += chunkSize;
-        if (!finished) sendChunk();
-      }).catch(() => {});
+      fetch(UL_URL, { method: 'POST', body: payload, signal: controller.signal, cache: 'no-store' })
+        .then(() => { totalSent += chunkSize; if (!finished) sendChunk(); })
+        .catch(() => {});
     }
 
-    for (let i = 0; i < numThreads; i++) {
-      sendChunk();
-    }
-
+    for (let i = 0; i < numThreads; i++) sendChunk();
     setTimeout(endRound, durationMs);
   });
 }
 
-// ============================================================
+// =============================================
 // TEST PRINCIPAL
-// ============================================================
-
+// =============================================
 async function startTest() {
-  if (isRunning) return;
-  isRunning = true;
-  shouldStop = false;
-  allSamples = [];
-  roundResults = [];
-  rtData = [];
+  if (running) return;
+  running = true; shouldStop = false;
+  chartData = []; roundsData = []; allSamples = []; peakMbps = 0;
+  document.getElementById('res-dl').textContent = '—';
+  document.getElementById('res-ul').textContent = '—';
+  document.getElementById('btn-start').style.display = 'none';
+  document.getElementById('btn-stop').style.display = '';
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('gauge-num').textContent = '—';
+  document.getElementById('gauge-num').classList.remove('ul-mode');
+  updateUnits(0);
 
-  document.getElementById('btn-go').disabled = true;
-  document.getElementById('btn-no').classList.add('vis');
-  document.getElementById('gauge-card').classList.add('measuring');
-  document.getElementById('dl-result').textContent = '—';
-  document.getElementById('ul-result').textContent = '—';
-  document.getElementById('gauge-dir').textContent = '↓ DL';
-
-  const rounds = testMode === 'fast' ? 2 : 5;
-  const threads = testMode === 'fast' ? [6, 12] : [4, 8, 12, 16, 20];
-  const dur = testMode === 'fast' ? 3000 : 4000;
+  const isFast = mode === 'fast';
+  const threadSchedule = isFast ? [6, 12] : [4, 8, 12, 16, 20];
+  const totalRounds = isFast ? 2 : 5;
+  const roundDuration = isFast ? 3000 : 4000;
 
   try {
-    // DESCARGA
-    for (let i = 0; i < rounds; i++) {
-      if (shouldStop) break;
-      const t = threads[i] || threads[threads.length - 1];
-      setStatus(`Descarga ronda ${i+1}/${rounds} · ${t} hilos...`);
-      setProgress(((i) / (rounds + 1)) * 100);
+    // === DESCARGA ===
+    currentPhase = 'dl';
+    document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
 
-      const res = await measureDownloadRound(t, dur);
+    for (let r = 0; r < totalRounds; r++) {
+      if (shouldStop) break;
+      const isWarmup = !isFast && r === 0;
+      const threads = isWarmup ? 2 : threadSchedule[r];
+      setStatus(isWarmup ? 'WARMUP TCP...' : `DESCARGA ${r+1}/${totalRounds}`, (r/totalRounds)*70);
+
+      const result = await measureDownloadRound(threads, isWarmup ? 2000 : roundDuration);
       if (shouldStop) break;
 
-      roundResults.push({
-        round: i + 1,
-        threads: t,
-        mbps: res.mbps,
-        elapsed: res.elapsed,
-        isWarmup: (i === 0 && testMode === 'detail')
+      addRound({
+        round: r+1,
+        threads: threads,
+        mbps: result.mbps,
+        ms: Math.round(result.elapsed),
+        status: isWarmup ? 'warmup' : 'OK ✓'
       });
+
+      if (result.mbps > peakMbps) peakMbps = result.mbps;
     }
 
-    // SUBIDA
+    // Resultado descarga = p90
+    const dlResult = allSamples.length > 0 ? [...allSamples].sort((a,b)=>a-b)[Math.floor(allSamples.length * 0.9)] : 0;
+    document.getElementById('res-dl').textContent = dlResult.toFixed(2);
+    updateUnits(dlResult);
+    updateMetrics();
+
+    // === SUBIDA ===
     if (!shouldStop) {
-      setStatus('Midiendo subida...');
-      document.getElementById('gauge-dir').textContent = '↑ UL';
-      setProgress(90);
-      const ul = await measureUploadRound(4, 3000);
-      document.getElementById('ul-result').textContent = ul.mbps.toFixed(1);
+      currentPhase = 'ul';
+      document.getElementById('gauge-dir-lbl').textContent = '↑ UL';
+      document.getElementById('gauge-num').classList.add('ul-mode');
+      setStatus('MIDIENDO SUBIDA...', 75);
+
+      const ulResult = await measureUploadRound(4, 3000);
+      document.getElementById('res-ul').textContent = ulResult.mbps.toFixed(2);
     }
 
-    // RESULTADOS
-    if (!shouldStop && allSamples.length > 0) {
-      const sorted = [...allSamples].sort((a, b) => a - b);
-      const p90 = sorted[Math.floor(sorted.length * 0.9)] || 0;
-      const avg = sorted.reduce((a, b) => a + b, 0) / sorted.length;
-      const min = sorted[0] || 0;
-      const std = Math.sqrt(sorted.reduce((s, v) => s + (v - avg) ** 2, 0) / sorted.length);
-
-      document.getElementById('dl-result').textContent = p90.toFixed(1);
-      setGauge(p90);
-      updateUnits(p90);
-
-      // Métricas main
-      document.getElementById('m-p90').textContent = p90.toFixed(1);
-      document.getElementById('m-avg').textContent = avg.toFixed(1);
-      document.getElementById('m-min').textContent = min.toFixed(1);
-      document.getElementById('m-std').textContent = std.toFixed(1);
-
-      // Métricas modal
-      document.getElementById('md-p90').textContent = p90.toFixed(1);
-      document.getElementById('md-avg').textContent = avg.toFixed(1);
-      document.getElementById('md-min').textContent = min.toFixed(1);
-      document.getElementById('md-std').textContent = std.toFixed(1);
-      document.getElementById('md-samp').textContent = sorted.length;
-
-      // Diagnóstico
-      const last = roundResults[roundResults.length - 1];
-      const first = roundResults[0];
-      if (last && first && first.mbps > 0) {
-        const eff = (last.mbps / first.mbps * 100);
-        document.getElementById('d-eff').textContent = eff.toFixed(0) + '%';
-        document.getElementById('d-eff-n').textContent = eff > 120 ? 'Escala bien' : eff > 90 ? 'Normal' : 'Limitado';
-        document.getElementById('md-eff').textContent = eff.toFixed(0) + '%';
+    // === DIAGNÓSTICO ===
+    if (roundsData.length > 1) {
+      const measured = roundsData.filter((_, i) => !((!isFast) && i === 0));
+      if (measured.length > 0) {
+        const maxR = Math.max(...measured.map(r => r.mbps));
+        const lastR = measured[measured.length-1].mbps;
+        const p90 = allSamples.length > 0 ? [...allSamples].sort((a,b)=>a-b)[Math.floor(allSamples.length*0.9)] : 0;
+        const ep = ((p90 / (maxR||1)) * 100).toFixed(0) + '%';
+        const vp = ((lastR / (p90||1)) * 100).toFixed(0) + '%';
+        const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+        set('d-eff', ep); set('d-vs', vp);
+        set('d-eff-lbl', parseFloat(ep) > 85 ? '✓ Excelente' : '⚠ Variable');
+        set('d-vs-lbl', parseFloat(vp) > 85 ? '✓ Estable' : '⚠ Inestable');
+        set('dm-eff', ep); set('dm-eff-lbl', parseFloat(ep) > 85 ? '✓ Excelente' : '⚠ Variable');
       }
-      if (last && p90 > 0) {
-        document.getElementById('d-fin').textContent = (last.mbps / p90 * 100).toFixed(0) + '%';
-        document.getElementById('d-fin-n').textContent = last.mbps >= p90 ? 'Estable' : 'Decayó';
-      }
-
-      updateRoundsTable();
-      drawHisto('histo-cv', allSamples);
-      drawHisto('mhisto-cv', allSamples);
-
-      const ulVal = document.getElementById('ul-result').textContent;
-      setStatus(`Completado · ${p90.toFixed(1)} Mbps ↓ · ${ulVal} Mbps ↑`);
     }
 
-  } catch (e) {
-    setStatus('Error: ' + e.message);
+    // Final
+    setStatus('✓ PRUEBA COMPLETADA', 100);
+    setGaugeArc(dlResult, Math.max(peakMbps * 1.2, 100));
+    document.getElementById('gauge-num').textContent = dlResult.toFixed(2);
+    document.getElementById('gauge-num').classList.remove('ul-mode');
+    document.getElementById('gauge-dir-lbl').textContent = '↓ DL FINAL';
+
+  } catch(e) {
+    setStatus(shouldStop ? '■ PRUEBA DETENIDA' : '⚠ ERROR: ' + e.message, 0);
   }
 
-  setProgress(100);
-  setTimeout(() => setProgress(0), 1000);
-  isRunning = false;
-  document.getElementById('btn-go').disabled = false;
-  document.getElementById('btn-no').classList.remove('vis');
-  document.getElementById('gauge-card').classList.remove('measuring');
+  running = false;
+  document.getElementById('btn-start').style.display = '';
+  document.getElementById('btn-stop').style.display = 'none';
 }
 
 function stopTest() {
   shouldStop = true;
-  setStatus('Detenido por el usuario');
+  running = false;
+  setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
+  document.getElementById('btn-start').style.display = '';
+  document.getElementById('btn-stop').style.display = 'none';
 }
 
-function updateRoundsTable() {
-  if (!roundResults.length) return;
-  document.getElementById('rph').style.display = 'none';
-  document.getElementById('rtbl').style.display = 'table';
-  document.getElementById('mrph').style.display = 'none';
-  document.getElementById('mrtbl').style.display = 'table';
-  const peak = Math.max(...roundResults.map(r => r.mbps));
-  let html = '';
-  roundResults.forEach(r => {
-    html += `<tr><td>${r.round}</td><td>${r.threads}</td><td style="color:#00d4ff;font-weight:700">${r.mbps.toFixed(1)}</td><td>${(r.mbps/peak*100).toFixed(0)}%</td><td>${r.elapsed.toFixed(0)}</td><td>${r.isWarmup ? '🔥 warmup' : '✓ ok'}</td></tr>`;
-  });
-  document.getElementById('rbody').innerHTML = html;
-  document.getElementById('mrbody').innerHTML = html;
-}
-
-// Close modals on bg click
-document.querySelectorAll('.mbg').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
+// =============================================
+// CONTROLES UI (sin cambios)
+// =============================================
+function setMode(m) { mode = m; document.getElementById('tab-fast').classList.toggle('active', m==='fast'); document.getElementById('tab-detail').classList.toggle('active', m==='detail'); }
+function openUnitsModal() { document.getElementById('units-modal').classList.add('open'); }
+function closeUnitsModal() { document.getElementById('units-modal').classList.remove('open'); }
+function openDiagModal() { document.getElementById('diag-modal').classList.add('open'); }
+function closeDiagModal() { document.getElementById('diag-modal').classList.remove('open'); }
+document.getElementById('btn-units-open').onclick = openUnitsModal;
+document.getElementById('btn-diag-open').onclick = openDiagModal;
+document.getElementById('units-modal').addEventListener('click', e => { if(e.target === document.getElementById('units-modal')) closeUnitsModal(); });
+document.getElementById('diag-modal').addEventListener('click', e => { if(e.target === document.getElementById('diag-modal')) closeDiagModal(); });
+let unitsOpen = true;
+function toggleUnitsCard() { unitsOpen = !unitsOpen; document.getElementById('units-card-body').style.display = unitsOpen ? 'grid' : 'none'; document.getElementById('units-card-toggle').textContent = unitsOpen ? '▼' : '▶'; }
+window.addEventListener('resize', () => { drawChart(); drawHisto('histo-canvas', allSamples); drawHisto('dm-histo', allSamples); });
+drawChart();
 </script>
 </body>
 </html>
