@@ -437,6 +437,18 @@
 
       <p class="status-msg" id="statusmsg">Presiona INICIAR para medir tu conexión</p>
 
+      <div style="display:flex;gap:6px;margin-bottom:10px;font-family:var(--mono);font-size:11px;">
+        <button id="mode-fast" onclick="setMode('fast')"
+          style="flex:1;padding:6px 0;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:#000;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.05em;">
+          ⚡ Rápida
+        </button>
+        <button id="mode-full" onclick="setMode('full')"
+          style="flex:1;padding:6px 0;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.05em;">
+          🔬 Detallada
+        </button>
+      </div>
+      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~15s · 2 rondas descarga + 1 subida</p>
+
       <div class="btn-row">
         <button class="btn primary" id="btnstart" onclick="runTest()">▶ Iniciar prueba</button>
         <button class="btn hidden" id="btnstop" onclick="doStop()">■ Detener</button>
@@ -537,7 +549,7 @@
       <div class="du-unit">M<span class="b-bit">b</span>ps</div>
     </div>
     <div class="du-card">
-      <div class="du-label">↑ SUBIDA (estimada)</div>
+      <div class="du-label">↑ SUBIDA</div>
       <div class="du-num" id="rul">—</div>
       <div class="du-unit">M<span class="b-bit">b</span>ps</div>
     </div>
@@ -674,7 +686,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2025-05-18 20:15</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 00:48</span></footer>
 </div>
 
 <script>
@@ -702,11 +714,28 @@ const GAUGE_LEN = 358, MAX_MBPS = 1000;
 const chartData = [];
 const MAX_POINTS = 40;
 let peakMbps = 0;
+let testMode = 'fast'; // 'fast' | 'full'
 
 // IT Pro state
-const allSamples = [];    // all mbps readings
-const roundLog = [];      // {round, threads, mbps, ms}
-const activeXhrs = [];    // in-flight XHRs, for abort
+const allSamples = [];
+const roundLog = [];
+const activeXhrs = [];
+
+// ─── Mode selector ─────────────────────────────────────────────────────────
+function setMode(m) {
+  testMode = m;
+  const fast = $('mode-fast'), full = $('mode-full'), desc = $('mode-desc');
+  const accent = 'var(--accent)', border = 'var(--border)', muted = 'var(--muted)';
+  if (m === 'fast') {
+    fast.style.cssText += ';background:var(--accent);border-color:var(--accent);color:#000;';
+    full.style.cssText += ';background:transparent;border-color:var(--border);color:var(--muted);';
+    desc.textContent = '~15s · 2 rondas descarga + 1 subida';
+  } else {
+    full.style.cssText += ';background:var(--accent);border-color:var(--accent);color:#000;';
+    fast.style.cssText += ';background:transparent;border-color:var(--border);color:var(--muted);';
+    desc.textContent = '~35s · 4 rondas descarga + 2 subida';
+  }
+}
 
 // ─── IT Panel toggle ───────────────────────────────────────────────────────
 function toggleIT() {
@@ -927,7 +956,100 @@ function setProgress(pct, lbl) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ─── Fetch Mbps — per-thread rate via onRate(mbps) callback ──────────────
+// ─── Upload measurement — real XHR PUT with progress tracking ────────────
+function uploadMbps(bytes, onRate) {
+  return new Promise(resolve => {
+    // Generate random data blob (can't use zeros — some proxies compress them)
+    const buf = new Uint8Array(bytes);
+    crypto.getRandomValues(buf.subarray(0, Math.min(65536, bytes))); // seed first 64KB
+    for (let i = 65536; i < bytes; i++) buf[i] = buf[i % 65536];    // repeat pattern
+    const blob = new Blob([buf]);
+
+    const xhr = new XMLHttpRequest();
+    activeXhrs.push(xhr);
+    xhr.open('POST', 'https://speed.cloudflare.com/__up', true);
+    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+
+    const t0 = performance.now();
+    let lastLoaded = 0, lastTime = t0;
+
+    xhr.upload.onprogress = e => {
+      if (!e.lengthComputable || e.loaded === 0) return;
+      const now = performance.now();
+      const dt = now - lastTime;
+      if (dt >= 300) {
+        const sent = e.loaded - lastLoaded;
+        if (sent > 0) {
+          const rate = (sent * 8) / (dt / 1000) / 1e6;
+          if (rate > 0 && rate < 2000 && onRate) onRate(rate);
+        }
+        lastLoaded = e.loaded;
+        lastTime = now;
+      }
+    };
+
+    const cleanup = () => {
+      const i = activeXhrs.indexOf(xhr);
+      if (i !== -1) activeXhrs.splice(i, 1);
+    };
+
+    xhr.onload = xhr.onerror = xhr.ontimeout = xhr.onabort = () => {
+      cleanup();
+      const ms = performance.now() - t0;
+      if (ms > 100) resolve({ mbps: (bytes * 8) / (ms / 1000) / 1e6, ms, bytes });
+      else resolve(null);
+    };
+    xhr.timeout = 30000;
+    xhr.send(blob);
+  });
+}
+
+// ─── Run parallel upload rounds ───────────────────────────────────────────
+function runUploadParallel(threads, bytes) {
+  return new Promise(resolve => {
+    const t0 = performance.now();
+    const threadRates    = new Array(threads).fill(0);
+    const threadLastSeen = new Array(threads).fill(performance.now());
+    const STALE_MS = 800;
+
+    let aggInterval = setInterval(() => {
+      const now = performance.now();
+      for (let i = 0; i < threads; i++) {
+        if (now - threadLastSeen[i] > STALE_MS) threadRates[i] = 0;
+      }
+      const total = threadRates.reduce((a, b) => a + b, 0);
+      if (total > 0.05) {
+        const display = smoothedMbps(total);
+        setGauge(display);
+        updateUnits(display);
+        drawChart(total);
+        allSamples.push(total);
+        updateITLive(total);
+      }
+    }, 250);
+
+    let done = 0;
+    const results = [];
+    for (let i = 0; i < threads; i++) {
+      uploadMbps(bytes, (rate) => {
+        threadRates[i]    = rate;
+        threadLastSeen[i] = performance.now();
+      }).then(res => {
+        threadRates[i] = 0;
+        if (res) results.push(res);
+        done++;
+        if (done === threads) {
+          clearInterval(aggInterval);
+          const totalMs    = performance.now() - t0;
+          const totalBytes = results.reduce((s, r) => s + r.bytes, 0);
+          resolve(totalBytes > 0 ? (totalBytes * 8) / (totalMs / 1000) / 1e6 : 0);
+        }
+      });
+    }
+  });
+}
+
+
 function fetchMbps(url, onRate) {
   return new Promise(resolve => {
     const xhr = new XMLHttpRequest();
@@ -1126,30 +1248,40 @@ async function runTest() {
 
   // 5 rondas: warmup → progresión hasta 20 hilos con archivos grandes
   // Más hilos = más ancho de banda agregado, supera el límite por hilo de Cloudflare
-  const testGroups = [
-    { threads:  4, bytes: 10000000, warmup: true  },  // ronda 1: warmup TCP (descartada)
-    { threads:  8, bytes: 50000000, warmup: false },  // ronda 2
-    { threads: 12, bytes: 50000000, warmup: false },  // ronda 3
-    { threads: 16, bytes: 50000000, warmup: false },  // ronda 4
-    { threads: 20, bytes: 50000000, warmup: false },  // ronda 5
-    { threads: 24, bytes: 50000000, warmup: false },  // ronda 6
-  ];
+  const dlGroups = testMode === 'fast'
+    ? [
+        { threads:  6, bytes: 10000000, warmup: true  }, // warmup
+        { threads: 12, bytes: 25000000, warmup: false }, // ronda 1
+        { threads: 16, bytes: 25000000, warmup: false }, // ronda 2
+      ]
+    : [
+        { threads:  4, bytes: 10000000, warmup: true  }, // warmup
+        { threads:  8, bytes: 50000000, warmup: false }, // ronda 1
+        { threads: 12, bytes: 50000000, warmup: false }, // ronda 2
+        { threads: 16, bytes: 50000000, warmup: false }, // ronda 3
+        { threads: 20, bytes: 50000000, warmup: false }, // ronda 4
+      ];
+
+  const ulRounds  = testMode === 'fast' ? 1 : 2;
+  const ulThreads = testMode === 'fast' ? 8 : 12;
+  const ulBytes   = testMode === 'fast' ? 15000000 : 25000000;
 
   const roundResults = [];
   const measureSamples = [];
+  const totalPhases = dlGroups.length + ulRounds;
+  let phasesDone = 0;
 
-  for (let r = 0; r < testGroups.length; r++) {
+  // ── Descarga ──
+  for (let r = 0; r < dlGroups.length; r++) {
     if (aborted) { finishStop(); return; }
-    const { threads, bytes, warmup } = testGroups[r];
-
-    // Todas las URLs apuntan a Cloudflare con parámetros únicos para evitar caché
+    const { threads, bytes, warmup } = dlGroups[r];
     const urls = Array.from({ length: threads }, (_, i) =>
       `https://speed.cloudflare.com/__down?bytes=${bytes}&_t=${Date.now()}_${r}_${i}_${Math.random()}`
     );
-
-    const pct = (r / testGroups.length) * 90;
-    const label = warmup ? `Ronda ${r+1} — calentamiento TCP` : `Ronda ${r+1}/${testGroups.length} — ${threads} hilos`;
+    const pct = (phasesDone / totalPhases) * 85;
+    const label = warmup ? `Calentamiento — ${threads} hilos` : `Descarga ${r}/${dlGroups.length - 1} — ${threads} hilos`;
     setProgress(pct, label);
+    $('gmode').textContent = '↓ DESCARGA';
 
     const t0 = performance.now();
     const { aggregatedMbps, results } = await runParallel(urls);
@@ -1158,27 +1290,37 @@ async function runTest() {
     if (aggregatedMbps > 0.1 && aggregatedMbps < 100000) {
       roundResults.push(aggregatedMbps);
       roundLog.push({ round: r+1, threads, mbps: aggregatedMbps, ms: totalMs, warmup });
-      setGauge(aggregatedMbps);
-      updateUnits(aggregatedMbps);
-      drawChart(aggregatedMbps);
     }
-
-    setProgress(((r+1) / testGroups.length) * 90, `Ronda ${r+1} completada`);
-    await sleep(300);
+    phasesDone++;
+    setProgress((phasesDone / totalPhases) * 85, warmup ? 'Calentamiento listo' : `Descarga ${r}/${dlGroups.length - 1} lista`);
+    await sleep(200);
   }
 
   if (aborted) { finishStop(); return; }
 
-  // Percentil 90: más representativo que el máximo, descarta picos puntuales
+  // Percentil 90 descarga
   function percentile90(arr) {
     if (!arr.length) return 0;
     const sorted = [...arr].sort((a,b) => a - b);
-    const idx = Math.floor(sorted.length * 0.9);
-    return sorted[Math.min(idx, sorted.length - 1)];
+    return sorted[Math.min(Math.floor(sorted.length * 0.9), sorted.length - 1)];
   }
-  const samples = measureSamples.length > 0 ? measureSamples : roundResults;
-  const dlFinal = percentile90(samples);
-  const ulEstimate = dlFinal * (0.1 + Math.random() * 0.2);
+  const dlSamples = measureSamples.length > 0 ? measureSamples : roundResults.filter((_, i) => !dlGroups[i]?.warmup);
+  const dlFinal = percentile90(dlSamples.length ? dlSamples : roundResults);
+
+  // ── Subida real ──
+  smoothBuf.length = 0; // reset smooth buffer for upload phase
+  const ulResults = [];
+  for (let u = 0; u < ulRounds; u++) {
+    if (aborted) { finishStop(); return; }
+    const pct = 85 + ((phasesDone - dlGroups.length) / ulRounds) * 13;
+    setProgress(pct, `Subida ${u+1}/${ulRounds} — ${ulThreads} hilos`);
+    $('gmode').textContent = '↑ SUBIDA';
+    const ulMbps = await runUploadParallel(ulThreads, ulBytes);
+    if (ulMbps > 0.1) ulResults.push(ulMbps);
+    phasesDone++;
+    await sleep(150);
+  }
+  const ulFinal = ulResults.length ? percentile90(ulResults) : 0;
 
   setProgress(100, 'Completado');
   // Restore gauge and graph
@@ -1195,7 +1337,7 @@ async function runTest() {
   $('us-legend-row').classList.remove('hidden');
 
   $('rdl').textContent = dlFinal.toLocaleString('es-CL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  $('rul').textContent = ulEstimate.toLocaleString('es-CL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  $('rul').textContent = ulFinal > 0 ? ulFinal.toLocaleString('es-CL', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
   $('dl-ul-row').classList.remove('hidden');
 
   $('fullgrid-header').classList.remove('hidden');
