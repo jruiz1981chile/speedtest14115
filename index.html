@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>..Speedtest 14115..</title>
+<title>SPEEDTEST 14115</title>
 <link href="./SPEEDTEST 14115 EN NEON, FALTA CORREGIR ALGO DE MEDICION_files/css2" rel="stylesheet">
 <style>
 :root {
@@ -15,7 +15,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:18px;}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
-#app{width:100vw;height:100vh;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;}
+#app{width:100vw;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 #header{display:flex;align-items:center;justify-content:space-between;padding:0.4em 1.2em;border-bottom:1px solid var(--border);background:linear-gradient(90deg,#0d0d14 0%,#0a0a16 50%,#0d0d14 100%);flex-shrink:0;gap:0.8em;}
 #header-left h1{font-family:'Orbitron',monospace;font-size:clamp(16px,2.2vw,26px);font-weight:900;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:0.18em;line-height:1;animation:neon-flicker 6s ease-in-out infinite;}
 #header-left .subtitle{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,1vw,13px);color:var(--text-dim);letter-spacing:0.12em;margin-top:0.15em;}
@@ -24,10 +24,15 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .hdr-btn-units:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 18px var(--neon-dl);}
 .hdr-btn-diag{border:1px solid var(--neon-ul);color:var(--neon-ul);text-shadow:0 0 8px var(--neon-ul);}
 .hdr-btn-diag:hover{background:var(--neon-ul);color:#fff;box-shadow:0 0 18px var(--neon-ul);}
-#main{display:grid;gap:0.55em;padding:0.55em;overflow:hidden;min-height:0;}
+#main{flex:1;display:grid;gap:0.55em;padding:0.55em;overflow:hidden;min-height:0;}
 @media(orientation:landscape){#main{grid-template-columns:1fr 1.5fr 1fr;grid-template-rows:1fr;}}
-@media(orientation:portrait){#main{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;}}
+@media(orientation:portrait){#main{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;}}
 .col{display:flex;flex-direction:column;gap:0.5em;overflow:hidden;min-height:0;}
+@media(orientation:portrait){
+  #col-left{order:2;}
+  #col-center{order:1;}
+  #col-right{order:3;display:none;}
+}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6em 0.8em;flex-shrink:0;position:relative;overflow:hidden;}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3;}
 .card.grow{flex:1;min-height:0;}
@@ -36,20 +41,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .res-box{flex:1;background:var(--surface2);border-radius:6px;padding:0.5em 0.6em;text-align:center;position:relative;overflow:hidden;}
 .res-box-dl{border:2px solid var(--neon-dl);box-shadow:0 0 18px rgba(0,255,224,0.18),inset 0 0 20px rgba(0,255,224,0.04);}
 .res-box-ul{border:2px solid var(--neon-ul);box-shadow:0 0 18px rgba(191,0,255,0.18),inset 0 0 20px rgba(191,0,255,0.04);}
-.res-arrow{font-family:'Orbitron',monospace;font-size:clamp(12px,1.3vw,16px);font-weight:900;letter-spacing:0.1em;margin-bottom:0.1em;}
+.res-arrow{font-family:'Orbitron',monospace;font-size:clamp(10px,1.3vw,16px);font-weight:900;letter-spacing:0.1em;margin-bottom:0.1em;}
 .res-arrow-dl{color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);}
 .res-arrow-ul{color:var(--neon-ul);text-shadow:0 0 10px var(--neon-ul);}
-.res-val{font-family:'Orbitron',monospace;font-size:clamp(26px,4vw,46px);font-weight:900;line-height:1;letter-spacing:-0.02em;}
+.res-val{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,46px);font-weight:900;line-height:1;letter-spacing:-0.02em;}
 .res-val-dl{color:var(--neon-dl);text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.4);}
 .res-val-ul{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.4);}
-.res-unit{font-family:'Orbitron',monospace;font-size:clamp(11px,1.1vw,14px);font-weight:700;letter-spacing:0.12em;margin-top:0.1em;}
+.res-unit{font-family:'Orbitron',monospace;font-size:clamp(10px,1.1vw,14px);font-weight:700;letter-spacing:0.12em;margin-top:0.1em;}
 .res-unit-dl{color:var(--accent2);}
 .res-unit-ul{color:#9900cc;}
 #mode-tabs{display:flex;gap:0.4em;flex-shrink:0;}
-.tab{flex:1;padding:0.5em 0.3em;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:clamp(10px,0.95vw,12px);font-weight:700;letter-spacing:0.08em;cursor:pointer;border-radius:4px;transition:all 0.18s;text-align:center;line-height:1.4;}
+.tab{flex:1;padding:0.4em 0.3em;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Orbitron',monospace;font-size:clamp(10px,0.95vw,12px);font-weight:700;letter-spacing:0.08em;cursor:pointer;border-radius:4px;transition:all 0.18s;text-align:center;line-height:1.4;}
 .tab.active{border-color:var(--neon-y);color:var(--neon-y);background:rgba(255,224,0,0.06);box-shadow:0 0 12px rgba(255,224,0,0.15);text-shadow:0 0 8px var(--neon-y);}
 .tab:not(.active):hover{border-color:var(--text-mid);color:var(--text-mid);}
 #units-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+@media(orientation:portrait){#units-card{display:none;}}
 #units-card-header{display:flex;align-items:center;justify-content:space-between;padding:0.4em 0.7em;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;flex-shrink:0;}
 #units-card-header .uch-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.15em;}
 #units-card-toggle{font-family:'Orbitron',monospace;font-size:clamp(9px,1vw,12px);color:var(--neon-dl);font-weight:700;transition:transform 0.2s;}
@@ -70,28 +76,28 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
 
 /* GAUGE */
-#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.3em;gap:0.15em;position:relative;overflow:hidden;}
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.3em;gap:0.1em;position:relative;overflow:hidden;}
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
-#gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
+#gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
 #gauge-wrap{position:relative;width:min(44vw,52vh,360px);aspect-ratio:1;flex-shrink:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(62vw,32vh,300px);}}
+@media(orientation:portrait){#gauge-wrap{width:min(52vw,30vh,240px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(20px,3.2vw,36px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,3vw,36px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 25px var(--neon-ul),0 0 50px rgba(191,0,255,0.3);}
-#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(9px,1vw,12px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.1em;}
-#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.05em;}
-#status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,13px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(8px,0.9vw,11px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.08em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.85vw,11px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.04em;}
+#status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,13px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
-#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;padding:0.3em 0;}
-@media(orientation:portrait){#btn-wrap{position:sticky;bottom:0;z-index:100;background:var(--bg);padding:0.5em 0.8em;border-top:1px solid var(--border);margin:0 -0.55em;padding-left:0.55em;padding-right:0.55em;}}
-.big-btn{padding:0.55em 1.4em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(11px,1.3vw,16px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
+#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;padding:0.2em 0;}
+.big-btn{padding:0.5em 1.4em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(11px,1.3vw,16px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
 #btn-start{background:transparent;border:2px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);box-shadow:0 0 14px rgba(0,255,224,0.2);}
 #btn-start:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 28px var(--neon-dl);}
 #btn-stop{background:transparent;border:2px solid var(--danger);color:var(--danger);text-shadow:0 0 10px var(--danger);display:none;}
 #btn-stop:hover{background:var(--danger);color:#fff;box-shadow:0 0 22px var(--danger);}
 #chart-card{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.3em 0.6em;display:flex;flex-direction:column;min-height:0;}
+@media(orientation:portrait){#chart-card{display:none;}}
 #chart-label{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.82vw,11px);color:var(--text-dim);letter-spacing:0.12em;margin-bottom:0.2em;flex-shrink:0;}
 #chart-canvas{flex:1;width:100%;height:clamp(22px,4vh,42px);display:block;}
 .metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;}
@@ -115,6 +121,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .dl-cell .dlc-val{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,18px);font-weight:900;color:var(--neon-y);text-shadow:0 0 10px rgba(255,224,0,0.3);margin:0.08em 0;}
 .dl-cell .dlc-sub{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;}
 #footer{border-top:1px solid var(--border);background:var(--surface);padding:0.25em 1.2em;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:1em;}
+@media(orientation:portrait){#footer{display:none;}}
 #footer p{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);line-height:1.5;flex:1;letter-spacing:0.05em;}
 #footer .f-right{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);text-align:right;white-space:nowrap;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
@@ -168,16 +175,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes pulse-glow{0%,100%{opacity:1;}50%{opacity:0.55;}}
 .pulsing{animation:pulse-glow 0.9s ease-in-out infinite;}
 @keyframes neon-flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:0.4;}94%{opacity:1;}96%{opacity:0.6;}97%{opacity:1;}}
-
-@media (orientation:portrait) {
-  #units-card-body { grid-template-columns: 1fr 1fr; gap: 0.25em; padding: 0.3em; }
-  .urow { padding: 0.2em 0.3em 0.2em 0.45em; overflow: visible; }
-  .urow-sym { font-size: 11px; }
-  .urow-eq { font-size: 8px; }
-  .urow-val { font-size: 15px; overflow: visible; white-space: nowrap; word-break: keep-all; }
-  .urow-desc { display: none; }
-  .units-note-row .unote { font-size: 8px; }
-}
 </style>
 </head>
 <body>
@@ -351,7 +348,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script>
 const DL_URL = 'https://speed.cloudflare.com/__down?bytes=26214400';
 const UL_URL = 'https://speed.cloudflare.com/__up';
-
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
@@ -595,7 +591,7 @@ async function startTest() {
   try {
     currentPhase = 'dl';
     document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
-    setStatus('WARMUP TCP (no cuenta para resultado)...', 5);
+    setStatus('WARMUP TCP...', 5);
     const warmupResult = await measureDownloadRound(warmupThreads, warmupDuration);
     if (shouldStop) throw new Error('stopped');
     addRound({ round: 0, threads: warmupThreads, mbps: warmupResult.mbps, ms: Math.round(warmupResult.elapsed), status: 'warmup', isWarmup: true });
@@ -603,7 +599,7 @@ async function startTest() {
 
     for (let r = 0; r < measureRounds; r++) {
       if (shouldStop) throw new Error('stopped');
-      setStatus(`DESCARGA ronda ${r+1}/${measureRounds} · ${MEASURE_THREADS} hilos`, 10 + ((r + 0.5) / measureRounds) * 60);
+      setStatus(`DESCARGA ${r+1}/${measureRounds} · ${MEASURE_THREADS} hilos`, 10 + ((r + 0.5) / measureRounds) * 60);
       const result = await measureDownloadRound(MEASURE_THREADS, roundDuration);
       if (shouldStop) throw new Error('stopped');
       roundResults.push(result.mbps);
@@ -651,19 +647,19 @@ async function startTest() {
       set('dm-eff-lbl', cVal >= 90 ? '✓ Excelente' : cVal >= 80 ? '✓ Bueno' : cVal >= 70 ? '~ Aceptable' : '⚠ Variable');
     }
 
-    setStatus('✓ COMPLETADA — Descarga: ' + dlResult.toFixed(1) + ' Mbps', 100);
+    setStatus('✓ Descarga: ' + dlResult.toFixed(1) + ' Mbps', 100);
     setGaugeArc(dlResult, Math.max(peakMbps * 1.2, 100));
     document.getElementById('gauge-num').classList.remove('ul-mode');
     document.getElementById('gauge-dir-lbl').textContent = '↓ RESULTADO';
 
   } catch(e) {
-    if (e.message === 'stopped') setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
+    if (e.message === 'stopped') setStatus('■ DETENIDA', 0);
     else setStatus('⚠ ERROR: ' + e.message, 0);
   }
 
   running = false;
   document.getElementById('btn-start').disabled = false;
-  document.getElementById('btn-start').textContent = '↺ REPETIR PRUEBA';
+  document.getElementById('btn-start').textContent = '↺ REPETIR';
   document.getElementById('btn-start').style.opacity = '';
   document.getElementById('btn-start').style.cursor = '';
   document.getElementById('btn-stop').style.display = 'none';
@@ -671,7 +667,7 @@ async function startTest() {
 
 function stopTest() {
   shouldStop = true; running = false;
-  setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
+  setStatus('■ DETENIDA', 0);
   document.getElementById('btn-start').disabled = false;
   document.getElementById('btn-start').textContent = '▶ INICIAR';
   document.getElementById('btn-start').style.opacity = '';
@@ -697,7 +693,14 @@ drawChart();
 </body></html>
 ```
 
-**Cambios:**
-- **Gauge mucho más grande:** Landscape `min(44vw, 52vh, 360px)`, Portrait `min(62vw, 32vh, 300px)`
-- **Contador más pequeño dentro:** `clamp(20px, 3.2vw, 36px)` — cabe perfectamente dentro del arco del gauge sin salirse
-- El número `000.0` + `Mbps` + `↓ DL` quedan todos centrados dentro del círculo del velocímetro, como el odómetro de un auto
+**Cambios para modo vertical/celular:**
+
+1. **Gauge siempre visible y prominente** — En portrait el gauge card va primero (`order:1`) y ocupa el espacio principal con `width:min(52vw, 30vh, 240px)`.
+
+2. **Layout portrait reorganizado:**
+   - Gauge + botones arriba (lo principal)
+   - Resultados DL/UL + tabs debajo
+   - Columna derecha (métricas, histograma, rondas) se oculta en móvil (accesible vía modal Diagnóstico)
+   - Footer y chart se ocultan en portrait para dar espacio al gauge
+
+3. **El gauge es el centro de la experiencia en móvil** — como un velocímetro de auto, siempre fijo, visible, con los números cambiando dentro sin mover nada.
