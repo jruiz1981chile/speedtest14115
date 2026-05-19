@@ -686,7 +686,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 01:05</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 01:22</span></footer>
 </div>
 
 <script>
@@ -959,19 +959,20 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // ─── Upload measurement — real XHR PUT with progress tracking ────────────
 function uploadMbps(bytes, onRate) {
   return new Promise(resolve => {
-    // Generate random data blob (can't use zeros — some proxies compress them)
     const buf = new Uint8Array(bytes);
-    crypto.getRandomValues(buf.subarray(0, Math.min(65536, bytes))); // seed first 64KB
-    for (let i = 65536; i < bytes; i++) buf[i] = buf[i % 65536];    // repeat pattern
+    crypto.getRandomValues(buf.subarray(0, Math.min(65536, bytes)));
+    for (let i = 65536; i < bytes; i++) buf[i] = buf[i % 65536];
     const blob = new Blob([buf]);
 
     const xhr = new XMLHttpRequest();
     activeXhrs.push(xhr);
-    xhr.open('POST', 'https://speed.cloudflare.com/__up', true);
+    // Cloudflare speed test upload endpoint
+    xhr.open('POST', `https://speed.cloudflare.com/__up?_t=${Date.now()}_${Math.random()}`, true);
     xhr.setRequestHeader('Content-Type', 'application/octet-stream');
 
     const t0 = performance.now();
     let lastLoaded = 0, lastTime = t0;
+    let resolved = false;
 
     xhr.upload.onprogress = e => {
       if (!e.lengthComputable || e.loaded === 0) return;
@@ -993,12 +994,27 @@ function uploadMbps(bytes, onRate) {
       if (i !== -1) activeXhrs.splice(i, 1);
     };
 
-    xhr.onload = xhr.onerror = xhr.ontimeout = xhr.onabort = () => {
+    // upload.onload fires when the data is fully sent (before server responds)
+    xhr.upload.onload = () => {
+      if (resolved) return;
+      resolved = true;
       cleanup();
       const ms = performance.now() - t0;
-      if (ms > 100) resolve({ mbps: (bytes * 8) / (ms / 1000) / 1e6, ms, bytes });
-      else resolve(null);
+      resolve(ms > 200 ? { mbps: (bytes * 8) / (ms / 1000) / 1e6, ms, bytes } : null);
     };
+
+    xhr.onload = () => {
+      if (resolved) return;
+      resolved = true;
+      cleanup();
+      const ms = performance.now() - t0;
+      resolve(ms > 200 ? { mbps: (bytes * 8) / (ms / 1000) / 1e6, ms, bytes } : null);
+    };
+
+    xhr.onerror = () => { if (!resolved) { resolved = true; cleanup(); resolve(null); } };
+    xhr.ontimeout = () => { if (!resolved) { resolved = true; cleanup(); resolve(null); } };
+    xhr.onabort = () => { if (!resolved) { resolved = true; cleanup(); resolve(null); } };
+
     xhr.timeout = 30000;
     xhr.send(blob);
   });
