@@ -27,7 +27,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #main{flex:1;display:grid;gap:0.55em;padding:0.55em;overflow:hidden;min-height:0;}
 @media(orientation:landscape){#main{grid-template-columns:1fr 1.5fr 1fr;grid-template-rows:1fr;}}
 @media(orientation:portrait){#main{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;}}
-.col{display:flex;flex-direction:column;gap:0.45em;overflow:hidden;min-height:0;}
+.col{display:flex;flex-direction:column;gap:0.5em;overflow:hidden;min-height:0;}
 @media(orientation:portrait){
   #col-left{order:2;}
   #col-center{order:1;}
@@ -85,10 +85,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:0.4em 0.3em;gap:0;position:relative;overflow:hidden;}
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;padding:0.1em 0;}
-#gauge-wrap{position:relative;width:min(32vw,58vh,300px);aspect-ratio:1;flex-shrink:1;min-height:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(52vw,28vh,220px);}}
+#gauge-row{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0.8em;flex-shrink:1;min-height:0;width:100%;}
+#gauge-wrap{position:relative;width:min(26vw,52vh,240px);aspect-ratio:1;flex-shrink:1;min-height:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(48vw,26vh,200px);}}
 #gauge-svg{width:100%;height:100%;}
-#gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+#gauge-val{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;pointer-events:none;flex-shrink:0;}
 #gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,3vw,36px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 25px var(--neon-ul),0 0 50px rgba(191,0,255,0.3);}
 #gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(8px,0.9vw,11px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.08em;}
@@ -324,23 +325,25 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="col" id="col-center">
     <div id="gauge-card" class="grow">
       <div id="gauge-title">VELOCIDAD EN TIEMPO REAL</div>
-      <div id="gauge-wrap">
-        <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
-          <defs>
-            <lineargradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#00ffe0"></stop>
-              <stop offset="50%" stop-color="#ffe000"></stop>
-              <stop offset="100%" stop-color="#bf00ff"></stop>
-            </lineargradient>
-            <filter id="glow">
-              <fegaussianblur stdDeviation="2" result="blur"></fegaussianblur>
-              <femerge><femergenode in="blur"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
-            </filter>
-          </defs>
-          <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"></path>
-          <path id="gauge-arc" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"></path>
-          <g id="gauge-ticks"></g>
-        </svg>
+      <div id="gauge-row">
+        <div id="gauge-wrap">
+          <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
+            <defs>
+              <lineargradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00ffe0"></stop>
+                <stop offset="50%" stop-color="#ffe000"></stop>
+                <stop offset="100%" stop-color="#bf00ff"></stop>
+              </lineargradient>
+              <filter id="glow">
+                <fegaussianblur stdDeviation="2" result="blur"></fegaussianblur>
+                <femerge><femergenode in="blur"></femergenode><femergenode in="SourceGraphic"></femergenode></femerge>
+              </filter>
+            </defs>
+            <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"></path>
+            <path id="gauge-arc" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"></path>
+            <g id="gauge-ticks"></g>
+          </svg>
+        </div>
         <div id="gauge-val">
           <div id="gauge-num">000.0</div>
           <div id="gauge-unit-lbl">Mbps</div>
