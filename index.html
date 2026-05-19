@@ -1,8 +1,9 @@
 
+```html
 <!DOCTYPE html>
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Speedtest 14115</title>
+<title>SPEEDTEST 14115</title>
 <link href="./SPEEDTEST 14115 EN NEON, FALTA CORREGIR ALGO DE MEDICION_files/css2" rel="stylesheet">
 <style>
 :root {
@@ -75,8 +76,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(orientation:portrait){#gauge-wrap{width:min(22vw,12vh,100px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-#gauge-num{display:none;}
-#gauge-unit-lbl{display:none;}
 #gauge-num{font-family:'Orbitron',monospace;font-size:clamp(16px,2.5vw,28px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
 #gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(8px,0.7vw,10px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
@@ -173,6 +172,37 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @keyframes pulse-glow{0%,100%{opacity:1;}50%{opacity:0.55;}}
 .pulsing{animation:pulse-glow 0.9s ease-in-out infinite;}
 @keyframes neon-flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:0.4;}94%{opacity:1;}96%{opacity:0.6;}97%{opacity:1;}}
+
+/* CORRECCIÓN MÓVIL VERTICAL - SECCIÓN UNIDADES */
+@media (orientation:portrait) {
+  #units-card-body {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25em;
+    padding: 0.3em;
+  }
+  .urow {
+    padding: 0.2em 0.3em 0.2em 0.45em;
+    overflow: visible;
+  }
+  .urow-sym {
+    font-size: 11px;
+  }
+  .urow-eq {
+    font-size: 8px;
+  }
+  .urow-val {
+    font-size: 15px;
+    overflow: visible;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+  .urow-desc {
+    display: none;
+  }
+  .units-note-row .unote {
+    font-size: 8px;
+  }
+}
 </style>
 </head>
 <body>
@@ -218,13 +248,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <span id="units-card-toggle">▼</span>
       </div>
       <div id="units-card-body">
-        <div class="urow urow-c0"><div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div><div class="urow-val" id="u-mbps">—</div><div class="urow-desc">Megabits/seg · estándar ISP</div></div>
-        <div class="urow urow-c1"><div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div><div class="urow-val" id="u-MBps">—</div><div class="urow-desc">Megabytes/seg · gestor descarga</div></div>
-        <div class="urow urow-c2"><div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div><div class="urow-val" id="u-kbps">—</div><div class="urow-desc">Kilobits/seg · VoIP, radio</div></div>
-        <div class="urow urow-c3"><div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div><div class="urow-val" id="u-kBps">—</div><div class="urow-desc">Kilobytes/seg · descargas lentas</div></div>
-        <div class="urow urow-c4"><div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div><div class="urow-val" id="u-gbps">—</div><div class="urow-desc">Gigabits/seg · fibra alta gama</div></div>
-        <div class="urow urow-c5"><div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div><div class="urow-val" id="u-GBps">—</div><div class="urow-desc">Gigabytes/seg · datacenter</div></div>
-        <div class="urow units-note-row"><div class="unote">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps &nbsp;|&nbsp; k · M · G · T</div></div>
+        <div class="urow urow-c0"><div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div><div class="urow-val" id="u-mbps">—</div><div class="urow-desc">Megabits/seg</div></div>
+        <div class="urow urow-c1"><div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div><div class="urow-val" id="u-MBps">—</div><div class="urow-desc">Megabytes/seg</div></div>
+        <div class="urow urow-c2"><div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div><div class="urow-val" id="u-kbps">—</div><div class="urow-desc">Kilobits/seg</div></div>
+        <div class="urow urow-c3"><div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div><div class="urow-val" id="u-kBps">—</div><div class="urow-desc">Kilobytes/seg</div></div>
+        <div class="urow urow-c4"><div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div><div class="urow-val" id="u-gbps">—</div><div class="urow-desc">Gigabits/seg</div></div>
+        <div class="urow urow-c5"><div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div><div class="urow-val" id="u-GBps">—</div><div class="urow-desc">Gigabytes/seg</div></div>
+        <div class="urow units-note-row"><div class="unote">■ b = bits | ■ B = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps</div></div>
       </div>
     </div>
   </div>
@@ -316,12 +346,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="modal-close-btn" onclick="closeUnitsModal()">✕ CERRAR</button>
     </div>
     <div id="um-body">
-      <div class="um-row um-c0"><div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div><div class="um-val" id="mu-mbps">—</div><div class="um-desc">Megabits por segundo · estándar ISP y routers<br>1 Mbps = 1,000,000 bits/seg</div></div>
-      <div class="um-row um-c1"><div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div><div class="um-val" id="mu-MBps">—</div><div class="um-desc">Megabytes por segundo · gestor de descarga<br>1 MBps = 8 Mbps</div></div>
-      <div class="um-row um-c2"><div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div><div class="um-val" id="mu-kbps">—</div><div class="um-desc">Kilobits por segundo · VoIP, radio<br>1 Mbps = 1,000 kbps</div></div>
-      <div class="um-row um-c3"><div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div><div class="um-val" id="mu-kBps">—</div><div class="um-desc">Kilobytes por segundo · descargas lentas<br>1 kBps = 8 kbps</div></div>
-      <div class="um-row um-c4"><div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div><div class="um-val" id="mu-gbps">—</div><div class="um-desc">Gigabits por segundo · fibra óptica alta gama<br>1 Gbps = 1,000 Mbps</div></div>
-      <div class="um-row um-c5"><div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div><div class="um-val" id="mu-GBps">—</div><div class="um-desc">Gigabytes por segundo · datacenter<br>1 GBps = 8 Gbps</div></div>
+      <div class="um-row um-c0"><div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div><div class="um-val" id="mu-mbps">—</div><div class="um-desc">Megabits por segundo<br>1 Mbps = 1,000,000 bits/seg</div></div>
+      <div class="um-row um-c1"><div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div><div class="um-val" id="mu-MBps">—</div><div class="um-desc">Megabytes por segundo<br>1 MBps = 8 Mbps</div></div>
+      <div class="um-row um-c2"><div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div><div class="um-val" id="mu-kbps">—</div><div class="um-desc">Kilobits por segundo<br>1 Mbps = 1,000 kbps</div></div>
+      <div class="um-row um-c3"><div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div><div class="um-val" id="mu-kBps">—</div><div class="um-desc">Kilobytes por segundo<br>1 kBps = 8 kbps</div></div>
+      <div class="um-row um-c4"><div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div><div class="um-val" id="mu-gbps">—</div><div class="um-desc">Gigabits por segundo<br>1 Gbps = 1,000 Mbps</div></div>
+      <div class="um-row um-c5"><div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div><div class="um-val" id="mu-GBps">—</div><div class="um-desc">Gigabytes por segundo<br>1 GBps = 8 Gbps</div></div>
       <div id="um-note">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>Prefijos SI: k = kilo · M = Mega · G = Giga · T = Tera</div>
     </div>
   </div>
@@ -465,18 +495,6 @@ function setStatus(txt, prog){
   if(prog !== undefined) document.getElementById('progress-fill').style.width = prog+'%';
 }
 
-/**
- * MÉTODO DE MEDICIÓN CORREGIDO:
- * 
- * El problema anterior: la ronda 1 (warmup/pocos hilos) medía mucho menos que las
- * rondas con más hilos. Esto hacía que min/max diera un ratio bajo (ej: 59%).
- * 
- * Solución: 
- * 1. TODAS las rondas de medición usan el MISMO número de hilos (suficientes para saturar)
- * 2. La primera ronda siempre es warmup y NO se cuenta para el resultado
- * 3. Estabilidad se calcula solo entre rondas con misma configuración
- * 4. Se usa el método "steady state": descartar los primeros 1.5s de cada ronda
- */
 function measureDownloadRound(numThreads, roundDurationMs) {
   return new Promise((resolve) => {
     let totalBytesReceived = 0;
@@ -485,13 +503,11 @@ function measureDownloadRound(numThreads, roundDurationMs) {
     const abortControllers = [];
     let activeThreads = 0;
     
-    // Descartar primeros 1.5s (TCP slow start + buffer fill)
     const DISCARD_MS = 1500;
     let steadyStartTime = 0;
     let steadyStartBytes = 0;
     let steadyStateReached = false;
     
-    // Para muestreo visual
     let lastSampleTime = startTime;
     let lastSampleBytes = 0;
     let ewma = 0;
@@ -502,7 +518,6 @@ function measureDownloadRound(numThreads, roundDurationMs) {
       const now = performance.now();
       const elapsed = now - startTime;
       
-      // Marcar inicio del estado estable
       if (!steadyStateReached && elapsed >= DISCARD_MS) {
         steadyStateReached = true;
         steadyStartTime = now;
@@ -538,12 +553,10 @@ function measureDownloadRound(numThreads, roundDurationMs) {
       let mbps;
       
       if (steadyStateReached && (endTime - steadyStartTime) > 1000) {
-        // Calcular SOLO con datos del estado estable (post TCP slow start)
         const validBytes = totalBytesReceived - steadyStartBytes;
         const validTime = (endTime - steadyStartTime) / 1000;
         mbps = (validBytes * 8) / validTime / 1e6;
       } else {
-        // Fallback
         const elapsed = (endTime - startTime) / 1000;
         mbps = (totalBytesReceived * 8) / elapsed / 1e6;
       }
@@ -564,7 +577,6 @@ function measureDownloadRound(numThreads, roundDurationMs) {
               if (finished) return;
               if (doneReading) {
                 activeThreads--;
-                // Re-lanzar si aún hay tiempo (necesario para mantener saturación)
                 if (!finished && (performance.now() - startTime) < (roundDurationMs - 500)) {
                   launchThread(true);
                 } else if (activeThreads <= 0 && !finished) {
@@ -663,18 +675,11 @@ async function startTest() {
 
   const isFast = mode === 'fast';
   
-  /*
-   * CLAVE DE LA CORRECCIÓN:
-   * - Ronda 1 = warmup con pocos hilos (NO cuenta para resultado ni estabilidad)
-   * - Rondas 2+ = todas con MISMO número de hilos (16) para comparar manzanas con manzanas
-   * - Estabilidad = coeficiente de variación de las rondas válidas
-   * - Resultado = mediana de rondas válidas
-   */
-  const MEASURE_THREADS = 16; // Hilos fijos para todas las rondas de medición
+  const MEASURE_THREADS = 16;
   const warmupThreads = 4;
   const warmupDuration = 3000;
   const roundDuration = isFast ? 5000 : 6000;
-  const measureRounds = isFast ? 3 : 5; // Rondas de medición (sin contar warmup)
+  const measureRounds = isFast ? 3 : 5;
 
   let roundResults = [];
 
@@ -682,7 +687,6 @@ async function startTest() {
     currentPhase = 'dl';
     document.getElementById('gr-dir').textContent = '↓ DL';
 
-    // WARMUP (siempre)
     setStatus('WARMUP TCP (no cuenta para resultado)...', 5);
     const warmupResult = await measureDownloadRound(warmupThreads, warmupDuration);
     if (shouldStop) throw new Error('stopped');
@@ -696,12 +700,10 @@ async function startTest() {
       isWarmup: true
     });
 
-    // Limpiar muestras del warmup (no deben afectar métricas)
     allSamples = [];
     chartData = [];
     peakMbps = 0;
 
-    // RONDAS DE MEDICIÓN (todas con mismos hilos)
     for (let r = 0; r < measureRounds; r++) {
       if (shouldStop) throw new Error('stopped');
       const progress = 10 + ((r + 0.5) / measureRounds) * 60;
@@ -725,7 +727,6 @@ async function startTest() {
       setStatus(`Ronda ${r+1}: ${result.mbps.toFixed(1)} Mbps`, 10 + ((r+1) / measureRounds) * 60);
     }
 
-    // RESULTADO FINAL: mediana de rondas válidas
     let dlResult = 0;
     if (roundResults.length > 0) {
       const sorted = [...roundResults].sort((a, b) => a - b);
@@ -735,11 +736,9 @@ async function startTest() {
       } else if (len === 2) {
         dlResult = (sorted[0] + sorted[1]) / 2;
       } else if (len <= 4) {
-        // Mediana
         const mid = Math.floor(len / 2);
         dlResult = len % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
       } else {
-        // 5+ rondas: descartar extremos, promediar resto
         const trimmed = sorted.slice(1, -1);
         dlResult = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
       }
@@ -749,7 +748,6 @@ async function startTest() {
     updateUnits(dlResult);
     updateMetrics();
 
-    // UPLOAD
     if (!shouldStop) {
       currentPhase = 'ul';
       document.getElementById('gr-dir').textContent = '↑ UL';
@@ -762,25 +760,17 @@ async function startTest() {
       setStatus('SUBIDA: ' + ulResult.mbps.toFixed(1) + ' Mbps', 95);
     }
 
-    // DIAGNÓSTICO DE ENLACE
     if (roundResults.length >= 2) {
       const avg = roundResults.reduce((a, b) => a + b, 0) / roundResults.length;
       const stdDev = Math.sqrt(roundResults.reduce((a, b) => a + (b - avg) ** 2, 0) / roundResults.length);
       
-      // Coeficiente de variación (CV): stdDev / media * 100
-      // CV < 5% = Excelente, 5-15% = Bueno, 15-25% = Aceptable, >25% = Inestable
       const cv = (stdDev / avg) * 100;
-      
-      // Consistencia = 100% - CV (capped 0-100)
       const consistency = Math.max(0, Math.min(100, 100 - cv)).toFixed(0) + '%';
       
-      // Estabilidad: ratio entre la peor y mejor ronda
-      // Pero solo considerar variación real (no outliers del TCP)
       const sortedR = [...roundResults].sort((a, b) => a - b);
-      // Si hay 4+ rondas, descartar la más baja (posible anomalía)
       let stabilityArr = sortedR;
       if (sortedR.length >= 4) {
-        stabilityArr = sortedR.slice(1); // quitar la más baja
+        stabilityArr = sortedR.slice(1);
       }
       const stabilityRatio = (stabilityArr[0] / stabilityArr[stabilityArr.length - 1]) * 100;
       const stability = Math.min(stabilityRatio, 100).toFixed(0) + '%';
@@ -848,4 +838,4 @@ drawChart();
 </script>
 
 </body></html>
-
+```
