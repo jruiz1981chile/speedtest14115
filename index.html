@@ -686,7 +686,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 02:28</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 02:41</span></footer>
 </div>
 
 <script>
@@ -973,8 +973,18 @@ function uploadOne(bytes, onRate) {
 
     const t0 = performance.now();
     let lastLoaded = 0, lastTime = t0;
+    let resolved = false;
+
+    const done = (res) => {
+      if (resolved) return; resolved = true;
+      const idx = activeXhrs.indexOf(entry);
+      if (idx !== -1) activeXhrs.splice(idx, 1);
+      console.log('[UL] resolved:', res ? `${res.bytes}B in ${res.ms.toFixed(0)}ms = ${((res.bytes*8)/(res.ms/1000)/1e6).toFixed(1)}Mbps` : 'null');
+      resolve(res);
+    };
 
     xhr.upload.onprogress = e => {
+      console.log('[UL] progress loaded:', e.loaded, 'total:', e.total, 'lengthComputable:', e.lengthComputable);
       if (!e.loaded) return;
       const now = performance.now();
       const dt = now - lastTime;
@@ -986,24 +996,16 @@ function uploadOne(bytes, onRate) {
       }
     };
 
-    const cleanup = () => {
-      const idx = activeXhrs.indexOf(entry);
-      if (idx !== -1) activeXhrs.splice(idx, 1);
-    };
+    xhr.upload.onload  = () => { console.log('[UL] upload.onload'); done({ bytes, ms: performance.now() - t0 }); };
+    xhr.upload.onerror = () => { console.log('[UL] upload.onerror'); done(null); };
+    xhr.upload.onabort = () => { console.log('[UL] upload.onabort'); done(null); };
+    xhr.onload         = () => { console.log('[UL] xhr.onload status:', xhr.status); done({ bytes, ms: performance.now() - t0 }); };
+    xhr.onerror        = () => { console.log('[UL] xhr.onerror'); done(null); };
+    xhr.onabort        = () => { console.log('[UL] xhr.onabort'); done(null); };
+    xhr.ontimeout      = () => { console.log('[UL] xhr.ontimeout'); done(null); };
+    xhr.onloadend      = () => { console.log('[UL] xhr.onloadend status:', xhr.status); done({ bytes, ms: performance.now() - t0 }); };
 
-    // upload.onload = all bytes left the browser — this is our measurement point
-    xhr.upload.onload = () => {
-      cleanup();
-      const ms = performance.now() - t0;
-      resolve({ bytes, ms });
-    };
-
-    // Fallbacks
-    xhr.upload.onerror = xhr.upload.onabort = () => { cleanup(); resolve(null); };
-    xhr.onerror = xhr.onabort = () => { cleanup(); resolve(null); };
-    // onloadend as last resort (some browsers)
-    xhr.onloadend = () => { cleanup(); resolve({ bytes, ms: performance.now() - t0 }); };
-
+    console.log('[UL] sending', bytes, 'bytes to __up');
     xhr.timeout = 60000;
     xhr.send(blob);
   });
