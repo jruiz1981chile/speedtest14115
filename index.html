@@ -460,7 +460,7 @@
           🔬 Detallada
         </button>
       </div>
-      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~8s · 2 rondas descarga + 1 subida</p>
+      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~6s · 2 rondas descarga + 1 subida</p>
 
       <div class="btn-row">
         <button class="btn primary" id="btnstart" onclick="runTest()">▶ Iniciar prueba</button>
@@ -1029,8 +1029,8 @@ async function runUploadParallel(threads, bytes) {
   const timerInterval = setInterval(() => {
     const elapsed = (performance.now() - t0) / 1000;
     $('overlay-text').textContent = `↑ ENVIANDO ${totalMB} MB... ${elapsed.toFixed(1)}s`;
-    // Animate progress bar based on estimated time (~20s max)
-    const pct = Math.min((elapsed / 20) * 13 + 85, 98);
+    // Animate progress bar based on estimated time (~8s max)
+    const pct = Math.min((elapsed / 8) * 13 + 85, 98);
     setProgress(pct, `Subida — ${threads} hilos · ${elapsed.toFixed(1)}s`);
   }, 100);
 
@@ -1256,20 +1256,20 @@ async function runTest() {
   // Más hilos = más ancho de banda agregado, supera el límite por hilo de Cloudflare
   const dlGroups = testMode === 'fast'
     ? [
-        { threads:  8, bytes:  8000000, warmup: true  }, // warmup ~1s
-        { threads: 12, bytes: 15000000, warmup: false }, // ronda 1 ~2s
-        { threads: 16, bytes: 15000000, warmup: false }, // ronda 2 ~2s
+        { threads:  6, bytes:  5000000, warmup: true  }, // warmup ~1s
+        { threads: 10, bytes:  8000000, warmup: false }, // ronda 1
+        { threads: 14, bytes:  8000000, warmup: false }, // ronda 2
       ]
     : [
-        { threads:  6, bytes:  8000000, warmup: true  }, // warmup ~1s
-        { threads: 10, bytes: 25000000, warmup: false }, // ronda 1
-        { threads: 14, bytes: 25000000, warmup: false }, // ronda 2
-        { threads: 18, bytes: 25000000, warmup: false }, // ronda 3
+        { threads:  6, bytes:  5000000, warmup: true  }, // warmup ~1s
+        { threads: 10, bytes: 12000000, warmup: false }, // ronda 1
+        { threads: 14, bytes: 12000000, warmup: false }, // ronda 2
+        { threads: 16, bytes: 12000000, warmup: false }, // ronda 3
       ];
 
   const ulRounds  = testMode === 'fast' ? 1 : 1;
-  const ulThreads = testMode === 'fast' ? 8 : 10;
-  const ulBytes   = testMode === 'fast' ? 15000000 : 20000000;
+  const ulThreads = testMode === 'fast' ? 4 : 5;
+  const ulBytes   = testMode === 'fast' ? 3000000 : 4000000;
 
   const roundResults = [];
   const measureSamples = [];
