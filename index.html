@@ -1,4 +1,5 @@
 
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -69,22 +70,34 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .urow-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;line-height:1.25;}
 .units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
-#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:0.6em 0.6em;gap:0.2em;position:relative;overflow:hidden;}
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;padding:0.5em 0.6em;gap:0.15em;position:relative;overflow:hidden;}
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
-#gauge-wrap{position:relative;width:min(18vw,18vh,160px);aspect-ratio:1;flex-shrink:1;min-height:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(28vw,14vh,120px);}}
+
+/* GAUGE + VALOR AL LADO */
+#gauge-row{display:flex;align-items:center;justify-content:center;gap:0.8em;flex-shrink:0;width:100%;}
+#gauge-wrap{position:relative;width:min(15vw,15vh,130px);aspect-ratio:1;flex-shrink:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(22vw,12vh,100px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(16px,3.2vw,34px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(14px,2.5vw,28px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
-#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(6px,0.75vw,9px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
-#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.85vw,10px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.04em;}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(6px,0.7vw,9px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,10px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.04em;}
+
+/* READOUT LATERAL */
+#gauge-readout{display:flex;flex-direction:column;align-items:flex-start;gap:0.1em;}
+#gauge-readout .gr-value{font-family:'Orbitron',monospace;font-size:clamp(20px,4vw,42px);font-weight:900;color:var(--neon-dl);line-height:1;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
+#gauge-readout .gr-value.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
+#gauge-readout .gr-unit{font-family:'Orbitron',monospace;font-size:clamp(8px,1vw,12px);font-weight:700;color:var(--text-dim);letter-spacing:0.1em;}
+#gauge-readout .gr-dir{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.1em;}
+
 #status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,12px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
-#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;padding-top:0.2em;}
-.big-btn{padding:0.45em 1.1em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(9px,1.1vw,13px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
+#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;padding:0.3em 0;}
+@media(orientation:portrait){#btn-wrap{position:sticky;bottom:0;z-index:100;background:var(--bg);padding:0.5em 0.8em;border-top:1px solid var(--border);margin:0 -0.55em;padding-left:0.55em;padding-right:0.55em;}}
+.big-btn{padding:0.55em 1.4em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(11px,1.3vw,16px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
 #btn-start{background:transparent;border:2px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);box-shadow:0 0 14px rgba(0,255,224,0.2);}
 #btn-start:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 28px var(--neon-dl);}
 #btn-stop{background:transparent;border:2px solid var(--danger);color:var(--danger);text-shadow:0 0 10px var(--danger);display:none;}
@@ -201,45 +214,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="tab active" id="tab-fast" onclick="setMode('fast')">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~6s · 2 rondas</span></button>
       <button class="tab" id="tab-detail" onclick="setMode('detail')">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">5 rondas</span></button>
     </div>
+    <div id="btn-wrap">
+      <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
+      <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
+    </div>
     <div id="units-card" class="grow">
       <div id="units-card-header" onclick="toggleUnitsCard()">
         <span class="uch-title">TODAS LAS UNIDADES</span>
         <span id="units-card-toggle">▼</span>
       </div>
       <div id="units-card-body">
-        <div class="urow urow-c0">
-          <div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div>
-          <div class="urow-val" id="u-mbps">—</div>
-          <div class="urow-desc">Megabits/seg · estándar ISP</div>
-        </div>
-        <div class="urow urow-c1">
-          <div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div>
-          <div class="urow-val" id="u-MBps">—</div>
-          <div class="urow-desc">Megabytes/seg · gestor descarga</div>
-        </div>
-        <div class="urow urow-c2">
-          <div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div>
-          <div class="urow-val" id="u-kbps">—</div>
-          <div class="urow-desc">Kilobits/seg · VoIP, radio</div>
-        </div>
-        <div class="urow urow-c3">
-          <div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div>
-          <div class="urow-val" id="u-kBps">—</div>
-          <div class="urow-desc">Kilobytes/seg · descargas lentas</div>
-        </div>
-        <div class="urow urow-c4">
-          <div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div>
-          <div class="urow-val" id="u-gbps">—</div>
-          <div class="urow-desc">Gigabits/seg · fibra alta gama</div>
-        </div>
-        <div class="urow urow-c5">
-          <div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div>
-          <div class="urow-val" id="u-GBps">—</div>
-          <div class="urow-desc">Gigabytes/seg · datacenter</div>
-        </div>
-        <div class="urow units-note-row">
-          <div class="unote">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps &nbsp;|&nbsp; k · M · G · T</div>
-        </div>
+        <div class="urow urow-c0"><div class="urow-sym" style="color:var(--neon-dl);">Mbps<span class="urow-eq">= Mb/s</span></div><div class="urow-val" id="u-mbps">—</div><div class="urow-desc">Megabits/seg · estándar ISP</div></div>
+        <div class="urow urow-c1"><div class="urow-sym" style="color:var(--neon-ul);">MBps<span class="urow-eq">= MB/s</span></div><div class="urow-val" id="u-MBps">—</div><div class="urow-desc">Megabytes/seg · gestor descarga</div></div>
+        <div class="urow urow-c2"><div class="urow-sym" style="color:var(--neon-y);">kbps<span class="urow-eq">= kb/s</span></div><div class="urow-val" id="u-kbps">—</div><div class="urow-desc">Kilobits/seg · VoIP, radio</div></div>
+        <div class="urow urow-c3"><div class="urow-sym" style="color:var(--neon-o);">kBps<span class="urow-eq">= kB/s</span></div><div class="urow-val" id="u-kBps">—</div><div class="urow-desc">Kilobytes/seg · descargas lentas</div></div>
+        <div class="urow urow-c4"><div class="urow-sym" style="color:var(--neon-p);">Gbps<span class="urow-eq">= Gbit/s</span></div><div class="urow-val" id="u-gbps">—</div><div class="urow-desc">Gigabits/seg · fibra alta gama</div></div>
+        <div class="urow urow-c5"><div class="urow-sym" style="color:#44aaff;">GBps<span class="urow-eq">= GB/s</span></div><div class="urow-val" id="u-GBps">—</div><div class="urow-desc">Gigabytes/seg · datacenter</div></div>
+        <div class="urow units-note-row"><div class="unote">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes<br>1 Byte = 8 bits · Mbps ÷ 8 = MBps &nbsp;|&nbsp; k · M · G · T</div></div>
       </div>
     </div>
   </div>
@@ -247,35 +238,37 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="col" id="col-center">
     <div id="gauge-card" class="grow">
       <div id="gauge-title">VELOCIDAD EN TIEMPO REAL</div>
-      <div id="gauge-wrap">
-        <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
-          <defs>
-            <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#00ffe0"/>
-              <stop offset="50%" stop-color="#ffe000"/>
-              <stop offset="100%" stop-color="#bf00ff"/>
-            </linearGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path id="gauge-arc" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"/>
-          <g id="gauge-ticks"></g>
-        </svg>
-        <div id="gauge-val">
-          <div id="gauge-num">—</div>
-          <div id="gauge-unit-lbl">Mbps</div>
-          <div id="gauge-dir-lbl">↓ DL</div>
+      <div id="gauge-row">
+        <div id="gauge-wrap">
+          <svg id="gauge-svg" viewBox="0 0 120 120" fill="none">
+            <defs>
+              <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00ffe0"/>
+                <stop offset="50%" stop-color="#ffe000"/>
+                <stop offset="100%" stop-color="#bf00ff"/>
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"/>
+            <path id="gauge-arc" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"/>
+            <g id="gauge-ticks"></g>
+          </svg>
+          <div id="gauge-val">
+            <div id="gauge-num">—</div>
+            <div id="gauge-unit-lbl">Mbps</div>
+          </div>
+        </div>
+        <div id="gauge-readout">
+          <div class="gr-value" id="gr-value">—</div>
+          <div class="gr-unit">Mbps</div>
+          <div class="gr-dir" id="gr-dir">↓ DL</div>
         </div>
       </div>
       <div id="status-line">Presiona INICIAR para medir tu conexión</div>
       <div id="progress-wrap"><div id="progress-fill"></div></div>
-      <div id="btn-wrap">
-        <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
-        <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
-      </div>
     </div>
     <div id="chart-card">
       <div id="chart-label">VELOCIDAD EN TIEMPO REAL — fluctuaciones normales de red</div>
@@ -287,26 +280,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="card" style="flex-shrink:0;">
       <div class="card-label">MÉTRICAS DE RENDIMIENTO</div>
       <div class="metrics-grid">
-        <div class="m-cell">
-          <div class="mc-lbl">Percentil 90</div>
-          <div class="mc-val mc-c0" id="m-p90">—</div>
-          <div class="mc-unit">Mbps p90</div>
-        </div>
-        <div class="m-cell">
-          <div class="mc-lbl">Velocidad Media</div>
-          <div class="mc-val mc-c1" id="m-avg">—</div>
-          <div class="mc-unit">promedio</div>
-        </div>
-        <div class="m-cell">
-          <div class="mc-lbl">Vel. Mínima</div>
-          <div class="mc-val mc-c2" id="m-min">—</div>
-          <div class="mc-unit">Mbps mín</div>
-        </div>
-        <div class="m-cell">
-          <div class="mc-lbl">Desv. Estándar σ</div>
-          <div class="mc-val mc-c3" id="m-std">—</div>
-          <div class="mc-unit">variabilidad</div>
-        </div>
+        <div class="m-cell"><div class="mc-lbl">Percentil 90</div><div class="mc-val mc-c0" id="m-p90">—</div><div class="mc-unit">Mbps p90</div></div>
+        <div class="m-cell"><div class="mc-lbl">Velocidad Media</div><div class="mc-val mc-c1" id="m-avg">—</div><div class="mc-unit">promedio</div></div>
+        <div class="m-cell"><div class="mc-lbl">Vel. Mínima</div><div class="mc-val mc-c2" id="m-min">—</div><div class="mc-unit">Mbps mín</div></div>
+        <div class="m-cell"><div class="mc-lbl">Desv. Estándar σ</div><div class="mc-val mc-c3" id="m-std">—</div><div class="mc-unit">variabilidad</div></div>
       </div>
     </div>
     <div class="card" style="flex-shrink:0;">
@@ -317,27 +294,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="card-label">RONDAS DE PRUEBA</div>
       <div id="rounds-scroll">
         <div id="rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div>
-        <table id="rounds-table">
-          <thead>
-            <tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr>
-          </thead>
-          <tbody id="rounds-tbody"></tbody>
-        </table>
+        <table id="rounds-table"><thead><tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr></thead><tbody id="rounds-tbody"></tbody></table>
       </div>
     </div>
     <div class="card" style="flex-shrink:0;">
       <div class="card-label">DIAGNÓSTICO DE ENLACE</div>
       <div class="diag-link-grid">
-        <div class="dl-cell">
-          <div class="dlc-lbl">Efic. multi-hilo</div>
-          <div class="dlc-val" id="d-eff">—</div>
-          <div class="dlc-sub" id="d-eff-lbl">—</div>
-        </div>
-        <div class="dl-cell">
-          <div class="dlc-lbl">Final vs p90</div>
-          <div class="dlc-val" id="d-vs">—</div>
-          <div class="dlc-sub" id="d-vs-lbl">—</div>
-        </div>
+        <div class="dl-cell"><div class="dlc-lbl">Efic. multi-hilo</div><div class="dlc-val" id="d-eff">—</div><div class="dlc-sub" id="d-eff-lbl">—</div></div>
+        <div class="dl-cell"><div class="dlc-lbl">Final vs p90</div><div class="dlc-val" id="d-vs">—</div><div class="dlc-sub" id="d-vs-lbl">—</div></div>
       </div>
     </div>
   </div>
@@ -346,7 +310,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <footer id="footer">
   <p><strong style="color:var(--text-mid);">NOTA TÉCNICA:</strong> 5 rondas · speed.cloudflare.com · archivos 25MB · hasta 20 hilos · ronda 1 = warmup TCP · resultado = p90. Puede diferir de speedtest.net.</p>
-  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>generado 2026-05-19</div>
+  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>generado 2026-05-19 10:58</div>
 </footer>
 
 </div>
@@ -358,36 +322,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="modal-close-btn" onclick="closeUnitsModal()">✕ CERRAR</button>
     </div>
     <div id="um-body">
-      <div class="um-row um-c0">
-        <div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div>
-        <div class="um-val" id="mu-mbps">—</div>
-        <div class="um-desc">Megabits por segundo · estándar ISP y routers<br>1 Mbps = 1,000,000 bits/seg</div>
-      </div>
-      <div class="um-row um-c1">
-        <div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div>
-        <div class="um-val" id="mu-MBps">—</div>
-        <div class="um-desc">Megabytes por segundo · gestor de descarga<br>1 MBps = 8 Mbps</div>
-      </div>
-      <div class="um-row um-c2">
-        <div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div>
-        <div class="um-val" id="mu-kbps">—</div>
-        <div class="um-desc">Kilobits por segundo · VoIP, radio<br>1 Mbps = 1,000 kbps</div>
-      </div>
-      <div class="um-row um-c3">
-        <div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div>
-        <div class="um-val" id="mu-kBps">—</div>
-        <div class="um-desc">Kilobytes por segundo · descargas lentas<br>1 kBps = 8 kbps</div>
-      </div>
-      <div class="um-row um-c4">
-        <div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div>
-        <div class="um-val" id="mu-gbps">—</div>
-        <div class="um-desc">Gigabits por segundo · fibra óptica alta gama<br>1 Gbps = 1,000 Mbps</div>
-      </div>
-      <div class="um-row um-c5">
-        <div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div>
-        <div class="um-val" id="mu-GBps">—</div>
-        <div class="um-desc">Gigabytes por segundo · datacenter<br>1 GBps = 8 Gbps</div>
-      </div>
+      <div class="um-row um-c0"><div class="um-sym" style="color:var(--neon-dl);">Mbps<span class="um-eq">= Mbit/s = Mb/s</span></div><div class="um-val" id="mu-mbps">—</div><div class="um-desc">Megabits por segundo · estándar ISP y routers<br>1 Mbps = 1,000,000 bits/seg</div></div>
+      <div class="um-row um-c1"><div class="um-sym" style="color:var(--neon-ul);">MBps<span class="um-eq">= MB/s</span></div><div class="um-val" id="mu-MBps">—</div><div class="um-desc">Megabytes por segundo · gestor de descarga<br>1 MBps = 8 Mbps</div></div>
+      <div class="um-row um-c2"><div class="um-sym" style="color:var(--neon-y);">kbps<span class="um-eq">= kbit/s = kb/s</span></div><div class="um-val" id="mu-kbps">—</div><div class="um-desc">Kilobits por segundo · VoIP, radio<br>1 Mbps = 1,000 kbps</div></div>
+      <div class="um-row um-c3"><div class="um-sym" style="color:var(--neon-o);">kBps<span class="um-eq">= kB/s</span></div><div class="um-val" id="mu-kBps">—</div><div class="um-desc">Kilobytes por segundo · descargas lentas<br>1 kBps = 8 kbps</div></div>
+      <div class="um-row um-c4"><div class="um-sym" style="color:var(--neon-p);">Gbps<span class="um-eq">= Gbit/s</span></div><div class="um-val" id="mu-gbps">—</div><div class="um-desc">Gigabits por segundo · fibra óptica alta gama<br>1 Gbps = 1,000 Mbps</div></div>
+      <div class="um-row um-c5"><div class="um-sym" style="color:#44aaff;">GBps<span class="um-eq">= GB/s</span></div><div class="um-val" id="mu-GBps">—</div><div class="um-desc">Gigabytes por segundo · datacenter<br>1 GBps = 8 Gbps</div></div>
       <div id="um-note">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>Prefijos SI: k = kilo · M = Mega · G = Giga · T = Tera</div>
     </div>
   </div>
@@ -402,51 +342,15 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div id="dm-body">
       <div class="dm-subtitle">Para profesionales TI · latencia · jitter · variabilidad · histograma</div>
       <div class="dm-grid-3">
-        <div class="dm-cell">
-          <div class="dmc-lbl">Percentil 90</div>
-          <div class="dmc-val dmc-c0" id="dm-p90">—</div>
-          <div class="dmc-unit">Mbps p90</div>
-        </div>
-        <div class="dm-cell">
-          <div class="dmc-lbl">Velocidad Media</div>
-          <div class="dmc-val dmc-c1" id="dm-avg">—</div>
-          <div class="dmc-unit">promedio</div>
-        </div>
-        <div class="dm-cell">
-          <div class="dmc-lbl">Vel. Mínima</div>
-          <div class="dmc-val dmc-c2" id="dm-min">—</div>
-          <div class="dmc-unit">Mbps mín</div>
-        </div>
-        <div class="dm-cell">
-          <div class="dmc-lbl">Desv. Est. σ</div>
-          <div class="dmc-val dmc-c3" id="dm-std">—</div>
-          <div class="dmc-unit">variabilidad</div>
-        </div>
-        <div class="dm-cell">
-          <div class="dmc-lbl">Muestras</div>
-          <div class="dmc-val dmc-c4" id="dm-samples">—</div>
-          <div class="dmc-unit">puntos datos</div>
-        </div>
-        <div class="dm-cell">
-          <div class="dmc-lbl">Efic. multi-hilo</div>
-          <div class="dmc-val dmc-c5" id="dm-eff">—</div>
-          <div class="dmc-unit" id="dm-eff-lbl">—</div>
-        </div>
+        <div class="dm-cell"><div class="dmc-lbl">Percentil 90</div><div class="dmc-val dmc-c0" id="dm-p90">—</div><div class="dmc-unit">Mbps p90</div></div>
+        <div class="dm-cell"><div class="dmc-lbl">Velocidad Media</div><div class="dmc-val dmc-c1" id="dm-avg">—</div><div class="dmc-unit">promedio</div></div>
+        <div class="dm-cell"><div class="dmc-lbl">Vel. Mínima</div><div class="dmc-val dmc-c2" id="dm-min">—</div><div class="dmc-unit">Mbps mín</div></div>
+        <div class="dm-cell"><div class="dmc-lbl">Desv. Est. σ</div><div class="dmc-val dmc-c3" id="dm-std">—</div><div class="dmc-unit">variabilidad</div></div>
+        <div class="dm-cell"><div class="dmc-lbl">Muestras</div><div class="dmc-val dmc-c4" id="dm-samples">—</div><div class="dmc-unit">puntos datos</div></div>
+        <div class="dm-cell"><div class="dmc-lbl">Efic. multi-hilo</div><div class="dmc-val dmc-c5" id="dm-eff">—</div><div class="dmc-unit" id="dm-eff-lbl">—</div></div>
       </div>
-      <div>
-        <div class="dm-sec-label">HISTOGRAMA DE VELOCIDAD</div>
-        <canvas id="dm-histo"></canvas>
-      </div>
-      <div>
-        <div class="dm-sec-label">RONDAS DE PRUEBA</div>
-        <div id="dm-rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div>
-        <table id="dm-rounds-table">
-          <thead>
-            <tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr>
-          </thead>
-          <tbody id="dm-rounds-tbody"></tbody>
-        </table>
-      </div>
+      <div><div class="dm-sec-label">HISTOGRAMA DE VELOCIDAD</div><canvas id="dm-histo"></canvas></div>
+      <div><div class="dm-sec-label">RONDAS DE PRUEBA</div><div id="dm-rounds-placeholder">Ejecute la prueba para ver el detalle por ronda</div><table id="dm-rounds-table"><thead><tr><th>#</th><th>Hilos</th><th>Mbps</th><th>vs Pico</th><th>ms</th><th>Estado</th></tr></thead><tbody id="dm-rounds-tbody"></tbody></table></div>
     </div>
   </div>
 </div>
@@ -476,7 +380,9 @@ function setGaugeArc(mbps, maxMbps){
   const arc = document.getElementById('gauge-arc');
   const ratio = Math.min(mbps / (maxMbps||100), 1), dash = ratio * 251;
   arc.setAttribute('stroke-dasharray', `${dash} ${251-dash}`);
-  document.getElementById('gauge-num').textContent = mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
+  const txt = mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
+  document.getElementById('gauge-num').textContent = txt;
+  document.getElementById('gr-value').textContent = txt;
 }
 
 function drawChart(){
@@ -671,7 +577,9 @@ async function startTest() {
   document.getElementById('btn-stop').style.display = '';
   document.getElementById('progress-fill').style.width = '0%';
   document.getElementById('gauge-num').textContent = '—';
+  document.getElementById('gr-value').textContent = '—';
   document.getElementById('gauge-num').classList.remove('ul-mode');
+  document.getElementById('gr-value').classList.remove('ul-mode');
   updateUnits(0);
 
   const isFast = mode === 'fast';
@@ -681,7 +589,7 @@ async function startTest() {
 
   try {
     currentPhase = 'dl';
-    document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
+    document.getElementById('gr-dir').textContent = '↓ DL';
 
     for (let r = 0; r < totalRounds; r++) {
       if (shouldStop) break;
@@ -710,8 +618,9 @@ async function startTest() {
 
     if (!shouldStop) {
       currentPhase = 'ul';
-      document.getElementById('gauge-dir-lbl').textContent = '↑ UL';
+      document.getElementById('gr-dir').textContent = '↑ UL';
       document.getElementById('gauge-num').classList.add('ul-mode');
+      document.getElementById('gr-value').classList.add('ul-mode');
       setStatus('MIDIENDO SUBIDA...', 75);
 
       const ulResult = await measureUploadRound(4, 3000);
@@ -736,9 +645,9 @@ async function startTest() {
 
     setStatus('✓ PRUEBA COMPLETADA', 100);
     setGaugeArc(dlResult, Math.max(peakMbps * 1.2, 100));
-    document.getElementById('gauge-num').textContent = dlResult.toFixed(2);
     document.getElementById('gauge-num').classList.remove('ul-mode');
-    document.getElementById('gauge-dir-lbl').textContent = '↓ DL FINAL';
+    document.getElementById('gr-value').classList.remove('ul-mode');
+    document.getElementById('gr-dir').textContent = '↓ DL FINAL';
 
   } catch(e) {
     setStatus(shouldStop ? '■ PRUEBA DETENIDA' : '⚠ ERROR: ' + e.message, 0);
@@ -773,3 +682,4 @@ drawChart();
 </script>
 </body>
 </html>
+```
