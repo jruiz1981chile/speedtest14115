@@ -723,7 +723,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 10:35</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 10:52</span></footer>
 </div>
 
 <script>
@@ -1023,20 +1023,22 @@ async function uploadOne(bytes, onRate) {
 // ─── Run parallel upload ───────────────────────────────────────────────────
 async function runUploadParallel(threads, bytes) {
   const t0 = performance.now();
+  const totalMB = (threads * bytes / 1e6).toFixed(0);
 
-  // Show indeterminate progress on gauge while uploading
-  const fakeInterval = setInterval(() => {
-    const elapsed = performance.now() - t0;
-    // Animate gauge with an estimate based on elapsed time
-    const estMbps = smoothedMbps(Math.min(elapsed / 50, 200));
-    if (estMbps > 0) { setGauge(estMbps); updateUnits(estMbps); }
-  }, 300);
+  // Live timer so user sees the upload is working
+  const timerInterval = setInterval(() => {
+    const elapsed = (performance.now() - t0) / 1000;
+    $('overlay-text').textContent = `↑ ENVIANDO ${totalMB} MB... ${elapsed.toFixed(1)}s`;
+    // Animate progress bar based on estimated time (~20s max)
+    const pct = Math.min((elapsed / 20) * 13 + 85, 98);
+    setProgress(pct, `Subida — ${threads} hilos · ${elapsed.toFixed(1)}s`);
+  }, 100);
 
   // Launch all threads concurrently
   const promises = Array.from({ length: threads }, () => uploadOne(bytes));
   const results = (await Promise.all(promises)).filter(r => r && r.ms > 100);
 
-  clearInterval(fakeInterval);
+  clearInterval(timerInterval);
 
   const elapsed = performance.now() - t0;
   const totalBytes = results.reduce((s, r) => s + r.bytes, 0);
@@ -1044,7 +1046,6 @@ async function runUploadParallel(threads, bytes) {
     ? (totalBytes * 8) / (elapsed / 1000) / 1e6
     : 0;
 
-  // Show final upload speed on gauge briefly
   if (ulMbps > 0) { setGauge(ulMbps); updateUnits(ulMbps); }
   return ulMbps;
 }
