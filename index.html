@@ -1,7 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>.:SpeedTest 14115:.</title>
+<title>..:Speedtest 14115:..</title>
 <link href="./SPEEDTEST 14115 EN NEON, FALTA CORREGIR ALGO DE MEDICION_files/css2" rel="stylesheet">
 <style>
 :root {
@@ -67,18 +68,18 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
 
-/* GAUGE - velocímetro fijo como en automóvil */
-#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.5em 0.6em;gap:0.3em;position:relative;overflow:hidden;}
+/* GAUGE - velocímetro grande fijo */
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.4em;gap:0.2em;position:relative;overflow:hidden;}
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
-#gauge-wrap{position:relative;width:min(28vw,28vh,220px);aspect-ratio:1;flex-shrink:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(45vw,22vh,200px);}}
+#gauge-wrap{position:relative;width:min(38vw,42vh,300px);aspect-ratio:1;flex-shrink:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(55vw,28vh,260px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(22px,3.5vw,38px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
-#gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
-#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(9px,1vw,12px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.1em;}
-#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,11px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.05em;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(28px,5vw,52px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
+#gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 25px var(--neon-ul),0 0 50px rgba(191,0,255,0.3);}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(10px,1.2vw,14px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.15em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,1vw,13px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.08em;}
 #status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,13px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
@@ -167,7 +168,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .pulsing{animation:pulse-glow 0.9s ease-in-out infinite;}
 @keyframes neon-flicker{0%,100%{opacity:1;}92%{opacity:1;}93%{opacity:0.4;}94%{opacity:1;}96%{opacity:0.6;}97%{opacity:1;}}
 
-/* CORRECCIÓN MÓVIL VERTICAL - SECCIÓN UNIDADES */
 @media (orientation:portrait) {
   #units-card-body {
     grid-template-columns: 1fr 1fr;
@@ -178,24 +178,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     padding: 0.2em 0.3em 0.2em 0.45em;
     overflow: visible;
   }
-  .urow-sym {
-    font-size: 11px;
-  }
-  .urow-eq {
-    font-size: 8px;
-  }
+  .urow-sym { font-size: 11px; }
+  .urow-eq { font-size: 8px; }
   .urow-val {
     font-size: 15px;
     overflow: visible;
     white-space: nowrap;
     word-break: keep-all;
   }
-  .urow-desc {
-    display: none;
-  }
-  .units-note-row .unote {
-    font-size: 8px;
-  }
+  .urow-desc { display: none; }
+  .units-note-row .unote { font-size: 8px; }
 }
 </style>
 </head>
@@ -374,7 +366,7 @@ const UL_URL = 'https://speed.cloudflare.com/__up';
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
-// Formato fijo tipo odómetro: siempre "0000.0" — nunca cambia de ancho
+// Formato fijo odómetro: "0000.0" siempre mismo ancho
 function formatFixed(mbps) {
   if (mbps <= 0) return '000.0';
   const val = Math.min(mbps, 9999.9);
@@ -497,96 +489,61 @@ function measureDownloadRound(numThreads, roundDurationMs) {
     const startTime = performance.now();
     const abortControllers = [];
     let activeThreads = 0;
-    
     const DISCARD_MS = 1500;
-    let steadyStartTime = 0;
-    let steadyStartBytes = 0;
-    let steadyStateReached = false;
-    
-    let lastSampleTime = startTime;
-    let lastSampleBytes = 0;
-    let ewma = 0;
+    let steadyStartTime = 0, steadyStartBytes = 0, steadyStateReached = false;
+    let lastSampleTime = startTime, lastSampleBytes = 0, ewma = 0;
     const ewmaAlpha = 0.3;
 
     function sampleSpeed() {
       if (finished) return;
-      const now = performance.now();
-      const elapsed = now - startTime;
-      
-      if (!steadyStateReached && elapsed >= DISCARD_MS) {
-        steadyStateReached = true;
-        steadyStartTime = now;
-        steadyStartBytes = totalBytesReceived;
-      }
-      
+      const now = performance.now(), elapsed = now - startTime;
+      if (!steadyStateReached && elapsed >= DISCARD_MS) { steadyStateReached = true; steadyStartTime = now; steadyStartBytes = totalBytesReceived; }
       const dt = now - lastSampleTime;
       if (dt >= 400) {
         const bytes = totalBytesReceived - lastSampleBytes;
         const instantMbps = (bytes * 8) / (dt / 1000) / 1e6;
         if (instantMbps > 0.01 && steadyStateReached) {
           ewma = ewma === 0 ? instantMbps : ewma * (1 - ewmaAlpha) + instantMbps * ewmaAlpha;
-          allSamples.push(ewma);
-          chartData.push({v: ewma});
+          allSamples.push(ewma); chartData.push({v: ewma});
           if (ewma > peakMbps) peakMbps = ewma;
           setGaugeArc(ewma, Math.max(peakMbps * 1.2, 100));
-          updateUnits(ewma);
-          updateMetrics();
-          drawChart();
+          updateUnits(ewma); updateMetrics(); drawChart();
         }
-        lastSampleBytes = totalBytesReceived;
-        lastSampleTime = now;
+        lastSampleBytes = totalBytesReceived; lastSampleTime = now;
       }
       requestAnimationFrame(sampleSpeed);
     }
 
     function endRound() {
-      if (finished) return;
-      finished = true;
+      if (finished) return; finished = true;
       abortControllers.forEach(c => { try { c.abort(); } catch(e){} });
-      
-      const endTime = performance.now();
-      let mbps;
-      
+      const endTime = performance.now(); let mbps;
       if (steadyStateReached && (endTime - steadyStartTime) > 1000) {
-        const validBytes = totalBytesReceived - steadyStartBytes;
-        const validTime = (endTime - steadyStartTime) / 1000;
-        mbps = (validBytes * 8) / validTime / 1e6;
-      } else {
-        const elapsed = (endTime - startTime) / 1000;
-        mbps = (totalBytesReceived * 8) / elapsed / 1e6;
-      }
-      
+        mbps = ((totalBytesReceived - steadyStartBytes) * 8) / ((endTime - steadyStartTime) / 1000) / 1e6;
+      } else { mbps = (totalBytesReceived * 8) / ((endTime - startTime) / 1000) / 1e6; }
       resolve({ mbps: Math.max(mbps, 0), elapsed: endTime - startTime, bytes: totalBytesReceived });
     }
 
-    function launchThread(relaunch) {
+    function launchThread() {
       if (finished || shouldStop) return;
       activeThreads++;
-      const controller = new AbortController();
-      abortControllers.push(controller);
+      const controller = new AbortController(); abortControllers.push(controller);
       fetch(DL_URL + '&r=' + Math.random(), { signal: controller.signal, cache: 'no-store' })
         .then(response => {
           const reader = response.body.getReader();
           (function pump() {
             reader.read().then(({ done: doneReading, value }) => {
               if (finished) return;
-              if (doneReading) {
-                activeThreads--;
-                if (!finished && (performance.now() - startTime) < (roundDurationMs - 500)) {
-                  launchThread(true);
-                } else if (activeThreads <= 0 && !finished) {
-                  endRound();
-                }
-                return;
-              }
-              totalBytesReceived += value.byteLength;
-              pump();
+              if (doneReading) { activeThreads--;
+                if (!finished && (performance.now() - startTime) < (roundDurationMs - 500)) launchThread();
+                else if (activeThreads <= 0 && !finished) endRound(); return; }
+              totalBytesReceived += value.byteLength; pump();
             }).catch(() => { activeThreads--; });
           })();
         }).catch(() => { activeThreads--; });
     }
 
-    for (let i = 0; i < numThreads; i++) launchThread(false);
+    for (let i = 0; i < numThreads; i++) launchThread();
     requestAnimationFrame(sampleSpeed);
     setTimeout(endRound, roundDurationMs);
   });
@@ -594,51 +551,31 @@ function measureDownloadRound(numThreads, roundDurationMs) {
 
 function measureUploadRound(numThreads, durationMs) {
   return new Promise((resolve) => {
-    let totalSent = 0;
-    let finished = false;
-    const startTime = performance.now();
-    const abortControllers = [];
-    const chunkSize = 2 * 1024 * 1024;
-    const payload = new ArrayBuffer(chunkSize);
-
+    let totalSent = 0, finished = false;
+    const startTime = performance.now(), abortControllers = [];
+    const chunkSize = 2 * 1024 * 1024, payload = new ArrayBuffer(chunkSize);
     const DISCARD_MS = 1000;
-    let steadyStartTime = 0;
-    let steadyStartBytes = 0;
-    let steadyStateReached = false;
+    let steadyStartTime = 0, steadyStartBytes = 0, steadyStateReached = false;
 
     function endRound() {
-      if (finished) return;
-      finished = true;
+      if (finished) return; finished = true;
       abortControllers.forEach(c => { try { c.abort(); } catch(e){} });
-      
-      const endTime = performance.now();
-      let mbps;
+      const endTime = performance.now(); let mbps;
       if (steadyStateReached && (endTime - steadyStartTime) > 500) {
-        const validBytes = totalSent - steadyStartBytes;
-        const validTime = (endTime - steadyStartTime) / 1000;
-        mbps = (validBytes * 8) / validTime / 1e6;
-      } else {
-        const elapsed = (endTime - startTime) / 1000;
-        mbps = (totalSent * 8) / elapsed / 1e6;
-      }
+        mbps = ((totalSent - steadyStartBytes) * 8) / ((endTime - steadyStartTime) / 1000) / 1e6;
+      } else { mbps = (totalSent * 8) / ((endTime - startTime) / 1000) / 1e6; }
       resolve({ mbps: Math.max(mbps, 0), elapsed: endTime - startTime });
     }
 
     function sendChunk() {
       if (finished || shouldStop) return;
-      const controller = new AbortController();
-      abortControllers.push(controller);
+      const controller = new AbortController(); abortControllers.push(controller);
       fetch(UL_URL, { method: 'POST', body: payload, signal: controller.signal, cache: 'no-store' })
         .then(() => {
           totalSent += chunkSize;
-          if (!steadyStateReached && (performance.now() - startTime) >= DISCARD_MS) {
-            steadyStateReached = true;
-            steadyStartTime = performance.now();
-            steadyStartBytes = totalSent;
-          }
+          if (!steadyStateReached && (performance.now() - startTime) >= DISCARD_MS) { steadyStateReached = true; steadyStartTime = performance.now(); steadyStartBytes = totalSent; }
           if (!finished) sendChunk();
-        })
-        .catch(() => {});
+        }).catch(() => {});
     }
 
     for (let i = 0; i < numThreads; i++) sendChunk();
@@ -662,92 +599,50 @@ async function startTest() {
   document.getElementById('gauge-num').classList.remove('ul-mode');
   document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
   updateUnits(0);
-
-  ['d-eff','d-vs','d-eff-lbl','d-vs-lbl','dm-eff','dm-eff-lbl'].forEach(id => {
-    const el = document.getElementById(id); if(el) el.textContent = '—';
-  });
+  ['d-eff','d-vs','d-eff-lbl','d-vs-lbl','dm-eff','dm-eff-lbl'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
 
   const isFast = mode === 'fast';
-  
-  const MEASURE_THREADS = 16;
-  const warmupThreads = 4;
-  const warmupDuration = 3000;
-  const roundDuration = isFast ? 5000 : 6000;
-  const measureRounds = isFast ? 3 : 5;
-
+  const MEASURE_THREADS = 16, warmupThreads = 4, warmupDuration = 3000;
+  const roundDuration = isFast ? 5000 : 6000, measureRounds = isFast ? 3 : 5;
   let roundResults = [];
 
   try {
     currentPhase = 'dl';
     document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
-
     setStatus('WARMUP TCP (no cuenta para resultado)...', 5);
     const warmupResult = await measureDownloadRound(warmupThreads, warmupDuration);
     if (shouldStop) throw new Error('stopped');
-    
-    addRound({
-      round: 0,
-      threads: warmupThreads,
-      mbps: warmupResult.mbps,
-      ms: Math.round(warmupResult.elapsed),
-      status: 'warmup',
-      isWarmup: true
-    });
-
-    allSamples = [];
-    chartData = [];
-    peakMbps = 0;
+    addRound({ round: 0, threads: warmupThreads, mbps: warmupResult.mbps, ms: Math.round(warmupResult.elapsed), status: 'warmup', isWarmup: true });
+    allSamples = []; chartData = []; peakMbps = 0;
 
     for (let r = 0; r < measureRounds; r++) {
       if (shouldStop) throw new Error('stopped');
-      const progress = 10 + ((r + 0.5) / measureRounds) * 60;
-      setStatus(`DESCARGA ronda ${r+1}/${measureRounds} · ${MEASURE_THREADS} hilos`, progress);
-
+      setStatus(`DESCARGA ronda ${r+1}/${measureRounds} · ${MEASURE_THREADS} hilos`, 10 + ((r + 0.5) / measureRounds) * 60);
       const result = await measureDownloadRound(MEASURE_THREADS, roundDuration);
       if (shouldStop) throw new Error('stopped');
-
       roundResults.push(result.mbps);
-      
-      addRound({
-        round: r + 1,
-        threads: MEASURE_THREADS,
-        mbps: result.mbps,
-        ms: Math.round(result.elapsed),
-        status: 'OK ✓',
-        isWarmup: false
-      });
-
+      addRound({ round: r + 1, threads: MEASURE_THREADS, mbps: result.mbps, ms: Math.round(result.elapsed), status: 'OK ✓', isWarmup: false });
       if (result.mbps > peakMbps) peakMbps = result.mbps;
       setStatus(`Ronda ${r+1}: ${result.mbps.toFixed(1)} Mbps`, 10 + ((r+1) / measureRounds) * 60);
     }
 
     let dlResult = 0;
     if (roundResults.length > 0) {
-      const sorted = [...roundResults].sort((a, b) => a - b);
-      const len = sorted.length;
-      if (len === 1) {
-        dlResult = sorted[0];
-      } else if (len === 2) {
-        dlResult = (sorted[0] + sorted[1]) / 2;
-      } else if (len <= 4) {
-        const mid = Math.floor(len / 2);
-        dlResult = len % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
-      } else {
-        const trimmed = sorted.slice(1, -1);
-        dlResult = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
-      }
+      const sorted = [...roundResults].sort((a, b) => a - b), len = sorted.length;
+      if (len === 1) dlResult = sorted[0];
+      else if (len === 2) dlResult = (sorted[0] + sorted[1]) / 2;
+      else if (len <= 4) { const mid = Math.floor(len / 2); dlResult = len % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid]; }
+      else { const trimmed = sorted.slice(1, -1); dlResult = trimmed.reduce((a, b) => a + b, 0) / trimmed.length; }
     }
 
     document.getElementById('res-dl').textContent = dlResult.toFixed(2);
-    updateUnits(dlResult);
-    updateMetrics();
+    updateUnits(dlResult); updateMetrics();
 
     if (!shouldStop) {
       currentPhase = 'ul';
       document.getElementById('gauge-dir-lbl').textContent = '↑ UL';
       document.getElementById('gauge-num').classList.add('ul-mode');
       setStatus('MIDIENDO SUBIDA...', 80);
-
       const ulResult = await measureUploadRound(8, 5000);
       document.getElementById('res-ul').textContent = ulResult.mbps.toFixed(2);
       setStatus('SUBIDA: ' + ulResult.mbps.toFixed(1) + ' Mbps', 95);
@@ -756,28 +651,16 @@ async function startTest() {
     if (roundResults.length >= 2) {
       const avg = roundResults.reduce((a, b) => a + b, 0) / roundResults.length;
       const stdDev = Math.sqrt(roundResults.reduce((a, b) => a + (b - avg) ** 2, 0) / roundResults.length);
-      
       const cv = (stdDev / avg) * 100;
       const consistency = Math.max(0, Math.min(100, 100 - cv)).toFixed(0) + '%';
-      
       const sortedR = [...roundResults].sort((a, b) => a - b);
-      let stabilityArr = sortedR;
-      if (sortedR.length >= 4) {
-        stabilityArr = sortedR.slice(1);
-      }
-      const stabilityRatio = (stabilityArr[0] / stabilityArr[stabilityArr.length - 1]) * 100;
-      const stability = Math.min(stabilityRatio, 100).toFixed(0) + '%';
-      
+      let stabilityArr = sortedR; if (sortedR.length >= 4) stabilityArr = sortedR.slice(1);
+      const stability = Math.min((stabilityArr[0] / stabilityArr[stabilityArr.length - 1]) * 100, 100).toFixed(0) + '%';
       const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
-      
-      set('d-eff', consistency);
-      const cVal = parseFloat(consistency);
+      set('d-eff', consistency); const cVal = parseFloat(consistency);
       set('d-eff-lbl', cVal >= 90 ? '✓ Excelente' : cVal >= 80 ? '✓ Bueno' : cVal >= 70 ? '~ Aceptable' : '⚠ Variable');
-      
-      set('d-vs', stability);
-      const sVal = parseFloat(stability);
+      set('d-vs', stability); const sVal = parseFloat(stability);
       set('d-vs-lbl', sVal >= 90 ? '✓ Muy estable' : sVal >= 80 ? '✓ Estable' : sVal >= 70 ? '~ Aceptable' : '⚠ Inestable');
-      
       set('dm-eff', consistency);
       set('dm-eff-lbl', cVal >= 90 ? '✓ Excelente' : cVal >= 80 ? '✓ Bueno' : cVal >= 70 ? '~ Aceptable' : '⚠ Variable');
     }
@@ -788,11 +671,8 @@ async function startTest() {
     document.getElementById('gauge-dir-lbl').textContent = '↓ RESULTADO';
 
   } catch(e) {
-    if (e.message === 'stopped') {
-      setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
-    } else {
-      setStatus('⚠ ERROR: ' + e.message, 0);
-    }
+    if (e.message === 'stopped') setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
+    else setStatus('⚠ ERROR: ' + e.message, 0);
   }
 
   running = false;
@@ -804,8 +684,7 @@ async function startTest() {
 }
 
 function stopTest() {
-  shouldStop = true;
-  running = false;
+  shouldStop = true; running = false;
   setStatus('■ PRUEBA DETENIDA POR EL USUARIO', 0);
   document.getElementById('btn-start').disabled = false;
   document.getElementById('btn-start').textContent = '▶ INICIAR';
@@ -830,16 +709,3 @@ drawChart();
 </script>
 
 </body></html>
-```
-
-**Cambios realizados:**
-
-1. **Eliminado el readout lateral** — Ya no hay contador al lado del gauge. Solo el número dentro del velocímetro.
-
-2. **Gauge más grande** — Ahora ocupa `min(28vw, 28vh, 220px)` en landscape y `min(45vw, 22vh, 200px)` en portrait, para que los números se lean claramente dentro.
-
-3. **Número dentro del gauge como odómetro** — Siempre muestra formato fijo `000.0` (4 dígitos + 1 decimal). Nunca cambia de ancho, solo cambian los dígitos. El gauge queda fijo en su posición como un velocímetro de automóvil.
-
-4. **Debajo del número**: `Mbps` y `↓ DL` / `↑ UL` como indicadores estáticos dentro del dial.
-
-5. **El gauge está centrado** en su card con `justify-content:center`, sin elementos que lo empujen lateralmente.
