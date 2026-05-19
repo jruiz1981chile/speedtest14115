@@ -429,7 +429,7 @@
 
       <div class="live-graph-wrap" id="graphwrap">
         <div class="live-graph-label">
-          <span>VELOCIDAD EN TIEMPO REAL</span>
+          <span>VELOCIDAD EN TIEMPO REAL <span style="opacity:0.5;font-size:9px">— fluctuaciones normales de red</span></span>
           <span id="graphpeak"></span>
         </div>
         <canvas id="liveChart" width="240" height="50"></canvas>
@@ -674,7 +674,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2025-05-18 19:42</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2025-05-18 20:15</span></footer>
 </div>
 
 <script>
@@ -719,7 +719,13 @@ function toggleIT() {
 function drawChart(mbps) {
   chartData.push(mbps);
   if (chartData.length > MAX_POINTS) chartData.shift();
-  if (mbps > peakMbps) { peakMbps = mbps; $('graphpeak').textContent = 'pico: ' + mbps.toLocaleString('es-CL', {minimumFractionDigits:1,maximumFractionDigits:1}) + ' Mbps'; }
+  if (mbps > peakMbps) peakMbps = mbps;
+  // Show p90 of chart data instead of raw spike peak
+  if (chartData.length > 1) {
+    const sorted = [...chartData].sort((a,b) => a-b);
+    const p90 = sorted[Math.min(Math.floor(sorted.length * 0.9), sorted.length-1)];
+    $('graphpeak').textContent = 'p90: ' + p90.toLocaleString('es-CL', {minimumFractionDigits:1,maximumFractionDigits:1}) + ' Mbps';
+  }
 
   const canvas = $('liveChart');
   const ctx = canvas.getContext('2d');
