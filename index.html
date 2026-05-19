@@ -69,22 +69,22 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .urow-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;line-height:1.25;}
 .units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.2em 0;}
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.72vw,8px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.3em;line-height:1.6;}
-#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.5em 0.6em;gap:0.3em;position:relative;overflow:hidden;}
+#gauge-card{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:0.6em 0.6em;gap:0.2em;position:relative;overflow:hidden;}
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
-#gauge-wrap{position:relative;width:min(22vw,22vh,190px);aspect-ratio:1;flex-shrink:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(30vw,16vh,130px);}}
+#gauge-wrap{position:relative;width:min(18vw,18vh,160px);aspect-ratio:1;flex-shrink:1;min-height:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(28vw,14vh,120px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,4vw,40px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(16px,3.2vw,34px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
-#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(7px,0.9vw,11px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.1em;}
-#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.95vw,12px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.08em;}
-#status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1vw,13px);color:var(--text-mid);text-align:center;min-height:1.5em;letter-spacing:0.08em;flex-shrink:0;}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(6px,0.75vw,9px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
+#gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.85vw,10px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.04em;}
+#status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,12px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
-#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;}
-.big-btn{padding:0.5em 1.2em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(10px,1.2vw,15px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
+#btn-wrap{display:flex;gap:0.5em;justify-content:center;flex-shrink:0;padding-top:0.2em;}
+.big-btn{padding:0.45em 1.1em;border-radius:4px;font-family:'Orbitron',monospace;font-size:clamp(9px,1.1vw,13px);font-weight:900;letter-spacing:0.14em;cursor:pointer;transition:all 0.18s;}
 #btn-start{background:transparent;border:2px solid var(--neon-dl);color:var(--neon-dl);text-shadow:0 0 10px var(--neon-dl);box-shadow:0 0 14px rgba(0,255,224,0.2);}
 #btn-start:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 28px var(--neon-dl);}
 #btn-stop{background:transparent;border:2px solid var(--danger);color:var(--danger);text-shadow:0 0 10px var(--danger);display:none;}
@@ -272,7 +272,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
       <div id="status-line">Presiona INICIAR para medir tu conexión</div>
       <div id="progress-wrap"><div id="progress-fill"></div></div>
-      <div id="btn-wrap" style="margin-top:0.4em;">
+      <div id="btn-wrap">
         <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
         <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
       </div>
@@ -452,18 +452,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 </div>
 
 <script>
-// =============================================
-// CONFIGURACIÓN
-// =============================================
 const DL_URL = 'https://speed.cloudflare.com/__down?bytes=26214400';
 const UL_URL = 'https://speed.cloudflare.com/__up';
 
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
-// =============================================
-// GAUGE TICKS (visual)
-// =============================================
 (function buildTicks(){
   const svg = document.getElementById('gauge-ticks');
   const cx=60, cy=60, r=50, startA=Math.PI*1.1, endA=Math.PI*1.9;
@@ -478,9 +472,6 @@ let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase
   }
 })();
 
-// =============================================
-// UI HELPERS (sin cambios visuales)
-// =============================================
 function setGaugeArc(mbps, maxMbps){
   const arc = document.getElementById('gauge-arc');
   const ratio = Math.min(mbps / (maxMbps||100), 1), dash = ratio * 251;
@@ -573,10 +564,6 @@ function setStatus(txt, prog){
   if(prog !== undefined) document.getElementById('progress-fill').style.width = prog+'%';
 }
 
-// =============================================
-// MEDICIÓN DE DESCARGA (lógica del archivo FUNCIONANDO)
-// Usa getReader() para leer bytes reales del stream
-// =============================================
 function measureDownloadRound(numThreads, roundDurationMs) {
   return new Promise((resolve) => {
     let totalBytesReceived = 0;
@@ -642,9 +629,6 @@ function measureDownloadRound(numThreads, roundDurationMs) {
   });
 }
 
-// =============================================
-// MEDICIÓN DE SUBIDA (lógica del archivo FUNCIONANDO)
-// =============================================
 function measureUploadRound(numThreads, durationMs) {
   return new Promise((resolve) => {
     let totalSent = 0;
@@ -677,9 +661,6 @@ function measureUploadRound(numThreads, durationMs) {
   });
 }
 
-// =============================================
-// TEST PRINCIPAL
-// =============================================
 async function startTest() {
   if (running) return;
   running = true; shouldStop = false;
@@ -699,7 +680,6 @@ async function startTest() {
   const roundDuration = isFast ? 3000 : 4000;
 
   try {
-    // === DESCARGA ===
     currentPhase = 'dl';
     document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
 
@@ -723,13 +703,11 @@ async function startTest() {
       if (result.mbps > peakMbps) peakMbps = result.mbps;
     }
 
-    // Resultado descarga = p90
     const dlResult = allSamples.length > 0 ? [...allSamples].sort((a,b)=>a-b)[Math.floor(allSamples.length * 0.9)] : 0;
     document.getElementById('res-dl').textContent = dlResult.toFixed(2);
     updateUnits(dlResult);
     updateMetrics();
 
-    // === SUBIDA ===
     if (!shouldStop) {
       currentPhase = 'ul';
       document.getElementById('gauge-dir-lbl').textContent = '↑ UL';
@@ -740,7 +718,6 @@ async function startTest() {
       document.getElementById('res-ul').textContent = ulResult.mbps.toFixed(2);
     }
 
-    // === DIAGNÓSTICO ===
     if (roundsData.length > 1) {
       const measured = roundsData.filter((_, i) => !((!isFast) && i === 0));
       if (measured.length > 0) {
@@ -757,7 +734,6 @@ async function startTest() {
       }
     }
 
-    // Final
     setStatus('✓ PRUEBA COMPLETADA', 100);
     setGaugeArc(dlResult, Math.max(peakMbps * 1.2, 100));
     document.getElementById('gauge-num').textContent = dlResult.toFixed(2);
@@ -781,9 +757,6 @@ function stopTest() {
   document.getElementById('btn-stop').style.display = 'none';
 }
 
-// =============================================
-// CONTROLES UI (sin cambios)
-// =============================================
 function setMode(m) { mode = m; document.getElementById('tab-fast').classList.toggle('active', m==='fast'); document.getElementById('tab-detail').classList.toggle('active', m==='detail'); }
 function openUnitsModal() { document.getElementById('units-modal').classList.add('open'); }
 function closeUnitsModal() { document.getElementById('units-modal').classList.remove('open'); }
@@ -800,4 +773,3 @@ drawChart();
 </script>
 </body>
 </html>
-```
