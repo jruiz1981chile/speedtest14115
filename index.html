@@ -686,7 +686,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 02:10</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 02:28</span></footer>
 </div>
 
 <script>
@@ -957,7 +957,8 @@ function setProgress(pct, lbl) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ─── Upload measurement — real XHR PUT with progress tracking ────────────
-function uploadMbps(bytes, onRate) {
+// ─── Upload measurement — exact mirror of fetchMbps ──────────────────────
+function uploadOne(bytes, onRate) {
   return new Promise(resolve => {
     const buf = new Uint8Array(bytes);
     crypto.getRandomValues(buf.subarray(0, Math.min(65536, bytes)));
@@ -967,57 +968,53 @@ function uploadMbps(bytes, onRate) {
     const xhr = new XMLHttpRequest();
     const entry = { abort: () => xhr.abort() };
     activeXhrs.push(entry);
-
     xhr.open('POST', `https://speed.cloudflare.com/__up?_t=${Date.now()}_${Math.random()}`, true);
     xhr.setRequestHeader('Content-Type', 'application/octet-stream');
 
     const t0 = performance.now();
     let lastLoaded = 0, lastTime = t0;
-    let uploadDoneAt = 0; // when upload.onload fires
 
     xhr.upload.onprogress = e => {
       if (!e.loaded) return;
       const now = performance.now();
       const dt = now - lastTime;
-      if (dt >= 400) {
+      if (dt >= 300) {
         const sent = e.loaded - lastLoaded;
-        if (sent > 0 && onRate) onRate((sent * 8) / (dt / 1000) / 1e6);
+        if (sent > 0 && onRate) onRate(sent, dt);
         lastLoaded = e.loaded;
         lastTime = now;
       }
     };
-
-    // Record when browser finished sending — but don't resolve yet
-    xhr.upload.onload = () => { uploadDoneAt = performance.now(); };
 
     const cleanup = () => {
       const idx = activeXhrs.indexOf(entry);
       if (idx !== -1) activeXhrs.splice(idx, 1);
     };
 
-    // Resolve only after server responds — use uploadDoneAt as the end of upload
-    // This avoids the "buffer flushed instantly" false reading
-    xhr.onloadend = () => {
+    // upload.onload = all bytes left the browser — this is our measurement point
+    xhr.upload.onload = () => {
       cleanup();
-      // If upload.onload never fired, use now as fallback
-      const uploadEnd = uploadDoneAt > 0 ? uploadDoneAt : performance.now();
-      const ms = uploadEnd - t0;
-      if (ms > 500) resolve({ mbps: (bytes * 8) / (ms / 1000) / 1e6, ms, bytes });
-      else resolve(null);
+      const ms = performance.now() - t0;
+      resolve({ bytes, ms });
     };
 
-    xhr.onerror = xhr.ontimeout = xhr.onabort = () => { cleanup(); resolve(null); };
-    xhr.timeout = 30000;
+    // Fallbacks
+    xhr.upload.onerror = xhr.upload.onabort = () => { cleanup(); resolve(null); };
+    xhr.onerror = xhr.onabort = () => { cleanup(); resolve(null); };
+    // onloadend as last resort (some browsers)
+    xhr.onloadend = () => { cleanup(); resolve({ bytes, ms: performance.now() - t0 }); };
+
+    xhr.timeout = 60000;
     xhr.send(blob);
   });
 }
 
-// ─── Run parallel upload rounds ───────────────────────────────────────────
+// ─── Run parallel upload — exact mirror of runParallel ────────────────────
 function runUploadParallel(threads, bytes) {
   return new Promise(resolve => {
     const t0 = performance.now();
     const threadRates    = new Array(threads).fill(0);
-    const threadLastSeen = new Array(threads).fill(performance.now());
+    const threadLastSeen = new Array(threads).fill(t0);
     const STALE_MS = 800;
 
     let aggInterval = setInterval(() => {
@@ -1038,21 +1035,25 @@ function runUploadParallel(threads, bytes) {
 
     let done = 0;
     const results = [];
+
     for (let i = 0; i < threads; i++) {
-      uploadMbps(bytes, (rate) => {
-        threadRates[i]    = rate;
-        threadLastSeen[i] = performance.now();
+      uploadOne(bytes, (sentBytes, dt) => {
+        const rate = (sentBytes * 8) / (dt / 1000) / 1e6;
+        if (rate > 0 && rate < 2000) {
+          threadRates[i]    = rate;
+          threadLastSeen[i] = performance.now();
+        }
       }).then(res => {
         threadRates[i] = 0;
-        if (res) results.push(res);
+        if (res && res.ms > 200) results.push(res);
         done++;
         if (done === threads) {
           clearInterval(aggInterval);
-          // Wall-clock: total bytes sent by all threads / total elapsed time
-          // This is correct because all threads ran concurrently from t0
-          const elapsed = performance.now() - t0;
+          const elapsed    = performance.now() - t0;
           const totalBytes = results.reduce((s, r) => s + r.bytes, 0);
-          resolve(totalBytes > 0 && elapsed > 500 ? (totalBytes * 8) / (elapsed / 1000) / 1e6 : 0);
+          resolve(totalBytes > 0 && elapsed > 300
+            ? (totalBytes * 8) / (elapsed / 1000) / 1e6
+            : 0);
         }
       });
     }
@@ -1273,8 +1274,8 @@ async function runTest() {
       ];
 
   const ulRounds  = testMode === 'fast' ? 1 : 2;
-  const ulThreads = testMode === 'fast' ? 6 : 10;
-  const ulBytes   = testMode === 'fast' ? 25000000 : 35000000; // 25MB / 35MB per thread
+  const ulThreads = testMode === 'fast' ? 8 : 12;
+  const ulBytes   = testMode === 'fast' ? 20000000 : 30000000;
 
   const roundResults = [];
   const measureSamples = [];
