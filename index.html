@@ -1,4 +1,5 @@
 
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -79,6 +80,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 @media(orientation:portrait){#gauge-wrap{width:min(22vw,12vh,100px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#gauge-num{display:none;}
+#gauge-unit-lbl{display:none;}
 #gauge-num{font-family:'Orbitron',monospace;font-size:clamp(16px,2.5vw,28px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
 #gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(8px,0.7vw,10px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
@@ -309,7 +312,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <footer id="footer">
   <p><strong style="color:var(--text-mid);">NOTA TÉCNICA:</strong> 5 rondas · speed.cloudflare.com · archivos 25MB · hasta 20 hilos · ronda 1 = warmup TCP · resultado = p90. Puede diferir de speedtest.net.</p>
-  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>generado 2026-05-19 11:18</div>
+  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>generado 2026-05-19 11:28</div>
 </footer>
 
 </div>
