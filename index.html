@@ -89,6 +89,19 @@
   .live-graph-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 3px; display: flex; justify-content: space-between; }
   canvas#liveChart { width: 100%; height: 50px; display: block; border-radius: 4px; background: var(--surface); }
 
+  /* Measuring overlay dots */
+  .ol-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); opacity: 0.2;
+    animation: ol-pulse 1.2s ease-in-out infinite;
+  }
+  .ol-dot:nth-child(2) { animation-delay: 0.2s; }
+  .ol-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes ol-pulse {
+    0%, 100% { opacity: 0.15; transform: scale(0.85); }
+    50%       { opacity: 1;    transform: scale(1.15); }
+  }
+
   /* Progress */
   .progress-wrap { width: 100%; margin-top: 6px; opacity: 0; transition: opacity 0.3s; }
   .progress-wrap.visible { opacity: 1; }
@@ -447,7 +460,7 @@
           🔬 Detallada
         </button>
       </div>
-      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~15s · 2 rondas descarga + 1 subida</p>
+      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~8s · 2 rondas descarga + 1 subida</p>
 
       <div class="btn-row">
         <button class="btn primary" id="btnstart" onclick="runTest()">▶ Iniciar prueba</button>
@@ -458,8 +471,8 @@
     <!-- Result column -->
     <div class="result-col">
 
-      <!-- Hero Mbps card -->
-      <div class="hero-mbps hidden" id="hero-mbps">
+      <!-- Hero Mbps card — always visible, shows — until test completes -->
+      <div class="hero-mbps" id="hero-mbps" style="position:relative;">
         <div class="hero-mbps-label">↓ RESULTADO DE DESCARGA</div>
         <div class="hero-mbps-sentence">Su velocidad es de</div>
         <div>
@@ -470,8 +483,32 @@
         </div>
       </div>
 
+      <!-- Measuring overlay — shown before/during test, hidden after -->
+      <div id="measuring-overlay" style="
+        margin: 8px 0 12px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1px dashed var(--border);
+        background: var(--surface);
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      ">
+        <div id="overlay-dots" style="display:flex;gap:5px;align-items:center;">
+          <span class="ol-dot"></span>
+          <span class="ol-dot"></span>
+          <span class="ol-dot"></span>
+        </div>
+        <div id="overlay-text" style="letter-spacing:0.08em;">PRESIONE INICIAR PARA MEDIR</div>
+      </div>
+
       <!-- 4 unit cards -->
-      <div class="units-summary hidden" id="units-summary">
+      <div class="units-summary" id="units-summary">
 
         <div class="us-card bits">
           <div class="us-card-header">
@@ -541,8 +578,8 @@
   </div>
   <!-- end ATF -->
 
-  <!-- DL / UL row -->
-  <div class="dl-ul-row hidden" id="dl-ul-row">
+  <!-- DL / UL row — always visible -->
+  <div class="dl-ul-row" id="dl-ul-row">
     <div class="du-card">
       <div class="du-label">↓ DESCARGA</div>
       <div class="du-num" id="rdl">—</div>
@@ -686,7 +723,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 02:55</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 10:35</span></footer>
 </div>
 
 <script>
@@ -729,11 +766,11 @@ function setMode(m) {
   if (m === 'fast') {
     fast.style.cssText += ';background:var(--accent);border-color:var(--accent);color:#000;';
     full.style.cssText += ';background:transparent;border-color:var(--border);color:var(--muted);';
-    desc.textContent = '~15s · 2 rondas descarga + 1 subida';
+    desc.textContent = '~8s · 2 rondas descarga + 1 subida';
   } else {
     full.style.cssText += ';background:var(--accent);border-color:var(--accent);color:#000;';
     fast.style.cssText += ';background:transparent;border-color:var(--border);color:var(--muted);';
-    desc.textContent = '~35s · 4 rondas descarga + 2 subida';
+    desc.textContent = '~18s · 3 rondas descarga + 1 subida';
   }
 }
 
@@ -1192,12 +1229,17 @@ async function runTest() {
 
   $('btnstart').classList.add('hidden');
   $('btnstop').classList.remove('hidden');
-  $('hero-mbps').classList.add('hidden');
-  $('units-summary').classList.add('hidden');
-  $('us-legend-row').classList.add('hidden');
-  $('dl-ul-row').classList.add('hidden');
   $('fullgrid-header').classList.add('hidden');
   $('fullgrid').classList.add('hidden');
+  $('graphwrap').classList.add('hidden');
+  $('statusmsg').classList.add('hidden');
+  // Reset result values to dashes
+  $('h-mbps-num').textContent = '—';
+  $('rdl').textContent = '—';
+  $('rul').textContent = '—';
+  // Show measuring overlay
+  $('measuring-overlay').style.display = '';
+  $('overlay-text').textContent = 'MIDIENDO VELOCIDAD...';
   $('progwrap').classList.add('visible');
   // Hide everything except progress bar during test
   $('gauge-outer').style.display = 'none';
@@ -1213,21 +1255,20 @@ async function runTest() {
   // Más hilos = más ancho de banda agregado, supera el límite por hilo de Cloudflare
   const dlGroups = testMode === 'fast'
     ? [
-        { threads:  6, bytes: 10000000, warmup: true  }, // warmup
-        { threads: 12, bytes: 25000000, warmup: false }, // ronda 1
-        { threads: 16, bytes: 25000000, warmup: false }, // ronda 2
+        { threads:  8, bytes:  8000000, warmup: true  }, // warmup ~1s
+        { threads: 12, bytes: 15000000, warmup: false }, // ronda 1 ~2s
+        { threads: 16, bytes: 15000000, warmup: false }, // ronda 2 ~2s
       ]
     : [
-        { threads:  4, bytes: 10000000, warmup: true  }, // warmup
-        { threads:  8, bytes: 50000000, warmup: false }, // ronda 1
-        { threads: 12, bytes: 50000000, warmup: false }, // ronda 2
-        { threads: 16, bytes: 50000000, warmup: false }, // ronda 3
-        { threads: 20, bytes: 50000000, warmup: false }, // ronda 4
+        { threads:  6, bytes:  8000000, warmup: true  }, // warmup ~1s
+        { threads: 10, bytes: 25000000, warmup: false }, // ronda 1
+        { threads: 14, bytes: 25000000, warmup: false }, // ronda 2
+        { threads: 18, bytes: 25000000, warmup: false }, // ronda 3
       ];
 
-  const ulRounds  = testMode === 'fast' ? 1 : 2;
-  const ulThreads = testMode === 'fast' ? 8 : 12;
-  const ulBytes   = testMode === 'fast' ? 20000000 : 30000000;
+  const ulRounds  = testMode === 'fast' ? 1 : 1;
+  const ulThreads = testMode === 'fast' ? 8 : 10;
+  const ulBytes   = testMode === 'fast' ? 15000000 : 20000000;
 
   const roundResults = [];
   const measureSamples = [];
@@ -1256,7 +1297,7 @@ async function runTest() {
     }
     phasesDone++;
     setProgress((phasesDone / totalPhases) * 85, warmup ? 'Calentamiento listo' : `Descarga ${r}/${dlGroups.length - 1} lista`);
-    await sleep(200);
+    await sleep(100);
   }
 
   if (aborted) { finishStop(); return; }
@@ -1278,6 +1319,7 @@ async function runTest() {
     const pct = 85 + ((phasesDone - dlGroups.length) / ulRounds) * 13;
     setProgress(pct, `Subida ${u+1}/${ulRounds} — ${ulThreads} hilos`);
     $('gmode').textContent = '↑ SUBIDA';
+    $('overlay-text').textContent = 'MIDIENDO SUBIDA...';
     const ulMbps = await runUploadParallel(ulThreads, ulBytes);
     if (ulMbps > 0.1) ulResults.push(ulMbps);
     phasesDone++;
@@ -1285,6 +1327,8 @@ async function runTest() {
   }
   const ulFinal = ulResults.length ? percentile90(ulResults) : 0;
 
+  // Hide measuring overlay
+  $('measuring-overlay').style.display = 'none';
   setProgress(100, 'Completado');
   // Restore gauge and graph
   $('gauge-outer').style.display = '';
@@ -1295,7 +1339,6 @@ async function runTest() {
 
   // Show hero & summaries
   $('h-mbps-num').textContent = f(dlFinal);
-  $('hero-mbps').classList.remove('hidden');
   $('units-summary').classList.remove('hidden');
   $('us-legend-row').classList.remove('hidden');
 
