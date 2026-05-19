@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SpeEdTest 14115</title>
+<title>-SpeedTest 14115-</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -460,7 +460,7 @@
           🔬 Detallada
         </button>
       </div>
-      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~6s · 2 rondas descarga + 1 subida</p>
+      <p id="mode-desc" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin:-6px 0 10px;text-align:center;">~6s · 2 rondas descarga + 1 subida · móvil / datos</p>
 
       <div class="btn-row">
         <button class="btn primary" id="btnstart" onclick="runTest()">▶ Iniciar prueba</button>
@@ -766,11 +766,11 @@ function setMode(m) {
   if (m === 'fast') {
     fast.style.cssText += ';background:var(--accent);border-color:var(--accent);color:#000;';
     full.style.cssText += ';background:transparent;border-color:var(--border);color:var(--muted);';
-    desc.textContent = '~8s · 2 rondas descarga + 1 subida';
+    desc.textContent = '~6s · 2 rondas descarga + 1 subida · móvil / datos';
   } else {
     full.style.cssText += ';background:var(--accent);border-color:var(--accent);color:#000;';
     fast.style.cssText += ';background:transparent;border-color:var(--border);color:var(--muted);';
-    desc.textContent = '~18s · 3 rondas descarga + 1 subida';
+    desc.textContent = '~60s · 4 rondas descarga + 2 subida · fibra / WiFi 6+';
   }
 }
 
@@ -1029,8 +1029,9 @@ async function runUploadParallel(threads, bytes) {
   const timerInterval = setInterval(() => {
     const elapsed = (performance.now() - t0) / 1000;
     $('overlay-text').textContent = `↑ ENVIANDO ${totalMB} MB... ${elapsed.toFixed(1)}s`;
-    // Animate progress bar based on estimated time (~8s max)
-    const pct = Math.min((elapsed / 8) * 13 + 85, 98);
+    // Animate progress bar: rápida ~8s, detallada ~40s
+    const estSecs = testMode === 'fast' ? 8 : 40;
+    const pct = Math.min((elapsed / estSecs) * 13 + 85, 98);
     setProgress(pct, `Subida — ${threads} hilos · ${elapsed.toFixed(1)}s`);
   }, 100);
 
@@ -1261,15 +1262,16 @@ async function runTest() {
         { threads: 14, bytes:  8000000, warmup: false }, // ronda 2
       ]
     : [
-        { threads:  6, bytes:  5000000, warmup: true  }, // warmup ~1s
-        { threads: 10, bytes: 12000000, warmup: false }, // ronda 1
-        { threads: 14, bytes: 12000000, warmup: false }, // ronda 2
-        { threads: 16, bytes: 12000000, warmup: false }, // ronda 3
+        { threads:  8, bytes: 10000000, warmup: true  }, // warmup — satura la línea
+        { threads: 16, bytes: 50000000, warmup: false }, // ronda 1 — archivos grandes
+        { threads: 20, bytes: 50000000, warmup: false }, // ronda 2 — más hilos
+        { threads: 24, bytes: 50000000, warmup: false }, // ronda 3 — pico
+        { threads: 24, bytes: 50000000, warmup: false }, // ronda 4 — confirmación
       ];
 
-  const ulRounds  = testMode === 'fast' ? 1 : 1;
-  const ulThreads = testMode === 'fast' ? 4 : 5;
-  const ulBytes   = testMode === 'fast' ? 3000000 : 4000000;
+  const ulRounds  = testMode === 'fast' ? 1 : 2;
+  const ulThreads = testMode === 'fast' ? 4 : 12;
+  const ulBytes   = testMode === 'fast' ? 3000000 : 15000000;
 
   const roundResults = [];
   const measureSamples = [];
