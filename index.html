@@ -71,19 +71,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #gauge-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,224,0.04) 0%,transparent 70%);pointer-events:none;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;}
 #gauge-row{display:flex;align-items:center;justify-content:center;gap:0.8em;flex-shrink:0;width:100%;}
-#gauge-wrap{position:relative;width:min(15vw,15vh,130px);aspect-ratio:1;flex-shrink:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(22vw,12vh,100px);}}
+#gauge-wrap{position:relative;width:min(18vw,18vh,160px);aspect-ratio:1;flex-shrink:0;}
+@media(orientation:portrait){#gauge-wrap{width:min(28vw,16vh,140px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(16px,2.5vw,28px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
+#gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,3vw,32px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:-0.03em;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
-#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(8px,0.7vw,10px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
+#gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(8px,0.8vw,11px);font-weight:700;color:var(--text-dim);letter-spacing:0.12em;margin-top:0.05em;}
 #gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.8vw,11px);color:var(--text-mid);letter-spacing:0.12em;margin-top:0.04em;}
-#gauge-readout{display:flex;flex-direction:column;align-items:flex-start;gap:0.1em;}
-#gauge-readout .gr-value{font-family:'Orbitron',monospace;font-size:clamp(24px,4vw,42px);font-weight:900;color:var(--neon-dl);line-height:1;text-shadow:0 0 20px var(--neon-dl),0 0 40px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;}
-#gauge-readout .gr-value.ul-mode{color:var(--neon-ul);text-shadow:0 0 20px var(--neon-ul),0 0 40px rgba(191,0,255,0.3);}
-#gauge-readout .gr-unit{font-family:'Orbitron',monospace;font-size:clamp(10px,1vw,13px);font-weight:700;color:var(--text-dim);letter-spacing:0.1em;}
-#gauge-readout .gr-dir{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,12px);color:var(--text-mid);letter-spacing:0.1em;}
 #status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,0.9vw,13px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
@@ -280,14 +275,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <g id="gauge-ticks"></g>
           </svg>
           <div id="gauge-val">
-            <div id="gauge-num">—</div>
+            <div id="gauge-num">000.0</div>
             <div id="gauge-unit-lbl">Mbps</div>
+            <div id="gauge-dir-lbl">↓ DL</div>
           </div>
-        </div>
-        <div id="gauge-readout">
-          <div class="gr-value" id="gr-value">—</div>
-          <div class="gr-unit">Mbps</div>
-          <div class="gr-dir" id="gr-dir">↓ DL</div>
         </div>
       </div>
       <div id="status-line">Presiona INICIAR para medir tu conexión</div>
@@ -385,6 +376,15 @@ const UL_URL = 'https://speed.cloudflare.com/__up';
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
+// Formato fijo: siempre 4 dígitos + 1 decimal = "000.0"
+function formatFixed(mbps) {
+  if (mbps <= 0) return '000.0';
+  const val = Math.min(mbps, 9999.9);
+  const whole = Math.floor(val);
+  const dec = Math.floor((val - whole) * 10);
+  return String(whole).padStart(4, '0') + '.' + dec;
+}
+
 (function buildTicks(){
   const svg = document.getElementById('gauge-ticks');
   const cx=60, cy=60, r=50, startA=Math.PI*1.1, endA=Math.PI*1.9;
@@ -403,9 +403,7 @@ function setGaugeArc(mbps, maxMbps){
   const arc = document.getElementById('gauge-arc');
   const ratio = Math.min(mbps / (maxMbps||100), 1), dash = ratio * 251;
   arc.setAttribute('stroke-dasharray', `${dash} ${251-dash}`);
-  const txt = mbps >= 10 ? mbps.toFixed(1) : mbps.toFixed(2);
-  document.getElementById('gauge-num').textContent = txt;
-  document.getElementById('gr-value').textContent = txt;
+  document.getElementById('gauge-num').textContent = formatFixed(mbps);
 }
 
 function drawChart(){
@@ -662,10 +660,9 @@ async function startTest() {
   document.getElementById('btn-start').style.cursor = 'not-allowed';
   document.getElementById('btn-stop').style.display = '';
   document.getElementById('progress-fill').style.width = '0%';
-  document.getElementById('gauge-num').textContent = '—';
-  document.getElementById('gr-value').textContent = '—';
+  document.getElementById('gauge-num').textContent = '000.0';
   document.getElementById('gauge-num').classList.remove('ul-mode');
-  document.getElementById('gr-value').classList.remove('ul-mode');
+  document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
   updateUnits(0);
 
   ['d-eff','d-vs','d-eff-lbl','d-vs-lbl','dm-eff','dm-eff-lbl'].forEach(id => {
@@ -684,7 +681,7 @@ async function startTest() {
 
   try {
     currentPhase = 'dl';
-    document.getElementById('gr-dir').textContent = '↓ DL';
+    document.getElementById('gauge-dir-lbl').textContent = '↓ DL';
 
     setStatus('WARMUP TCP (no cuenta para resultado)...', 5);
     const warmupResult = await measureDownloadRound(warmupThreads, warmupDuration);
@@ -749,9 +746,8 @@ async function startTest() {
 
     if (!shouldStop) {
       currentPhase = 'ul';
-      document.getElementById('gr-dir').textContent = '↑ UL';
+      document.getElementById('gauge-dir-lbl').textContent = '↑ UL';
       document.getElementById('gauge-num').classList.add('ul-mode');
-      document.getElementById('gr-value').classList.add('ul-mode');
       setStatus('MIDIENDO SUBIDA...', 80);
 
       const ulResult = await measureUploadRound(8, 5000);
@@ -791,8 +787,7 @@ async function startTest() {
     setStatus('✓ COMPLETADA — Descarga: ' + dlResult.toFixed(1) + ' Mbps', 100);
     setGaugeArc(dlResult, Math.max(peakMbps * 1.2, 100));
     document.getElementById('gauge-num').classList.remove('ul-mode');
-    document.getElementById('gr-value').classList.remove('ul-mode');
-    document.getElementById('gr-dir').textContent = '↓ RESULTADO';
+    document.getElementById('gauge-dir-lbl').textContent = '↓ RESULTADO';
 
   } catch(e) {
     if (e.message === 'stopped') {
@@ -838,3 +833,13 @@ drawChart();
 
 </body></html>
 ```
+
+**Cambios realizados:**
+
+1. **Eliminado el contador lateral (`#gauge-readout`)** — Ya no está el número grande al lado del velocímetro. Solo queda el número dentro del gauge.
+
+2. **Formato fijo `000.0`** — La función `formatFixed(mbps)` siempre devuelve exactamente 4 dígitos enteros + punto + 1 decimal (ej: `0045.3`, `0128.7`, `0003.2`). Esto evita que el texto cambie de ancho y el velocímetro se mueva lateralmente.
+
+3. **El gauge ahora es más grande** — Ajusté `#gauge-wrap` a `min(18vw,18vh,160px)` en landscape y `min(28vw,16vh,140px)` en portrait para que se aproveche mejor el espacio sin el readout lateral.
+
+4. **Se agregó `#gauge-dir-lbl`** debajo del número dentro del gauge para indicar `↓ DL` o `↑ UL`.
