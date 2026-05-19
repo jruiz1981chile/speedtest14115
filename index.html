@@ -686,7 +686,7 @@
     <span>Nota técnica:</span> 5 rondas de descargas paralelas desde <span>speed.cloudflare.com</span> (archivos de 25 MB, hasta 20 hilos simultáneos). La ronda 1 es warmup TCP y no cuenta. El resultado es el <span>percentil 90</span> de las rondas de medición. La velocidad se mide como suma agregada de todos los hilos en tiempo real, superando el límite por-hilo del servidor. Puede diferir de speedtest.net, que usa servidores dedicados geográficamente cercanos.
   </div>
 
-  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 00:48</span></footer>
+  <footer>speedtest · descargas paralelas HTTP · sin instalación requerida &nbsp;·&nbsp; generado <span style="color:var(--accent);opacity:1">2026-05-19 01:05</span></footer>
 </div>
 
 <script>
@@ -1040,9 +1040,11 @@ function runUploadParallel(threads, bytes) {
         done++;
         if (done === threads) {
           clearInterval(aggInterval);
-          const totalMs    = performance.now() - t0;
+          // Wall-clock: total bytes sent by all threads / total elapsed time
+          // This is correct because all threads ran concurrently from t0
+          const elapsed = performance.now() - t0;
           const totalBytes = results.reduce((s, r) => s + r.bytes, 0);
-          resolve(totalBytes > 0 ? (totalBytes * 8) / (totalMs / 1000) / 1e6 : 0);
+          resolve(totalBytes > 0 && elapsed > 500 ? (totalBytes * 8) / (elapsed / 1000) / 1e6 : 0);
         }
       });
     }
