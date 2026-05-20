@@ -1,5 +1,5 @@
+
 <!DOCTYPE html>
-<!-- saved from url=(0048)https://jruiz1981chile.github.io/speedtest14115/ -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -49,7 +49,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   #col-right{display:none;}
   #chart-card{display:none !important;}
   #units-card{display:none !important;}
-  /* contador grande, protagonista */
   #speed-display-card{flex:none;min-height:min(72vw,340px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.2em;}
   #gauge-num{font-size:clamp(52px,18vw,120px) !important;letter-spacing:-0.04em !important;}
   #gauge-unit-lbl{font-size:clamp(14px,5vw,24px) !important;}
@@ -109,7 +108,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .urow-c3::after{background:var(--neon-o);}
 .urow-c4::after{background:var(--neon-p);}
 .urow-c5::after{background:#44aaff;}
-/* ← tamaños reducidos para que no se corten los números */
 .urow-sym{font-family:'Orbitron',monospace;font-size:clamp(9px,0.85vw,11px);font-weight:700;letter-spacing:0.04em;}
 .urow-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.62vw,8px);color:var(--text-dim);margin-left:0.25em;}
 .urow-vals{display:flex;gap:0.3em;align-items:baseline;margin:0.06em 0;flex-wrap:wrap;}
@@ -122,7 +120,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .units-note-row{grid-column:1/-1;background:transparent;border:none;padding:0.15em 0;}
 .units-note-row .unote{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.62vw,7px);color:var(--text-dim);border-top:1px solid var(--border);padding-top:0.25em;line-height:1.5;}
 
-/* ── SPEED DISPLAY CARD (col-center, reemplaza gauge) ── */
+/* ── SPEED DISPLAY CARD (col-center) ── */
 #speed-display-card{
   flex:1;min-height:0;
   background:var(--surface);border:1px solid var(--border);border-radius:6px;
@@ -133,7 +131,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #speed-display-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(0,255,224,0.05) 0%,transparent 70%);pointer-events:none;}
 #speed-display-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--neon-dl),transparent);opacity:0.5;}
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.85vw,11px);color:var(--text-dim);letter-spacing:0.2em;text-align:center;flex-shrink:0;}
-/* contador Mbps — protagonista */
 #gauge-num{
   font-family:'Orbitron',monospace;
   font-size:clamp(36px,7vw,90px);
@@ -149,8 +146,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #gauge-num.ul-mode{color:var(--neon-ul);text-shadow:0 0 40px var(--neon-ul),0 0 80px rgba(191,0,255,0.25);}
 #gauge-unit-lbl{font-family:'Orbitron',monospace;font-size:clamp(11px,1.4vw,18px);font-weight:700;color:var(--text-mid);letter-spacing:0.18em;flex-shrink:0;}
 #gauge-dir-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(10px,1.1vw,14px);color:var(--text-mid);letter-spacing:0.14em;flex-shrink:0;}
-
-/* barra de progreso y status */
 #status-line{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,13px);color:var(--text-mid);text-align:center;min-height:1.2em;letter-spacing:0.08em;flex-shrink:0;}
 #progress-wrap{width:90%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;flex-shrink:0;}
 #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-dl),var(--neon-ul));border-radius:2px;transition:width 0.3s;box-shadow:0 0 8px var(--neon-dl);}
@@ -191,9 +186,35 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .dl-cell .dlc-sub{font-family:'Rajdhani',sans-serif;font-size:clamp(7px,0.78vw,9px);color:var(--text-dim);font-weight:600;}
 
 /* ── FOOTER ── */
-#footer{border-top:1px solid var(--border);background:var(--surface);padding:0.25em 1.2em;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:1em;}
-#footer p{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);line-height:1.5;flex:1;letter-spacing:0.05em;}
-#footer .f-right{font-family:'Share Tech Mono',monospace;font-size:clamp(6px,0.68vw,8px);color:var(--text-dim);text-align:right;white-space:nowrap;}
+#footer{
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  padding:0.4em 1.2em;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  gap:1em;
+}
+#footer p{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,0.85vw,11px);
+  color:#8888a8;
+  line-height:1.65;
+  flex:1;
+  letter-spacing:0.04em;
+}
+#footer p strong{
+  color:#c0c0e0;
+}
+#footer .f-right{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,0.85vw,11px);
+  color:#8888a8;
+  text-align:right;
+  white-space:nowrap;
+  line-height:1.65;
+}
 
 /* ── MODALES ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
@@ -225,7 +246,37 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .um-val-sep{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.85vw,11px);color:var(--text-dim);}
 .um-val-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.75vw,9px);color:var(--text-dim);}
 .um-desc{font-family:'Rajdhani',sans-serif;font-size:clamp(9px,0.95vw,12px);color:var(--text-dim);font-weight:600;line-height:1.3;}
-#um-note{grid-column:1/-1;font-family:'Share Tech Mono',monospace;font-size:clamp(7px,0.8vw,10px);color:var(--text-dim);padding:0.5em 0.7em;border-top:1px solid var(--border);line-height:1.65;}
+#um-note{
+  grid-column:1/-1;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,0.88vw,11px);
+  color:#8888a8;
+  padding:0.55em 0.7em;
+  border-top:1px solid var(--border);
+  line-height:1.7;
+}
+#um-note strong{color:#c0c0e0;}
+#um-si-note{
+  grid-column:1/-1;
+  background:rgba(0,255,224,0.03);
+  border:1px solid rgba(0,255,224,0.12);
+  border-radius:5px;
+  padding:0.65em 0.8em;
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(9px,0.88vw,11px);
+  color:#8888a8;
+  line-height:1.75;
+}
+#um-si-note .si-title{
+  font-family:'Orbitron',monospace;
+  font-size:clamp(8px,0.82vw,10px);
+  color:var(--neon-dl);
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  margin-bottom:0.4em;
+  display:block;
+}
+#um-si-note strong{color:#d0d0f0;}
 #dm-body{padding:0.7em;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:0.6em;}
 .dm-subtitle{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.9vw,11px);color:var(--text-dim);letter-spacing:0.1em;}
 .dm-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4em;}
@@ -272,7 +323,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 <div id="main">
 
-  <!-- COL LEFT: resultados + controles + unidades -->
+  <!-- COL LEFT -->
   <div class="col" id="col-left">
     <div id="results-bar">
       <div class="res-box res-box-dl">
@@ -287,8 +338,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       </div>
     </div>
     <div id="mode-tabs">
-      <button class="tab active" id="tab-fast" onclick="setMode(&#39;fast&#39;)">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~12s · 3 rondas</span></button>
-      <button class="tab" id="tab-detail" onclick="setMode(&#39;detail&#39;)">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">6 rondas</span></button>
+      <button class="tab active" id="tab-fast" onclick="setMode('fast')">⚡ RÁPIDA<br><span style="font-size:0.8em;opacity:0.7;">~12s · 3 rondas</span></button>
+      <button class="tab" id="tab-detail" onclick="setMode('detail')">🔬 DETALLADA<br><span style="font-size:0.8em;opacity:0.7;">6 rondas</span></button>
     </div>
     <div id="btn-wrap">
       <button class="big-btn" id="btn-start" onclick="startTest()">▶ INICIAR</button>
@@ -362,7 +413,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
   </div>
 
-  <!-- COL CENTER: contador Mbps protagonista -->
+  <!-- COL CENTER -->
   <div class="col" id="col-center">
     <div id="speed-display-card">
       <div id="gauge-title">VELOCIDAD EN TIEMPO REAL</div>
@@ -378,7 +429,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
   </div>
 
-  <!-- COL RIGHT: métricas + histograma + rondas + diagnóstico -->
+  <!-- COL RIGHT -->
   <div class="col" id="col-right">
     <div class="card" style="flex-shrink:0;">
       <div class="card-label">MÉTRICAS DE RENDIMIENTO</div>
@@ -411,9 +462,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 </div>
 
+<!-- FOOTER -->
 <footer id="footer">
-  <p><strong style="color:var(--text-mid);">NOTA TÉCNICA:</strong> Rondas con hilos paralelos · speed.cloudflare.com · archivos 25MB · resultado = mediana de rondas (bytes/tiempo). Puede diferir de speedtest.net por método y servidor.</p>
-  <div class="f-right">speedtest · HTTP paralelo · sin instalación<br>bulk transfer method</div>
+  <p>
+    <strong>NOTA TÉCNICA:</strong> Notación de unidades conforme al Sistema Internacional de Unidades (SI), organismo BIPM, Francia. ·
+    <strong>b</strong> minúscula = bit · <strong>B</strong> mayúscula = Byte ·
+    <strong>k</strong> minúscula = kilo (10³) · <strong>M</strong> mayúscula = Mega (10⁶) · <strong>G</strong> mayúscula = Giga (10⁹) ·
+    regla: kilo es el único prefijo en minúscula; Mega, Giga, Tera y superiores siempre en mayúscula. ·
+    Rondas con hilos paralelos · speed.cloudflare.com · archivos 25MB · resultado = mediana de rondas (bytes/tiempo). ·
+    Puede diferir de speedtest.net por método y servidor.
+  </p>
+  <div class="f-right">speedtest · HTTP paralelo<br>sin instalación · bulk transfer method</div>
 </footer>
 
 </div>
@@ -456,7 +515,23 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="um-vals"><span class="um-val um-val-dl" id="mu-GBps-dl">—</span><span class="um-val-sep">·</span><span class="um-val um-val-ul" id="mu-GBps-ul">—</span></div>
         <div class="um-desc"><span style="color:var(--neon-dl);">↓ Descarga</span> &nbsp;·&nbsp; <span style="color:var(--neon-ul);">↑ Subida</span><br>Gigabytes por segundo · 1 GBps = 8 Gbps</div>
       </div>
-      <div id="um-note">■ b minúscula = bits &nbsp;|&nbsp; ■ B mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>Prefijos SI: k = kilo · M = Mega · G = Giga · T = Tera</div>
+
+      <!-- NOTA GENERAL -->
+      <div id="um-note">
+        ■ <strong>b</strong> minúscula = bits &nbsp;|&nbsp; ■ <strong>B</strong> mayúscula = Bytes &nbsp;|&nbsp; 1 Byte = 8 bits &nbsp;·&nbsp; Mbps ÷ 8 = MBps<br>
+        Prefijos SI: <strong>k</strong> = kilo · <strong>M</strong> = Mega · <strong>G</strong> = Giga · <strong>T</strong> = Tera
+      </div>
+
+      <!-- VERSIÓN TÉCNICA / FORMAL -->
+      <div id="um-si-note">
+        <span class="si-title">⚙ Versión técnica / formal</span>
+        Unidades formateadas según el Sistema Internacional de Unidades (SI), mantenido por la
+        <strong>BIPM</strong> — Bureau International des Poids et Mesures
+        (Oficina Internacional de Pesas y Medidas), con sede en Sèvres, Francia. ·
+        <strong>b</strong> = bit (minúscula) · <strong>B</strong> = Byte (mayúscula) ·
+        prefijos: <strong>k</strong> = kilo, 10³ (minúscula) · <strong>M</strong> = Mega, 10⁶ (mayúscula) · <strong>G</strong> = Giga, 10⁹ (mayúscula)
+      </div>
+
     </div>
   </div>
 </div>
@@ -843,4 +918,4 @@ window.addEventListener('resize', () => { drawChart(); drawHisto('histo-canvas',
 drawChart();
 </script>
 
-<div class="insta-popup" style="display: none;">Download in high quality</div></body></html>
+</body></html>
