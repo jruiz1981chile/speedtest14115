@@ -33,6 +33,18 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   #col-center{order:1;}
   #col-right{order:3;display:none;}
 }
+@media(orientation:portrait){
+  #main{grid-template-rows:1fr auto;}
+  #col-left{flex-direction:row;flex-wrap:wrap;gap:0.4em;}
+  #col-left .card{flex:1;min-width:140px;}
+  #gauge-card{padding:0.5em 0.4em;}
+  #gauge-row{flex-direction:column;align-items:center;gap:0.3em;}
+  #gauge-wrap{width:min(72vw,36vh,300px) !important;}
+  #gauge-val{align-items:center !important;}
+  #gauge-num{font-size:clamp(22px,8vw,48px) !important;}
+  #gauge-unit-lbl{font-size:clamp(10px,3vw,16px) !important;}
+  #gauge-dir-lbl{font-size:clamp(10px,2.5vw,14px) !important;}
+}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6em 0.8em;flex-shrink:0;position:relative;overflow:hidden;}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3;}
 .card.grow{flex:1;min-height:0;}
@@ -87,7 +99,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #gauge-title{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.9vw,12px);color:var(--text-dim);letter-spacing:0.18em;text-align:center;flex-shrink:0;padding:0.1em 0;}
 #gauge-row{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0.8em;flex-shrink:1;min-height:0;width:100%;}
 #gauge-wrap{position:relative;width:min(26vw,52vh,240px);aspect-ratio:1;flex-shrink:1;min-height:0;}
-@media(orientation:portrait){#gauge-wrap{width:min(48vw,26vh,200px);}}
 #gauge-svg{width:100%;height:100%;}
 #gauge-val{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;pointer-events:none;flex-shrink:0;}
 #gauge-num{font-family:'Orbitron',monospace;font-size:clamp(18px,3vw,36px);font-weight:900;color:var(--neon-dl);line-height:1;letter-spacing:0.02em;text-shadow:0 0 25px var(--neon-dl),0 0 50px rgba(0,255,224,0.3);transition:color 0.3s,text-shadow 0.3s;white-space:nowrap;}
@@ -103,10 +114,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 #btn-start:hover{background:var(--neon-dl);color:#000;box-shadow:0 0 28px var(--neon-dl);}
 #btn-stop{background:transparent;border:2px solid var(--danger);color:var(--danger);text-shadow:0 0 10px var(--danger);display:none;}
 #btn-stop:hover{background:var(--danger);color:#fff;box-shadow:0 0 22px var(--danger);}
-#chart-card{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.3em 0.6em 0.4em;display:flex;flex-direction:column;min-height:0;}
+#chart-card{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.3em 0.6em;display:flex;flex-direction:column;min-height:0;}
 @media(orientation:portrait){#chart-card{display:none;}}
-#chart-label{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.82vw,11px);color:var(--text-dim);letter-spacing:0.12em;margin-bottom:0.2em;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#chart-canvas{flex:1;width:100%;height:clamp(26px,4.5vh,48px);display:block;}
+#chart-label{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.82vw,11px);color:var(--text-dim);letter-spacing:0.12em;margin-bottom:0.2em;flex-shrink:0;}
+#chart-canvas{flex:1;width:100%;height:clamp(22px,4vh,42px);display:block;}
 .metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35em;}
 .m-cell{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.35em 0.5em;text-align:center;}
 .m-cell .mc-lbl{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.78vw,10px);color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;}
@@ -342,6 +353,16 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
             <path d="M 15 95 A 50 50 0 1 1 105 95" stroke="#1a1a2a" stroke-width="10" stroke-linecap="round" fill="none"></path>
             <path id="gauge-arc" d="M 15 95 A 50 50 0 1 1 105 95" stroke="url(#gGrad)" stroke-width="10" stroke-linecap="round" fill="none" stroke-dasharray="0 251" filter="url(#glow)" style="transition:stroke-dasharray 0.25s ease;"></path>
             <g id="gauge-ticks"></g>
+            <g id="gauge-speed-labels"></g>
+            <!-- puntero tipo velocímetro -->
+            <line id="gauge-needle"
+              x1="60" y1="60" x2="60" y2="18"
+              stroke="#00ffe0" stroke-width="2" stroke-linecap="round"
+              filter="url(#glow)"
+              style="transform-origin:60px 60px;transform:rotate(-126deg);transition:transform 0.25s ease;"/>
+            <!-- pivote central -->
+            <circle cx="60" cy="60" r="4" fill="#1a1a2a" stroke="#00ffe0" stroke-width="1.5" filter="url(#glow)"/>
+            <circle cx="60" cy="60" r="2" fill="#00ffe0"/>
           </svg>
         </div>
         <div id="gauge-val">
@@ -349,6 +370,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
           <div id="gauge-unit-lbl">Mbps</div>
           <div id="gauge-dir-lbl">↓ DL</div>
         </div>
+      </div>
       </div>
       <div id="status-line">Presiona INICIAR para medir tu conexión</div>
       <div id="progress-wrap"><div id="progress-fill"></div></div>
@@ -537,16 +559,34 @@ function formatFixed(mbps) {
 
 (function buildTicks(){
   const svg = document.getElementById('gauge-ticks');
+  const lblG = document.getElementById('gauge-speed-labels');
   const cx=60, cy=60, r=50, startA=Math.PI*1.1, endA=Math.PI*1.9;
+  // ticks
   for(let i=0; i<=10; i++){
     const a = startA + (endA-startA)*(i/10), isMaj = i%5===0;
     const r1 = r-5, r2 = r-(isMaj?13:9);
     const line = document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1', cx+r1*Math.cos(a)); line.setAttribute('y1', cy+r1*Math.sin(a));
     line.setAttribute('x2', cx+r2*Math.cos(a)); line.setAttribute('y2', cy+r2*Math.sin(a));
-    line.setAttribute('stroke', isMaj?'#333':'#1e1e2a'); line.setAttribute('stroke-width', isMaj?'2':'1');
+    line.setAttribute('stroke', isMaj?'#444':'#1e1e2a'); line.setAttribute('stroke-width', isMaj?'2':'1');
     svg.appendChild(line);
   }
+  // etiquetas de velocidad en los ticks mayores (0, 25, 50, 75, 100)
+  const labels = ['0','25','50','75','100'];
+  [0,2.5,5,7.5,10].forEach((pos, idx) => {
+    const a = startA + (endA-startA)*(pos/10);
+    const rL = r - 20;
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', cx + rL*Math.cos(a));
+    t.setAttribute('y', cy + rL*Math.sin(a) + 3);
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','6');
+    t.setAttribute('font-family','monospace');
+    t.setAttribute('fill','#44445a');
+    t.setAttribute('letter-spacing','0');
+    t.textContent = labels[idx];
+    lblG.appendChild(t);
+  });
 })();
 
 function setGaugeArc(mbps, maxMbps){
@@ -554,6 +594,16 @@ function setGaugeArc(mbps, maxMbps){
   const ratio = Math.min(mbps / (maxMbps||100), 1), dash = ratio * 251;
   arc.setAttribute('stroke-dasharray', `${dash} ${251-dash}`);
   document.getElementById('gauge-num').textContent = formatFixed(mbps);
+  // mover puntero: de -126deg (0) a +126deg (máx), rango total 252deg
+  const needle = document.getElementById('gauge-needle');
+  const degMin = -126, degMax = 126;
+  const deg = degMin + ratio * (degMax - degMin);
+  needle.style.transform = `rotate(${deg}deg)`;
+  // color del puntero según fase
+  const color = currentPhase === 'ul' ? '#bf00ff' : '#00ffe0';
+  needle.setAttribute('stroke', color);
+  const pivot2 = needle.nextElementSibling?.nextElementSibling;
+  if(pivot2) pivot2.setAttribute('fill', color);
 }
 
 function drawChart(){
