@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- saved from url=(0048)https://jruiz1981chile.github.io/speedtest14115/ -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -26,16 +25,22 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .hdr-btn-diag:hover{background:var(--neon-ul);color:#fff;box-shadow:0 0 18px var(--neon-ul);}
 #main{flex:1;display:grid;gap:0.55em;padding:0.55em;overflow:hidden;min-height:0;}
 @media(orientation:landscape){#main{grid-template-columns:1fr 1.5fr 1fr;grid-template-rows:1fr;}}
-@media(orientation:portrait){#main{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;}}
-.col{display:flex;flex-direction:column;gap:0.5em;overflow:hidden;min-height:0;}
+
+/* =====================================================================
+   PORTRAIT FIX: allow scrolling so the START button in col-left is
+   reachable. The original code used overflow:hidden + flex:1 on
+   col-center which pushed col-left (and the button) off-screen.
+   ===================================================================== */
 @media(orientation:portrait){
-  #main{grid-template-columns:1fr;grid-template-rows:1fr auto;gap:0.4em;padding:0.4em;}
-  #col-center{order:1;flex:1;min-height:0;}
+  html,body{overflow:auto !important;height:auto !important;}
+  #app{height:auto;min-height:100vh;overflow:visible;}
+  #main{grid-template-columns:1fr;grid-template-rows:auto auto;gap:0.4em;padding:0.4em;overflow:visible;}
+  #col-center{order:1;flex:none;}
   #col-left{order:2;flex-shrink:0;display:flex;flex-direction:column;gap:0.35em;}
   #col-right{display:none;}
   #chart-card{display:none !important;}
   #units-card{display:none !important;}
-  #gauge-card{flex:1;min-height:0;}
+  #gauge-card{flex:none;height:min(80vw,360px);}
   #gauge-row{flex-direction:column;align-items:center;gap:0.3em;}
   #gauge-wrap{width:min(68vw,38vh,280px) !important;flex-shrink:0;}
   #gauge-val{align-items:center !important;}
@@ -52,6 +57,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   #btn-wrap{padding:0.15em 0;}
   .big-btn{font-size:clamp(12px,3.5vw,16px);padding:0.5em 1.2em;}
 }
+
+.col{display:flex;flex-direction:column;gap:0.5em;overflow:hidden;min-height:0;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0.6em 0.8em;flex-shrink:0;position:relative;overflow:hidden;}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.3;}
 .card.grow{flex:1;min-height:0;}
@@ -89,7 +96,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .urow-c5::after{background:#44aaff;}
 .urow-sym{font-family:'Orbitron',monospace;font-size:clamp(11px,1.1vw,14px);font-weight:700;letter-spacing:0.05em;}
 .urow-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(9px,0.75vw,10px);color:var(--text-dim);margin-left:0.3em;}
-/* MODIFICADO: contenedor de los dos valores dl/ul dentro de cada urow */
 .urow-vals{display:flex;gap:0.4em;align-items:baseline;margin:0.12em 0;flex-wrap:wrap;}
 .urow-val{font-family:'Orbitron',monospace;font-size:clamp(13px,1.4vw,17px);font-weight:900;color:var(--text);line-height:1.2;letter-spacing:-0.01em;}
 .urow-val-dl{color:var(--neon-dl);}
@@ -171,7 +177,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .um-c5::after{background:#44aaff;}
 .um-sym{font-family:'Orbitron',monospace;font-size:clamp(12px,1.5vw,17px);font-weight:900;letter-spacing:0.05em;}
 .um-eq{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,0.85vw,10px);color:var(--text-dim);margin-left:0.4em;}
-/* MODIFICADO: contenedor de los dos valores dl/ul dentro de cada um-row */
 .um-vals{display:flex;gap:0.5em;align-items:baseline;margin:0.15em 0;flex-wrap:wrap;}
 .um-val{font-family:'Orbitron',monospace;font-size:clamp(15px,2vw,24px);font-weight:900;color:var(--text);line-height:1.15;letter-spacing:-0.01em;}
 .um-val-dl{color:var(--neon-dl);}
@@ -246,7 +251,6 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <button class="big-btn" id="btn-stop" onclick="stopTest()">■ DETENER</button>
     </div>
 
-    <!-- PANEL LATERAL DE UNIDADES: ahora muestra ↓ DL y ↑ UL en cada fila -->
     <div id="units-card" class="grow">
       <div id="units-card-header" onclick="toggleUnitsCard()">
         <span class="uch-title">TODAS LAS UNIDADES</span>
@@ -424,7 +428,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 </div>
 
-<!-- MODAL UNIDADES: ahora muestra ↓ DL y ↑ UL en cada fila -->
+<!-- MODAL UNIDADES -->
 <div class="modal-overlay" id="units-modal">
   <div class="modal-box">
     <div class="modal-head">
@@ -550,7 +554,6 @@ const UL_URL = 'https://speed.cloudflare.com/__up';
 let running = false, mode = 'fast', shouldStop = false;
 let chartData = [], roundsData = [], allSamples = [], peakMbps = 0, currentPhase = 'dl';
 
-// Almacena el último resultado de descarga y subida en Mbps para updateUnits
 let lastDlMbps = 0, lastUlMbps = 0;
 
 function formatFixed(mbps) {
@@ -646,9 +649,7 @@ function drawHisto(canvasId, samples){
   ctx.shadowBlur = 0;
 }
 
-// MODIFICADO: updateUnits ahora acepta dl y ul, actualiza ambos en panel lateral y modal
 function updateUnits(dlMbps, ulMbps) {
-  // Guardamos los últimos valores conocidos
   if (dlMbps !== undefined) lastDlMbps = dlMbps;
   if (ulMbps !== undefined) lastUlMbps = ulMbps;
 
@@ -657,7 +658,6 @@ function updateUnits(dlMbps, ulMbps) {
   function fmtDl(val, dec) { return dl <= 0 ? '—' : val.toFixed(dec); }
   function fmtUl(val, dec) { return ul <= 0 ? '—' : val.toFixed(dec); }
 
-  // Panel lateral: ↓ DL
   const setDL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtDl(val, dec); };
   setDL('u-mbps-dl',  dl,        dl>=10?2:3);
   setDL('u-MBps-dl',  dl/8,      3);
@@ -666,7 +666,6 @@ function updateUnits(dlMbps, ulMbps) {
   setDL('u-gbps-dl',  dl/1000,   4);
   setDL('u-GBps-dl',  dl/8000,   5);
 
-  // Panel lateral: ↑ UL
   const setUL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtUl(val, dec); };
   setUL('u-mbps-ul',  ul,        ul>=10?2:3);
   setUL('u-MBps-ul',  ul/8,      3);
@@ -675,7 +674,6 @@ function updateUnits(dlMbps, ulMbps) {
   setUL('u-gbps-ul',  ul/1000,   4);
   setUL('u-GBps-ul',  ul/8000,   5);
 
-  // Modal: ↓ DL
   const setMDL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtDl(val, dec); };
   setMDL('mu-mbps-dl',  dl,        dl>=10?2:3);
   setMDL('mu-MBps-dl',  dl/8,      3);
@@ -684,7 +682,6 @@ function updateUnits(dlMbps, ulMbps) {
   setMDL('mu-gbps-dl',  dl/1000,   4);
   setMDL('mu-GBps-dl',  dl/8000,   5);
 
-  // Modal: ↑ UL
   const setMUL = (id, val, dec) => { const el = document.getElementById(id); if(el) el.textContent = fmtUl(val, dec); };
   setMUL('mu-mbps-ul',  ul,        ul>=10?2:3);
   setMUL('mu-MBps-ul',  ul/8,      3);
@@ -752,7 +749,6 @@ function measureDownloadRound(numThreads, roundDurationMs) {
           allSamples.push(ewma); chartData.push({v: ewma});
           if (ewma > peakMbps) peakMbps = ewma;
           setGaugeArc(ewma, Math.max(peakMbps * 1.2, 100));
-          // Durante descarga, solo actualiza DL en las unidades
           updateUnits(ewma, undefined); updateMetrics(); drawChart();
         }
         lastSampleBytes = totalBytesReceived; lastSampleTime = now;
@@ -883,7 +879,6 @@ async function startTest() {
     }
 
     document.getElementById('res-dl').textContent = dlResult.toFixed(2);
-    // Actualiza unidades con resultado final de DL (UL sigue siendo 0 aún)
     updateUnits(dlResult, undefined); updateMetrics();
 
     if (!shouldStop) {
@@ -893,7 +888,6 @@ async function startTest() {
       setStatus('MIDIENDO SUBIDA...', 80);
       const ulResult = await measureUploadRound(8, 5000);
       document.getElementById('res-ul').textContent = ulResult.mbps.toFixed(2);
-      // AQUÍ: actualiza unidades con ambos valores finales DL + UL
       updateUnits(dlResult, ulResult.mbps);
       setStatus('SUBIDA: ' + ulResult.mbps.toFixed(1) + ' Mbps', 95);
     }
